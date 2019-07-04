@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 from distutils.core import setup
 from distutils.extension import Extension
@@ -7,8 +7,8 @@ from Cython.Distutils import build_ext
 
 from subprocess import Popen, PIPE
 
-cflags = Popen(['pkg-config', '--cflags', 'purple'], stdout=PIPE).communicate()[0].split()
-ldflags = Popen(['pkg-config', '--libs', 'purple'], stdout=PIPE).communicate()[0].split()
+cflags = Popen(['pkg-config', '--cflags', 'purple'], stdout=PIPE).communicate()[0].decode().split()
+ldflags = Popen(['pkg-config', '--libs', 'purple'], stdout=PIPE).communicate()[0].decode().split()
 
 purplemodule = Extension('purple',
                          sources=['c_purple.c','purple.pyx'],
