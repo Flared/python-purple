@@ -74,6 +74,12 @@ cdef class Purple:
     def __init__(self, ui_name, ui_version, ui_website, ui_dev_website, \
             debug_enabled=None, default_path=None):
 
+        assert isinstance(ui_name, bytes)
+        assert isinstance(ui_version, bytes)
+        assert isinstance(ui_website, bytes)
+        assert isinstance(ui_dev_website, bytes)
+        assert isinstance(default_path, bytes)
+
         global c_ui_name
         global c_ui_version
         global c_ui_website
@@ -106,7 +112,7 @@ cdef class Purple:
         '''
 
         global c_ui_name
-        return str(c_ui_name)
+        return c_ui_name
     ui_name = property(__get_ui_name)
 
     cdef void __core_ui_ops_ui_prefs_init(self):

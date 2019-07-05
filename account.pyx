@@ -428,8 +428,11 @@ cdef class Account:
         @return True if successful, False if account doesn't exists
         """
         if self.__exists:
-            account.purple_account_set_enabled(self._get_structure(), \
-                    self.__core.ui_name, bool(value))
+            account.purple_account_set_enabled(
+                self._get_structure(),
+                self.__core.ui_name,
+                bool(value)
+            )
             return True
         else:
             return False
