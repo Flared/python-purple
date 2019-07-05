@@ -29,7 +29,7 @@ __VERSION__ = b"0.1"
 __WEBSITE__ = b"N/A"
 __DEV_WEBSITE__ = b"N/A"
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Sets initial parameters
     core = purple.Purple(
         __NAME__,
@@ -37,7 +37,7 @@ if __name__ == '__main__':
         __WEBSITE__,
         __DEV_WEBSITE__,
         debug_enabled=True,
-        default_path=b"/tmp"
+        default_path=b"/tmp",
     )
 
     # Initializes libpurple
@@ -48,7 +48,7 @@ if __name__ == '__main__':
     username = sys.stdin.readline()[:-1].encode()
 
     # Initialize protocol class
-    protocol = purple.Protocol(b'prpl-null')
+    protocol = purple.Protocol(b"prpl-null")
 
     # Creates new account inside libpurple
     account = purple.Account(username, protocol, core)
@@ -59,11 +59,11 @@ if __name__ == '__main__':
     account.set_password(password)
 
     # Set account protocol options
-    #info = {}
-    #info[b'connect_server'] = b'talk.google.com'
-    #info[b'port'] = b'443'
-    #info[b'old_ssl'] = True
-    #account.set_protocol_options(info)
+    # info = {}
+    # info[b'connect_server'] = b'talk.google.com'
+    # info[b'port'] = b'443'
+    # info[b'old_ssl'] = True
+    # account.set_protocol_options(info)
 
     # Enable account (connects automatically)
     account.set_enabled(True)

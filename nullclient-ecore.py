@@ -31,6 +31,7 @@ __VERSION__ = "0.1"
 __WEBSITE__ = "N/A"
 __DEV_WEBSITE__ = "N/A"
 
+
 class MainWindow(object):
     def __init__(self):
         # Connect button callback
@@ -50,7 +51,7 @@ class MainWindow(object):
         self.login_password = etk.Entry()
 
         # Confirm login button
-        confirm_login_bt = etk.Button(label='Ok')
+        confirm_login_bt = etk.Button(label="Ok")
         confirm_login_bt.on_clicked(self.__connect_button_clicked)
 
         # Login VBox
@@ -59,8 +60,9 @@ class MainWindow(object):
         vbox.append(confirm_login_bt, etk.VBox.END, etk.VBox.NONE, 0)
 
         # Login window
-        self.login_window = etk.Window(title='Password', \
-                size_request=(190, 80), child=vbox)
+        self.login_window = etk.Window(
+            title="Password", size_request=(190, 80), child=vbox
+        )
         self.login_window.show_all()
 
     def __connect_button_clicked(self, pointer):
@@ -76,20 +78,20 @@ class MainWindow(object):
         # Get message from command entry
         msg = self.cmd_entry.text
 
-        if bname and msg != '':
+        if bname and msg != "":
             # Call send button callback
             if self.__send_button_cb:
                 self.__send_button_cb(bname, msg)
 
         # Clear text from command entry
-        self.cmd_entry.text = ''
+        self.cmd_entry.text = ""
 
     def __new_account_button_clicked(self, pointer):
         # Username entry
         self.login_username = etk.Entry()
 
         # Confirm username button
-        confirm_username_bt = etk.Button(label='Ok')
+        confirm_username_bt = etk.Button(label="Ok")
         confirm_username_bt.on_clicked(self.add_account)
 
         # Username VBox
@@ -98,18 +100,22 @@ class MainWindow(object):
         vbox.append(confirm_username_bt, etk.VBox.END, etk.VBox.NONE, 0)
 
         # Username window
-        self.username_window = etk.Window(title='Username', \
-                size_request=(190, 80), child=vbox)
+        self.username_window = etk.Window(
+            title="Username", size_request=(190, 80), child=vbox
+        )
         self.username_window.show_all()
 
     def __create_accounts_list(self):
         # Accounts list
         self.accslistmodel = etk.ListModel()
-        self.accslist = etk.List(model=self.accslistmodel, \
-                columns=[(10, etk.TextRenderer(slot=0), False)], \
-                selectable=True, animated_changes=True)
+        self.accslist = etk.List(
+            model=self.accslistmodel,
+            columns=[(10, etk.TextRenderer(slot=0), False)],
+            selectable=True,
+            animated_changes=True,
+        )
 
-        #Appending accounts list to VBox
+        # Appending accounts list to VBox
         vbox = etk.VBox()
         vbox.append(self.accslist, etk.VBox.START, etk.VBox.EXPAND_FILL, 0)
         return vbox
@@ -117,9 +123,12 @@ class MainWindow(object):
     def __create_buddies_list(self):
         # Buddies list
         self.blistmodel = etk.ListModel()
-        self.blist = etk.List(model=self.blistmodel, \
-                columns=[(10, etk.TextRenderer(slot=0), False)], \
-                selectable=True, animated_changes=True)
+        self.blist = etk.List(
+            model=self.blistmodel,
+            columns=[(10, etk.TextRenderer(slot=0), False)],
+            selectable=True,
+            animated_changes=True,
+        )
 
         # Appending buddies list to VBox
         vbox = etk.VBox()
@@ -128,15 +137,15 @@ class MainWindow(object):
 
     def __create_buttons_bar(self):
         # Send button
-        send_button = etk.Button(label='Send')
+        send_button = etk.Button(label="Send")
         send_button.on_clicked(self.__send_button_clicked)
 
         # Connect button
-        conn_button = etk.Button(label='Connect')
+        conn_button = etk.Button(label="Connect")
         conn_button.on_clicked(self.__login_window_cb)
 
         # New account button
-        new_acc_button = etk.Button(label='New Account')
+        new_acc_button = etk.Button(label="New Account")
         new_acc_button.on_clicked(self.__new_account_button_clicked)
 
         # Appending all buttons to HBox
@@ -149,20 +158,18 @@ class MainWindow(object):
     def __create_command_entry_box(self):
         # Command entry box
         self.cmd_entry = etk.Entry()
-        self.cmd_label = etk.Label(text='Type your message: ')
+        self.cmd_label = etk.Label(text="Type your message: ")
 
         # appending command entry and label to HBox
         hbox = etk.HBox(homogeneous=False)
-        hbox.append(self.cmd_label, etk.HBox.START, \
-                etk.HBox.START, 0)
-        hbox.append(self.cmd_entry, etk.HBox.START, \
-                etk.HBox.EXPAND_FILL, 0)
+        hbox.append(self.cmd_label, etk.HBox.START, etk.HBox.START, 0)
+        hbox.append(self.cmd_entry, etk.HBox.START, etk.HBox.EXPAND_FILL, 0)
         return hbox
 
     def __create_text_area(self):
         # Text area (shows buddy messages)
         self.txt_area = etk.Label()
-        self.txt_area.text = '<br>Nullclient-Ecore<br> '
+        self.txt_area.text = "<br>Nullclient-Ecore<br> "
 
         # Appending text area to VBox
         vbox = etk.VBox()
@@ -197,7 +204,7 @@ class MainWindow(object):
         btn_hbox = self.__create_buttons_bar()
 
         # Connection status
-        self.status = etk.Label(text='Connection status')
+        self.status = etk.Label(text="Connection status")
 
         # Main VBox
         vbox = etk.VBox(homogeneous=False)
@@ -255,8 +262,9 @@ class MainWindow(object):
         main_box = self.__create_main_box()
 
         # Main Window
-        self.window = etk.Window(title='Nullclient-Ecore', \
-                size_request=(600, 600), child=main_box)
+        self.window = etk.Window(
+            title="Nullclient-Ecore", size_request=(600, 600), child=main_box
+        )
         self.window.on_destroyed(self.__exit_cb)
         self.window.show_all()
 
@@ -264,51 +272,57 @@ class MainWindow(object):
         if self.window:
             self.window.show_all()
 
+
 class NullClient(object):
     def __init__(self):
         # Sets initial parameters
-        self.core = purple.Purple(__NAME__, __VERSION__, __WEBSITE__, \
-                __DEV_WEBSITE__, debug_enabled=True, default_path='/tmp')
+        self.core = purple.Purple(
+            __NAME__,
+            __VERSION__,
+            __WEBSITE__,
+            __DEV_WEBSITE__,
+            debug_enabled=True,
+            default_path="/tmp",
+        )
         ecore.Timer(0.01, self.core.iterate_main_loop)
         self.account = None
         self.buddies = {}
         self.conversations = {}
-        self.protocol = purple.Protocol('prpl-jabber')
+        self.protocol = purple.Protocol("prpl-jabber")
         self.window = MainWindow()
 
         # Adds libpurple core callbacks
 
         # Updates buddy list
-        self.core.add_callback('blist', 'update', \
-                self.__update_blist_cb)
+        self.core.add_callback("blist", "update", self.__update_blist_cb)
 
         # Updates connection progress
-        self.core.add_callback('connection', 'connect-progress', \
-                self.__connection_progress_cb)
+        self.core.add_callback(
+            "connection", "connect-progress", self.__connection_progress_cb
+        )
 
         # Activates when an account is connected
-        self.core.add_callback('connection', 'connected', \
-                self.__connected_cb)
+        self.core.add_callback("connection", "connected", self.__connected_cb)
 
         # Activates when an account is disconnected
-        self.core.add_callback('connection', 'disconnected', \
-                self.__disconected_cb)
+        self.core.add_callback(
+            "connection", "disconnected", self.__disconected_cb
+        )
 
         # Activates when a message is sent or received from conversation
-        self.core.add_callback('conversation', 'write-im', \
-                self.__write_im_cb)
+        self.core.add_callback("conversation", "write-im", self.__write_im_cb)
 
         # Signal when account signed on
-        self.core.signal_connect('signed-on', self.__signed_on_cb)
+        self.core.signal_connect("signed-on", self.__signed_on_cb)
 
         # Signal when account signed off
-        self.core.signal_connect('signed-off', self.__signed_off_cb)
+        self.core.signal_connect("signed-off", self.__signed_off_cb)
 
         # Signal when buddy signed on
-        self.core.signal_connect('buddy-signed-on', self.__buddy_signed_on_cb)
+        self.core.signal_connect("buddy-signed-on", self.__buddy_signed_on_cb)
 
         # Signed when buddy signed off
-        self.core.signal_connect('buddy-signed-off', self.__buddy_signed_off_cb)
+        self.core.signal_connect("buddy-signed-off", self.__buddy_signed_off_cb)
 
         # Adds UI callbacks
         self.window.add_connection_button_cb(self.connect)
@@ -334,15 +348,15 @@ class NullClient(object):
 
     def __connected_cb(self, *data):
         if self.window:
-            self.window.status.text = 'Connected'
+            self.window.status.text = "Connected"
 
     def __disconected_cb():
         if self.window:
-            self.window.status.text = 'Disconnected'
+            self.window.status.text = "Disconnected"
 
     def __write_im_cb(self, username, name, alias, message, flags):
         if self.window:
-            if 'SEND' == flags:
+            if "SEND" == flags:
                 self.window.txt_area.text += username + ": " + message + "<br> "
             elif alias:
                 self.window.txt_area.text += alias + ": " + message + "<br> "
@@ -352,17 +366,23 @@ class NullClient(object):
 
     def __signed_on_cb(self, username, protocol_id):
         if self.window:
-            self.window.txt_area += 'Signed on: %s (%s)' % (username, protocol_id)
+            self.window.txt_area += "Signed on: %s (%s)" % (
+                username,
+                protocol_id,
+            )
             self.window.show()
 
     def __signed_off_cb(self, username, protocol_id):
         if self.window:
-            self.window.txt_area += 'Signed off: %s (%s)' % (username, protocol_id)
+            self.window.txt_area += "Signed off: %s (%s)" % (
+                username,
+                protocol_id,
+            )
             self.window.show()
 
     def __buddy_signed_on_cb(self, name, alias):
         if self.window:
-            self.window.txt_area += 'Buddy signed on: %s (%s)' % (name, alias)
+            self.window.txt_area += "Buddy signed on: %s (%s)" % (name, alias)
             self.window.show()
 
     def __buddy_signed_off_cb(self, name, alias):
@@ -370,7 +390,7 @@ class NullClient(object):
             del self.buddies[name]
 
         if self.window:
-            self.window.txt_area += 'Buddy signed off: %s (%s)' % (name, alias)
+            self.window.txt_area += "Buddy signed off: %s (%s)" % (name, alias)
             self.window.remove_buddy(name)
             self.window.show()
 
@@ -381,18 +401,20 @@ class NullClient(object):
             if not self.account.exists:
                 self.account.new()
                 info = {}
-                info['connect_server'] = 'talk.google.com'
-                info['port'] = '443'
-                info['old_ssl'] = True
+                info["connect_server"] = "talk.google.com"
+                info["port"] = "443"
+                info["old_ssl"] = True
                 self.account.set_protocol_options(info)
 
             self.account.set_password(password)
             self.account.set_enabled(True)
 
     def send_message(self, name, message):
-        print name, message
+        print(name, message)
         if name not in self.conversations:
-            self.conversations[name] = purple.Conversation('IM', self.account, name)
+            self.conversations[name] = purple.Conversation(
+                "IM", self.account, name
+            )
             self.conversations[name].new()
 
         self.conversations[name].im_send(message)
@@ -400,7 +422,8 @@ class NullClient(object):
     def exit(self, pointer):
         ecore.main_loop_quit()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     client = NullClient()
 
     # Initializes ecore mainloop
