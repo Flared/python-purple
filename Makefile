@@ -15,9 +15,13 @@ venv-test: requirements.txt \
 		-r requirements.tests.txt
 	venv-test/bin/python setup.py install
 
-.PONY: format
-format:
+.PHONY: format
+format: venv-test
 	venv-test/bin/black .
+
+.PHONY: lint
+lint: venv-test
+	venv-test/bin/black --check .
 
 .PHONY: build
 build: venv
