@@ -9,6 +9,11 @@ venv: requirements.txt
 build: venv
 	venv/bin/python setup.py build
 
+
+.PHONY: run-nullclient
+run-nullclient:
+	venv/bin/python nullclient.py
+
 .PHONY: clean
 clean:
 	rm -rf venv
