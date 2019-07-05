@@ -33,7 +33,7 @@ install: build
 
 .PHONY: run-nullclient
 run-nullclient: install
-	venv/bin/python nullclient.py
+	venv/bin/python examples/nullclient.py
 
 .PHONY: clean
 clean:

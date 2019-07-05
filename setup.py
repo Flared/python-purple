@@ -24,11 +24,11 @@ ldflags = (
 ext_modules = cythonize(
     Extension(
         "purple",
-        sources=["c_purple.c", "purple.pyx"],
+        sources=["purple/c_purple.c", "purple/purple.pyx"],
         extra_compile_args=cflags,
         extra_link_args=ldflags,
     ),
-    include_path=["libpurple"],
+    include_path=["purple/libpurple"],
 )
 
 long_description = "\

@@ -1,4 +1,4 @@
 /build
 /venv
 /venv-test
-/purple.c
+/purple/purple.c
