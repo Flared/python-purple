@@ -17,11 +17,7 @@ venv-test: requirements.txt \
 
 .PONY: format
 format:
-	venv-test/bin/black \
-		-t py37 \
-		-l 80 \
-		--exclude "(venv|venv-test)" \
-		.
+	venv-test/bin/black .
 
 .PHONY: build
 build: venv
