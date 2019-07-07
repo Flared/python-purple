@@ -17,3 +17,10 @@ def test_plugins_get_all():
     purple_plugins = purple.Plugins()
     plugins = purple_plugins.get_plugins()
     assert isinstance(plugins, list)
+
+
+def test_plugins_get_search_paths():
+    purple_plugins = purple.Plugins()
+    search_paths = purple_plugins.get_search_paths()
+    assert isinstance(search_paths, list)
+    assert len(search_paths)

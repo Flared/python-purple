@@ -42,6 +42,7 @@ cdef extern from "libpurple/plugin.h":
     PurplePlugin* purple_plugin_new(glib.gboolean native, char* path)
 
     void purple_plugins_add_search_path(char* path)
+    glib.GList* purple_plugins_get_search_paths()
     glib.GList* purple_plugins_get_protocols()
     glib.GList* purple_plugins_get_all()
     PurplePlugin purple_plugins_find_with_name(char* name)

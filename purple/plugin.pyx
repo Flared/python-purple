@@ -202,6 +202,15 @@ cdef class Plugins:
     def plugins_enabled(self):
         return bool(plugin.purple_plugins_enabled())
 
+    def get_search_paths(self):
+        search_paths = []
+        cdef glib.GList* iter
+        iter = plugin.purple_plugins_get_search_paths()
+        while iter:
+            search_paths.append(<char*> iter.data)
+            iter = iter.next
+        return search_paths
+
     def add_search_path(self, path):
         plugin.purple_plugins_add_search_path(path)
 
@@ -211,7 +220,7 @@ cdef class Plugins:
     def get_plugins(self):
         if self.plugins:
             return self.plugins
-        cdef glib.GList *iter
+        cdef glib.GList* iter
         cdef plugin.PurplePlugin *pp
         plugins = []
         iter = plugin.purple_plugins_get_all()
