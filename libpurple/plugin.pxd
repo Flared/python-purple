@@ -47,5 +47,7 @@ cdef extern from "libpurple/plugin.h":
     PurplePlugin purple_plugins_find_with_name(char *name)
     PurplePlugin *purple_plugins_find_with_id(char *id)
     char *purple_plugin_get_name(PurplePlugin *plugin)
+    void purple_plugins_probe(const char *ext)
+    glib.gboolean purple_plugins_enabled()
 
 

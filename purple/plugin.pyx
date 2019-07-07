@@ -199,6 +199,15 @@ cdef class Plugins:
         self.protocols = None
         self.plugins = None
 
+    def plugins_enabled(self):
+        return bool(plugin.purple_plugins_enabled())
+
+    def add_search_path(self, path):
+        plugin.purple_plugins_add_search_path(path)
+
+    def probe(self, ext):
+        plugin.purple_plugins_probe(ext)
+
     def get_plugins(self):
         if self.plugins:
             return self.plugins
@@ -212,6 +221,8 @@ cdef class Plugins:
                 p = Plugin(pp.info.id)
                 if p:
                     plugins += [p]
+            else:
+                raise Exception("Plugin without info or name")
             iter = iter.next
         glib.g_list_free(iter)
         self.plugins = plugins
