@@ -1,9 +1,12 @@
-import purple
+import pytest
 import tempfile
 
+import purple
 
-def test_core_init():
-    core = purple.Purple(
+
+@pytest.fixture
+def core():
+    c = purple.Purple(
         b"name",
         b"version",
         b"website",
@@ -11,5 +14,8 @@ def test_core_init():
         debug_enabled=True,
         default_path=tempfile.mkdtemp().encode(),
     )
-    core.purple_init()
-    core.destroy()
+    c.purple_init()
+
+    yield core
+
+    c.destroy()
