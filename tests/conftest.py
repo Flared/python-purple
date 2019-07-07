@@ -16,6 +16,6 @@ def core():
     )
     c.purple_init()
 
-    yield core
+    yield c
 
     c.destroy()

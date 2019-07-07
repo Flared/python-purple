@@ -112,6 +112,9 @@ cdef class Purple:
     def destroy(self):
         core.purple_core_quit()
 
+    def get_version(self):
+        return core.purple_core_get_version()
+
     def __get_ui_name(self):
         '''Returns the UI name.
 

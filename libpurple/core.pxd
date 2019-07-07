@@ -31,3 +31,4 @@ cdef extern from "libpurple/core.h":
     void purple_core_quit()
     void purple_core_set_ui_ops(PurpleCoreUiOps *ops)
     glib.gboolean purple_core_ensure_single_instance()
+    const char* purple_core_get_version()
