@@ -306,8 +306,8 @@ cdef class Purple:
         @param callback Callback to be called
         '''
 
-        assert isinstance(type, bytes)
-        assert isinstance(name, bytes)
+        assert isinstance(type, str)
+        assert isinstance(name, str)
 
         global account_cbs
         global blist_cbs
@@ -317,12 +317,12 @@ cdef class Purple:
         global request_cbs
 
         {
-            b"account": account_cbs,
-            b"blist": blist_cbs,
-            b"connection": connection_cbs,
-            b"conversation": conversation_cbs,
-            b"notify": notify_cbs,
-            b"request": request_cbs,
+            "account": account_cbs,
+            "blist": blist_cbs,
+            "connection": connection_cbs,
+            "conversation": conversation_cbs,
+            "notify": notify_cbs,
+            "request": request_cbs,
         }[type][name] = callback
 
     def signal_connect(self, name=None, cb=None):
