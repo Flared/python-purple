@@ -193,9 +193,29 @@ cdef class Plugin:
 cdef class Plugins:
 
     cdef protocols
+    cdef plugins
 
     def __init__(self):
         self.protocols = None
+        self.plugins = None
+
+    def get_plugins(self):
+        if self.plugins:
+            return self.plugins
+        cdef glib.GList *iter
+        cdef plugin.PurplePlugin *pp
+        plugins = []
+        iter = plugin.purple_plugins_get_all()
+        while iter:
+            pp = <plugin.PurplePlugin*> iter.data
+            if pp.info and pp.info.name:
+                p = Plugin(pp.info.id)
+                if p:
+                    plugins += [p]
+            iter = iter.next
+        glib.g_list_free(iter)
+        self.plugins = plugins
+        return plugins
 
     def get_protocols(self):
         if self.protocols:
