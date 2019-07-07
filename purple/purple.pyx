@@ -71,8 +71,15 @@ cdef class Purple:
     '''
 
 
-    def __init__(self, ui_name, ui_version, ui_website, ui_dev_website, \
-            debug_enabled=None, default_path=None):
+    def __init__(
+        self,
+        ui_name,
+        ui_version,
+        ui_website,
+        ui_dev_website,
+        debug_enabled=None,
+        default_path=None,
+    ):
 
         assert isinstance(ui_name, bytes)
         assert isinstance(ui_version, bytes)
@@ -151,8 +158,9 @@ cdef class Purple:
         #ft.purple_xfers_set_ui_ops(NULL)
         #roomlist.purple_roomlist_set_ui_ops(NULL)
 
-        if self.c_ui_info:
-            glib.g_hash_table_destroy(<glib.GHashTable *> self.c_ui_info)
+        global c_ui_info
+        if c_ui_info:
+            glib.g_hash_table_destroy(<glib.GHashTable *> c_ui_info)
 
     cdef glib.GHashTable *__core_ui_ops_get_ui_info(self):
         global c_ui_info
