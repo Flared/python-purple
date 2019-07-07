@@ -12,6 +12,7 @@ def test_plugins_enabled():
     ret = plugins.plugins_enabled()
     assert ret is True
 
+
 def test_plugins_get_all():
     purple_plugins = purple.Plugins()
     assert isinstance(plugins, list)
