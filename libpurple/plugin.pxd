@@ -23,31 +23,31 @@ cimport prpl
 
 cdef extern from "libpurple/plugin.h":
     ctypedef struct PurplePluginInfo:
-        char *id
-        char *name
+        char* id
+        char* name
 
     ctypedef struct PurplePlugin:
         glib.gboolean native_plugin
         glib.gboolean loaded
-        void *handle
-        char *path
-        PurplePluginInfo *info
-        char *error
-        void *ipc_data
-        void *extra
+        void* handle
+        char* path
+        PurplePluginInfo* info
+        char* error
+        void* ipc_data
+        void* extra
         glib.gboolean unloadable
-        glib.GList *dependent_plugins
+        glib.GList* dependent_plugins
 
-    prpl.PurplePluginProtocolInfo *PURPLE_PLUGIN_PROTOCOL_INFO(PurplePlugin *plugin)
-    PurplePlugin *purple_plugin_new(glib.gboolean native, char* path)
+    prpl.PurplePluginProtocolInfo* PURPLE_PLUGIN_PROTOCOL_INFO(PurplePlugin* plugin)
+    PurplePlugin* purple_plugin_new(glib.gboolean native, char* path)
 
-    void purple_plugins_add_search_path(char *path)
-    glib.GList *purple_plugins_get_protocols()
-    glib.GList *purple_plugins_get_all()
-    PurplePlugin purple_plugins_find_with_name(char *name)
-    PurplePlugin *purple_plugins_find_with_id(char *id)
-    char *purple_plugin_get_name(PurplePlugin *plugin)
-    void purple_plugins_probe(const char *ext)
+    void purple_plugins_add_search_path(char* path)
+    glib.GList* purple_plugins_get_protocols()
+    glib.GList* purple_plugins_get_all()
+    PurplePlugin purple_plugins_find_with_name(char* name)
+    PurplePlugin* purple_plugins_find_with_id(char* id)
+    char* purple_plugin_get_name(PurplePlugin* plugin)
+    void purple_plugins_probe(const char* ext)
     glib.gboolean purple_plugins_enabled()
 
 
