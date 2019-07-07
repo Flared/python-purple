@@ -23,6 +23,8 @@ cdef extern from "c_purple.h":
     glib.guint glib_input_add(glib.gint fd, eventloop.PurpleInputCondition condition, eventloop.PurpleInputFunction function, glib.gpointer data)
 
 import signal
+import sys
+import os
 
 cdef glib.GHashTable *c_ui_info
 
@@ -187,6 +189,9 @@ cdef class Purple:
 
         This will setup preferences for all the core subsystems.
         '''
+
+        if not sys.getdlopenflags() & os.RTLD_GLOBAL:
+            raise Exception("Yous must set RTLD_GLOBAL for plugins to load")
 
         global c_ui_name
 

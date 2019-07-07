@@ -1,8 +1,15 @@
-import purple
+import sys
+import os
 import tempfile
+
+import purple
 
 
 def test_core_init():
+    dlopenflags = sys.getdlopenflags()
+    if not dlopenflags & os.RTLD_GLOBAL:
+        sys.setdlopenflags(dlopenflags | os.RTLD_GLOBAL)
+
     core = purple.Purple(
         b"name",
         b"version",
