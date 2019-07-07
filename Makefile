@@ -17,7 +17,7 @@ lint: venv
 
 .PHONY: test
 test: install
-	venv/bin/pytest
+	venv/bin/pytest -v
 
 .PHONY: install
 install: venv
