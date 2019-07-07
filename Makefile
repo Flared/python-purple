@@ -1,4 +1,3 @@
-
 venv: requirements.txt
 	rm -rf venv
 	virtualenv -p python3 venv
@@ -23,6 +22,10 @@ format: venv-test
 lint: venv-test
 	venv-test/bin/black --check .
 
+.PHONY: test
+test: venv-test
+	venv-test/bin/pytest
+
 .PHONY: build
 build: venv
 	venv/bin/python setup.py build
@@ -40,4 +43,4 @@ clean:
 	rm -rf venv
 	rm -rf venv-test
 	rm -rf build
-	rm -f purple.c
+	rm -f purple/purple.c

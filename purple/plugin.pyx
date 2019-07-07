@@ -24,14 +24,9 @@ cdef class Plugin:
     cdef prpl.PurplePluginProtocolInfo *c_prpl_info
     cdef plugin.PurplePluginInfo *c_plugin_info
 
-    def __init__(self):
-        pass
-
-    '''
     def __init__(self, id):
         self.c_plugin = plugin.purple_plugins_find_with_id(id)
-        self.c_prpl_info = plugin.c_PURPLE_PLUGIN_PROTOCOL_INFO(self.c_plugin)
-    '''
+        self.c_prpl_info = plugin.PURPLE_PLUGIN_PROTOCOL_INFO(self.c_plugin)
 
     def get_name(self):
         return self.c_plugin.info.name
@@ -79,7 +74,7 @@ cdef class Plugin:
             c_account = account.purple_accounts_find(username, id)
 
         c_plugin = plugin.purple_plugins_find_with_id(id)
-        c_prpl_info = plugin.c_PURPLE_PLUGIN_PROTOCOL_INFO(c_plugin)
+        c_prpl_info = plugin.PURPLE_PLUGIN_PROTOCOL_INFO(c_plugin)
 
         po = {}
 
@@ -155,7 +150,7 @@ cdef class Plugin:
             return False
 
         c_plugin = plugin.purple_plugins_find_with_id(acc[1])
-        c_prpl_info = plugin.c_PURPLE_PLUGIN_PROTOCOL_INFO(c_plugin)
+        c_prpl_info = plugin.PURPLE_PLUGIN_PROTOCOL_INFO(c_plugin)
 
         iter = c_prpl_info.protocol_options
 

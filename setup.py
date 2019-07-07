@@ -28,7 +28,7 @@ ext_modules = cythonize(
         extra_compile_args=cflags,
         extra_link_args=ldflags,
     ),
-    include_path=["purple/libpurple"],
+    include_path=["libpurple"],
 )
 
 long_description = "\

@@ -324,6 +324,12 @@ cdef class Account:
             return False
 
         c_plugin = plugin.purple_plugins_find_with_id(self.__protocol.id)
+        if c_plugin == NULL:
+            raise Exception(
+                "Could not find plugin matching protocol id {id}".format(
+                    id=self.__protocol.id,
+                )
+            )
         prpl_info = plugin.PURPLE_PLUGIN_PROTOCOL_INFO(c_plugin)
         iter = prpl_info.protocol_options
 

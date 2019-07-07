@@ -286,6 +286,9 @@ cdef class Purple:
         @param callback Callback to be called
         '''
 
+        assert isinstance(type, bytes)
+        assert isinstance(name, bytes)
+
         global account_cbs
         global blist_cbs
         global connection_cbs
@@ -293,12 +296,14 @@ cdef class Purple:
         global notify_cbs
         global request_cbs
 
-        { "account": account_cbs,
-          "blist": blist_cbs,
-          "connection": connection_cbs,
-          "conversation": conversation_cbs,
-          "notify": notify_cbs,
-          "request": request_cbs }[type][name] = callback
+        {
+            b"account": account_cbs,
+            b"blist": blist_cbs,
+            b"connection": connection_cbs,
+            b"conversation": conversation_cbs,
+            b"notify": notify_cbs,
+            b"request": request_cbs,
+        }[type][name] = callback
 
     def signal_connect(self, name=None, cb=None):
         '''Connects a signal handler to a callback for a particular object.
@@ -356,6 +361,8 @@ cdef class Purple:
             signals.purple_signal_connect(
                     jabber, "jabber-receiving-xmlnode", &handle,
                     <signals.PurpleCallback> jabber_receiving_xmlnode_cb, NULL)
+        else:
+            raise Exception("Unknown signal")
 
     def accounts_get_all(self):
         '''Returns a list of all accounts.
@@ -442,7 +449,7 @@ cdef class Purple:
         __call_action(i)
 
 include "protocol.pyx"
-#include "plugin.pyx"
+include "plugin.pyx"
 include "proxy.pyx"
 include "account.pyx"
 include "conversation.pyx"

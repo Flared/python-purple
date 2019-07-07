@@ -36,6 +36,8 @@ cdef class Protocol:
     cdef object __exists
 
     def __init__(self, id):
+        assert isinstance(id, bytes)
+
         self.__id = id
 
         if self._get_structure() != NULL:
