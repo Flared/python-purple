@@ -1,5 +1,11 @@
 import pytest
+import sys
+import os
 import tempfile
+
+dlopenflags = sys.getdlopenflags()
+if not dlopenflags & os.RTLD_GLOBAL:
+    sys.setdlopenflags(dlopenflags | os.RTLD_GLOBAL)
 
 import purple
 

@@ -1,16 +1,11 @@
 import sys
 import os
 import tempfile
-
 import purple
 
 
 def test_core_init():
-    dlopenflags = sys.getdlopenflags()
-    if not dlopenflags & os.RTLD_GLOBAL:
-        sys.setdlopenflags(dlopenflags | os.RTLD_GLOBAL)
-
-    core = purple.Purple(
+    c = purple.Purple(
         b"name",
         b"version",
         b"website",
@@ -18,8 +13,8 @@ def test_core_init():
         debug_enabled=True,
         default_path=tempfile.mkdtemp().encode(),
     )
-    core.purple_init()
-    core.destroy()
+    c.purple_init()
+    c.destroy()
 
 
 def test_core_version(core):
