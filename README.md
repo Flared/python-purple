@@ -6,3 +6,7 @@
 
 # Roadmap:
 - [ ] Strings should be used instead of bytes wherever it makes sense.
+
+# Changelog
+
+See [CHANGELOG.md](CHANGELOG.md).
