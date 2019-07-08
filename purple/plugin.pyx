@@ -20,19 +20,39 @@
 cimport purple
 
 cdef class Plugin:
-    cdef plugin.PurplePlugin *c_plugin
-    cdef prpl.PurplePluginProtocolInfo *c_prpl_info
-    cdef plugin.PurplePluginInfo *c_plugin_info
+    cdef plugin.PurplePlugin* _c_plugin
+    cdef prpl.PurplePluginProtocolInfo* _c_protocol_info
+    cdef plugin.PurplePluginInfo* _c_plugin_info
 
-    def __init__(self, id):
-        self.c_plugin = plugin.purple_plugins_find_with_id(id)
-        self.c_prpl_info = plugin.PURPLE_PLUGIN_PROTOCOL_INFO(self.c_plugin)
+    def __init__(self):
+        raise Exception("Use Plugin.find_with_id() instead.")
+
+    @staticmethod
+    cdef Plugin _new(plugin.PurplePlugin* c_plugin):
+        cdef Plugin _plugin = Plugin.__new__(Plugin)
+        _plugin._c_plugin = c_plugin
+        _plugin._c_protocol_info = plugin.PURPLE_PLUGIN_PROTOCOL_INFO(_plugin._c_plugin)
+        return _plugin
+
+    @staticmethod
+    def find_with_id(char* id):
+        cdef object _plugin = None
+        cdef plugin.PurplePlugin* c_plugin = plugin.purple_plugins_find_with_id(id)
+        if c_plugin != NULL:
+            _plugin = Plugin._new(c_plugin)
+        return _plugin
 
     def get_name(self):
-        return self.c_plugin.info.name
+        return self._c_plugin.info.name
 
     def get_id(self):
-        return self.c_plugin.info.id
+        return self._c_plugin.info.id
+
+    def __repr__(self):
+        return "<{class_name}: {protocol_id}>".format(
+            class_name=self.__class__.__name__,
+            protocol_id=self.get_id(),
+        )
 
     def get_all(self):
         ''' @return A string list of protocols' (id, name) '''
@@ -227,7 +247,7 @@ cdef class Plugins:
         while iter:
             pp = <plugin.PurplePlugin*> iter.data
             if pp.info and pp.info.name:
-                p = Plugin(pp.info.id)
+                p = Plugin._new(pp)
                 if p:
                     plugins += [p]
             else:
@@ -247,7 +267,7 @@ cdef class Plugins:
         while iter:
             pp = <plugin.PurplePlugin*> iter.data
             if pp.info and pp.info.name:
-                p = Plugin(pp.info.id)
+                p = Plugin._new(pp)
                 if p:
                     protocols += [p]
             iter = iter.next

@@ -44,8 +44,8 @@ cdef class Protocol:
 
     @staticmethod
     def find_with_id(char* id):
-        protocol = None
-        c_plugin = plugin.purple_plugins_find_with_id(id)
+        cdef object protocol = None
+        cdef plugin.PurplePlugin* c_plugin = plugin.purple_plugins_find_with_id(id)
         if c_plugin != NULL:
             protocol = Protocol._new(plugin.purple_plugins_find_with_id(id))
         return protocol
