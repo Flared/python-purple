@@ -45,14 +45,16 @@ cdef class Account:
         self.__protocol = protocol
         self.__core = core
 
-        if protocol.exists and self._get_structure() != NULL:
+        if self._get_structure() != NULL:
             self.__exists = True
         else:
             self.__exists = False
 
     cdef account.PurpleAccount *_get_structure(self):
-        return account.purple_accounts_find(self.__username, \
-                self.__protocol.id)
+        return account.purple_accounts_find(
+            self.__username,
+            self.__protocol.get_id(),
+        )
 
     def __is_connected(self):
         if self.__exists:
@@ -323,7 +325,7 @@ cdef class Account:
         if c_account == NULL:
             return False
 
-        c_plugin = plugin.purple_plugins_find_with_id(self.__protocol.id)
+        c_plugin = plugin.purple_plugins_find_with_id(self.__protocol.get_id())
         if c_plugin == NULL:
             raise Exception(
                 "Could not find plugin matching protocol id {id}".format(
@@ -452,8 +454,12 @@ cdef class Account:
         if self.__exists:
             return False
         else:
-            account.purple_accounts_add(account.purple_account_new( \
-                    self.__username, self.__protocol.id))
+            account.purple_accounts_add(
+                account.purple_account_new(
+                    self.__username,
+                    self.__protocol.get_id(),
+                )
+            )
 
             self.__exists = True
             return True

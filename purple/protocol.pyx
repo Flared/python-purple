@@ -30,44 +30,33 @@ cdef extern from *:
 cdef class Protocol:
     """
     Protocol class
-    @param id
     """
-    cdef object __id
-    cdef object __exists
+    cdef plugin.PurplePlugin* _c_plugin
 
-    def __init__(self, id):
-        assert isinstance(id, bytes)
+    def __init__(self):
+        raise Exception("Use Protocol.find_with_id() instead.")
 
-        self.__id = id
+    @staticmethod
+    cdef Protocol _new(plugin.PurplePlugin* c_plugin):
+        cdef Protocol protocol = Protocol.__new__(Protocol)
+        protocol._c_plugin = c_plugin
+        return protocol
 
-        if self._get_structure() != NULL:
-            self.__exists = True
-        else:
-            self.__exists = False
+    @staticmethod
+    def find_with_id(char* id):
+        protocol = None
+        c_plugin = plugin.purple_plugins_find_with_id(id)
+        if c_plugin != NULL:
+            protocol = Protocol._new(plugin.purple_plugins_find_with_id(id))
+        return protocol
 
-    cdef plugin.PurplePlugin *_get_structure(self):
-        return plugin.purple_plugins_find_with_id(self.__id)
+    def get_name(self):
+        return self._c_plugin.info.name
 
-    def __get_exists(self):
-        return self.__exists
-    exists = property(__get_exists)
+    def get_id(self):
+        return self._c_plugin.info.id
 
-    def __get_id(self):
-        return self.__id
-    id = property(__get_id)
-
-    def __get_name(self):
-        cdef char *name = NULL
-        if self.__exists:
-            name = <char *> plugin.purple_plugin_get_name(self._get_structure())
-            if name != NULL:
-                return name
-            else:
-                return None
-        return None
-    name = property(__get_name)
-
-    def __get_options_labels(self):
+    def get_options_labels(self):
         cdef prpl.PurplePluginProtocolInfo *prpl_info
         cdef glib.GList *iter
         cdef accountopt.PurpleAccountOption *option
@@ -78,7 +67,7 @@ cdef class Protocol:
         if not self.__exists:
             return None
 
-        prpl_info = plugin.PURPLE_PLUGIN_PROTOCOL_INFO(self._get_structure())
+        prpl_info = plugin.PURPLE_PLUGIN_PROTOCOL_INFO(self._c_plugin)
 
         po = {}
 
@@ -99,9 +88,8 @@ cdef class Protocol:
             po[sett] = label
 
         return po
-    options_labels = property(__get_options_labels)
 
-    def __get_options_values(self):
+    def get_options_values(self):
         cdef prpl.PurplePluginProtocolInfo *prpl_info
         cdef glib.GList *iter
         cdef accountopt.PurpleAccountOption *option
@@ -114,7 +102,7 @@ cdef class Protocol:
         if not self.__exists:
             return None
 
-        prpl_info = plugin.PURPLE_PLUGIN_PROTOCOL_INFO(self._get_structure())
+        prpl_info = plugin.PURPLE_PLUGIN_PROTOCOL_INFO(self._c_plugin)
 
         po = {}
 
@@ -155,4 +143,3 @@ cdef class Protocol:
             po[sett] = val
 
         return po
-    options_values = property(__get_options_values)
