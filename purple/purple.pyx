@@ -82,19 +82,13 @@ cdef class Purple:
 
     def __init__(
         self,
-        ui_name,
-        ui_version,
-        ui_website,
-        ui_dev_website,
-        debug_enabled=None,
-        default_path=None,
+        char* ui_name,
+        char* ui_version,
+        char* ui_website,
+        char* ui_dev_website,
+        bint debug_enabled=False,
+        char* default_path="",
     ):
-
-        assert isinstance(ui_name, bytes)
-        assert isinstance(ui_version, bytes)
-        assert isinstance(ui_website, bytes)
-        assert isinstance(ui_dev_website, bytes)
-        assert isinstance(default_path, bytes)
 
         global c_ui_name
         global c_ui_version
@@ -109,7 +103,7 @@ cdef class Purple:
         if debug_enabled:
             debug.purple_debug_set_enabled(debug_enabled)
 
-        if default_path:
+        if default_path != b"":
             util.purple_util_set_user_dir(default_path)
 
         # libpurple's built-in DNS resolution forks processes to perform
