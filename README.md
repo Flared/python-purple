@@ -4,5 +4,5 @@
 
 [Flare System](https://flare.systems)'s attempt at reviving python-purple.
 
-# TODO:
+# Roadmap:
 - [ ] Strings should be used instead of bytes wherever it makes sense.
