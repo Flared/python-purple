@@ -1,5 +1,7 @@
 # python-purple
 
+[![Build Status](https://travis-ci.com/Flared/python-purple.svg?branch=master)](https://travis-ci.com/Flared/python-purple)
+
 [Flare System](https://flare.systems)'s attempt at reviving python-purple.
 
 # TODO:
