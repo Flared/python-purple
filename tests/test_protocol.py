@@ -6,6 +6,7 @@ def test_protocol_find_with_id(core):
     assert protocol
     assert protocol.get_name() == b"IRC"
     assert protocol.get_id() == b"prpl-irc"
+    assert repr(protocol) == "<Protocol: b'prpl-irc'>"
 
 
 def test_protocol_find_with_id_unknown(core):

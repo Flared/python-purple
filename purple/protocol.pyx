@@ -56,6 +56,12 @@ cdef class Protocol:
     def get_id(self):
         return self._c_plugin.info.id
 
+    def __repr__(self):
+        return "<{class_name}: {protocol_id}>".format(
+            class_name=self.__class__.__name__,
+            protocol_id=self.get_id(),
+        )
+
     def get_options_labels(self):
         cdef prpl.PurplePluginProtocolInfo *prpl_info
         cdef glib.GList *iter
