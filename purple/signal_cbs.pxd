@@ -22,7 +22,18 @@ signal_cbs = {}
 cdef extern from *:
     ctypedef char const_gchar "const gchar"
 
-cdef void signal_signed_on_cb(connection.PurpleConnection *gc, \
+cdef void signal_core_quitting_cb():
+    """
+    Emitted when libpurple is quitting.
+    """
+    debug.purple_debug_info("core", "%s", "quitting\n")
+    cdef char *c_name = NULL
+
+    if "quitting" in signal_cbs:
+        (<object> signal_cbs["quitting"])()
+
+
+cdef void signal_connection_signed_on_cb(connection.PurpleConnection *gc, \
         glib.gpointer null):
     """
     Emitted when a connection has signed on.
@@ -47,7 +58,7 @@ cdef void signal_signed_on_cb(connection.PurpleConnection *gc, \
     if "signed-on" in signal_cbs:
         (<object> signal_cbs["signed-on"])(username, protocol_id)
 
-cdef void signal_signed_off_cb(connection.PurpleConnection *gc, \
+cdef void signal_connection_signed_off_cb(connection.PurpleConnection *gc, \
         glib.gpointer null):
     """
     Emitted when a connection has signed off.
@@ -72,7 +83,7 @@ cdef void signal_signed_off_cb(connection.PurpleConnection *gc, \
     if "signed-off" in signal_cbs:
         (<object> signal_cbs["signed-off"])(username, protocol_id)
 
-cdef void signal_connection_error_cb(connection.PurpleConnection *gc, \
+cdef void signal_connection_connection_error_cb(connection.PurpleConnection *gc, \
         connection.PurpleConnectionError err, const_gchar *c_desc):
     """
     Emitted when a connection error occurs, before signed-off.
@@ -124,7 +135,7 @@ cdef void signal_connection_error_cb(connection.PurpleConnection *gc, \
         (<object> signal_cbs["connection-error"])(username, protocol_id, \
                 short_desc, desc)
 
-cdef void signal_buddy_signed_on_cb(blist.PurpleBuddy *buddy):
+cdef void signal_blist_buddy_signed_on_cb(blist.PurpleBuddy *buddy):
     """
     Emitted when a buddy on your buddy list signs on.
     @params buddy  The buddy that signed on.
@@ -147,7 +158,7 @@ cdef void signal_buddy_signed_on_cb(blist.PurpleBuddy *buddy):
     if "buddy-signed-on" in signal_cbs:
         (<object> signal_cbs["buddy-signed-on"])(name, alias)
 
-cdef void signal_buddy_signed_off_cb(blist.PurpleBuddy *buddy):
+cdef void signal_blist_buddy_signed_off_cb(blist.PurpleBuddy *buddy):
     """
     Emitted when a buddy on your buddy list signs off.
     @params buddy  The buddy that signed off.
@@ -170,7 +181,7 @@ cdef void signal_buddy_signed_off_cb(blist.PurpleBuddy *buddy):
     if "buddy-signed-off" in signal_cbs:
         (<object> signal_cbs["buddy-signed-off"])(name, alias)
 
-cdef glib.gboolean signal_receiving_im_msg_cb(account.PurpleAccount *account, \
+cdef glib.gboolean signal_conversation_receiving_im_msg_cb(account.PurpleAccount *account, \
         char **sender, char **message, conversation.PurpleConversation *conv, \
         conversation.PurpleMessageFlags *flags):
     """
@@ -198,13 +209,3 @@ cdef glib.gboolean signal_receiving_im_msg_cb(account.PurpleAccount *account, \
 
     if "receiving-im-msg" in signal_cbs:
         return (<object> signal_cbs["receiving-im-msg"])(sender[0], alias, stripped)
-
-cdef void jabber_receiving_xmlnode_cb(connection.PurpleConnection *gc, \
-        xmlnode.xmlnode **packet, glib.gpointer null):
-    """
-    Emitted when jabber receives a XML node.
-    """
-    message = xmlnode.xmlnode_to_str(packet[0], NULL)
-
-    if "jabber-receiving-xmlnode" in signal_cbs:
-        (<object> signal_cbs["jabber-receiving-xmlnode"])(message)

@@ -292,16 +292,13 @@ cdef class Purple:
 
         return ret
 
-    def add_callback(self, type, name, callback):
+    def add_callback(self, str type, str name, object callback):
         '''Adds a callback with given name inside callback's type.
 
         @param type     Callback type (e.g. "account")
         @param name     Callback name (e.g. "notify-added")
         @param callback Callback to be called
         '''
-
-        assert isinstance(type, str)
-        assert isinstance(name, str)
 
         global account_cbs
         global blist_cbs
@@ -319,7 +316,7 @@ cdef class Purple:
             "request": request_cbs,
         }[type][name] = callback
 
-    def signal_connect(self, name=None, cb=None):
+    def signal_connect(self, str name=None, object cb=None):
         '''Connects a signal handler to a callback for a particular object.
         Take care not to register a handler function twice. Purple will
         not correct any mistakes for you in this area.
@@ -329,52 +326,64 @@ cdef class Purple:
         '''
 
         cdef int handle
-        cdef plugin.PurplePlugin *jabber
-
-        if name is None:
-            return
-
-        jabber = prpl.purple_find_prpl("prpl-jabber")
-        if jabber == NULL:
-            return
 
         global signal_cbs
         signal_cbs[name] = cb
 
-        if name == "signed-on":
+        ##################
+        ## Core Signals ##
+        ##################
+        if name == "quitting":
+            signals.purple_signal_connect(
+                core.purple_get_core(),
+                "quitting", &handle,
+                <signals.PurpleCallback> signal_core_quitting_cb, NULL)
+
+        #######################
+        ## Connection Sinals ##
+        #######################
+        elif name == "signed-on":
             signals.purple_signal_connect(
                     connection.purple_connections_get_handle(),
                     "signed-on", &handle,
-                    <signals.PurpleCallback> signal_signed_on_cb, NULL)
+                    <signals.PurpleCallback> signal_connection_signed_on_cb, NULL)
         elif name == "signed-off":
             signals.purple_signal_connect(
                     connection.purple_connections_get_handle(),
                     "signed-off", &handle,
-                    <signals.PurpleCallback> signal_signed_off_cb, NULL)
+                    <signals.PurpleCallback> signal_connection_signed_off_cb, NULL)
         elif name == "connection-error":
             signals.purple_signal_connect(
                     connection.purple_connections_get_handle(),
                     "connection-error", &handle,
-                    <signals.PurpleCallback> signal_connection_error_cb, NULL)
+                    <signals.PurpleCallback> signal_connection_connection_error_cb, NULL)
+
+        ########################
+        ## Buddy List Signals ##
+        ########################
         elif name == "buddy-signed-on":
             signals.purple_signal_connect(
                     blist.purple_blist_get_handle(),
                     "buddy-signed-on", &handle,
-                    <signals.PurpleCallback> signal_buddy_signed_on_cb, NULL)
+                    <signals.PurpleCallback> signal_blist_buddy_signed_on_cb, NULL)
         elif name == "buddy-signed-off":
             signals.purple_signal_connect(
                     blist.purple_blist_get_handle(),
                     "buddy-signed-off", &handle,
-                    <signals.PurpleCallback> signal_buddy_signed_off_cb, NULL)
+                    <signals.PurpleCallback> signal_blist_buddy_signed_off_cb, NULL)
+
+        ##########################
+        ## Conversation Signals ##
+        ##########################
         elif name == "receiving-im-msg":
             signals.purple_signal_connect(
                     conversation.purple_conversations_get_handle(),
                     "receiving-im-msg", &handle,
-                    <signals.PurpleCallback> signal_receiving_im_msg_cb, NULL)
-        elif name == "jabber-receiving-xmlnode":
-            signals.purple_signal_connect(
-                    jabber, "jabber-receiving-xmlnode", &handle,
-                    <signals.PurpleCallback> jabber_receiving_xmlnode_cb, NULL)
+                    <signals.PurpleCallback> signal_conversation_receiving_im_msg_cb, NULL)
+
+        ####################
+        ## Unknown Signal ##
+        ####################
         else:
             raise Exception("Unknown signal")
 

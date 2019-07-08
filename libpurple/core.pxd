@@ -27,8 +27,12 @@ cdef extern from "libpurple/core.h":
         void (*quit) ()
         glib.GHashTable* (*get_ui_info) ()
 
-    glib.gboolean purple_core_init(char *ui_name)
+    ctypedef struct PurpleCore
+
+    glib.gboolean purple_core_init(char* ui_name)
     void purple_core_quit()
-    void purple_core_set_ui_ops(PurpleCoreUiOps *ops)
+    void purple_core_set_ui_ops(PurpleCoreUiOps* ops)
     glib.gboolean purple_core_ensure_single_instance()
     const char* purple_core_get_version()
+    const char* purple_core_get_version()
+    PurpleCore* purple_get_core()
