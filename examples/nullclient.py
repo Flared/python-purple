@@ -53,7 +53,7 @@ if __name__ == "__main__":
     username = sys.stdin.readline()[:-1].encode()
 
     # Initialize protocol class
-    protocol = purple.Protocol(b"prpl-null")
+    protocol = purple.Protocol.find_with_id(b"prpl-irc")
 
     # Creates new account inside libpurple
     account = purple.Account(username, protocol, core)
