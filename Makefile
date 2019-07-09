@@ -31,3 +31,5 @@ run-nullclient: install
 clean:
 	rm -rf venv
 	rm -rf build
+	rm -rf *.egg-info
+	rm -rf dist

@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 
-from distutils.core import setup
+from setuptools import setup
 from distutils.extension import Extension
-
 from Cython.Build import cythonize
-
 from subprocess import Popen, PIPE
 
 cflags = (
