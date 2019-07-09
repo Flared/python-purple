@@ -71,5 +71,5 @@ setup(
     description="Python bindings for libpurple",
     long_description=long_description,
     ext_modules=cythonized_modules,
-    packages=["purple"],
+    packages=find_packages(),
 )
