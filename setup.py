@@ -37,9 +37,9 @@ Python bindings for libpurple, a multi-protocol instant messaging library."
 setup(
     name="python-purple",
     version="0.1",
-    author="Bruno Abinader",
-    author_email="bruno.abinader@openbossa.org",
-    description="Python bindings for Purple",
+    author="Alexandre Viau",
+    author_email="alexandre.viau@flare.systems",
+    description="Python bindings for libpurple",
     long_description=long_description,
     ext_modules=ext_modules,
 )
