@@ -17,7 +17,7 @@ lint: venv
 
 .PHONY: test
 test: install
-	venv/bin/pytest tests -v --forked
+	venv/bin/pytest purple -v --forked
 
 .PHONY: install
 install: venv
