@@ -479,7 +479,6 @@ cdef class Purple:
         __call_action(i)
 
 include "protocol.pyx"
-include "plugin.pyx"
 include "proxy.pyx"
 include "account.pyx"
 include "conversation.pyx"
