@@ -17,6 +17,8 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+from libpurple cimport notify
+
 cdef extern from *:
     ctypedef char const_char "const char"
     ctypedef int size_t

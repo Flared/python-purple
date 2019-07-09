@@ -23,8 +23,21 @@ import os
 if not sys.getdlopenflags() & os.RTLD_GLOBAL:
     raise Exception("Yous must set RTLD_GLOBAL for plugins to load")
 
-cimport purple
 cimport glib
+
+from libpurple cimport purple
+from libpurple cimport eventloop
+from libpurple cimport account
+from libpurple cimport blist
+from libpurple cimport connection
+from libpurple cimport signals
+from libpurple cimport pounce
+from libpurple cimport core
+from libpurple cimport util
+from libpurple cimport status
+from libpurple cimport notify
+from libpurple cimport conversation
+from libpurple cimport request
 
 cdef extern from "c_purple.h":
     glib.guint glib_input_add(glib.gint fd, eventloop.PurpleInputCondition condition, eventloop.PurpleInputFunction function, glib.gpointer data)

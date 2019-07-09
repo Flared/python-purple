@@ -17,9 +17,9 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-cimport account
-cimport blist
-cimport status
+from libpurple cimport account
+from libpurple cimport blist
+from libpurple cimport status
 
 cdef class Buddy:
     '''Buddy class

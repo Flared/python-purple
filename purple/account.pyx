@@ -17,15 +17,15 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-cimport account
-cimport accountopt
-cimport blist
-cimport plugin
-cimport prefs
-cimport prpl
-cimport savedstatuses
-cimport server
-cimport status
+from libpurple cimport account
+from libpurple cimport accountopt
+from libpurple cimport blist
+from libpurple cimport plugin
+from libpurple cimport prefs
+from libpurple cimport prpl
+from libpurple cimport savedstatuses
+from libpurple cimport server
+from libpurple cimport status
 
 cdef class Account:
     """

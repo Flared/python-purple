@@ -17,7 +17,7 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-cimport conversation
+from libpurple cimport conversation
 
 cdef class Conversation:
     """

@@ -17,6 +17,8 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+from libpurple cimport conversation
+
 cdef extern from *:
     ctypedef char const_char "const char"
     ctypedef glib.guchar const_guchar "const guchar"

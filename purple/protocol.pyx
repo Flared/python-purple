@@ -19,10 +19,10 @@
 
 cimport glib
 
-cimport accountopt
-cimport plugin
-cimport prefs
-cimport prpl
+from libpurple cimport accountopt
+from libpurple cimport plugin
+from libpurple cimport prefs
+from libpurple cimport prpl
 
 cdef extern from *:
     ctypedef char const_char "const char"

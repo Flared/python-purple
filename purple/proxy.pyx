@@ -17,8 +17,8 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-cimport account
-cimport proxy
+from libpurple cimport account
+from libpurple cimport proxy
 
 cdef class ProxyInfoType:
     cdef proxy.PurpleProxyType c_type
