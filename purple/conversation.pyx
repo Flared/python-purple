@@ -18,6 +18,7 @@
 #
 
 from libpurple cimport conversation
+from libpurple cimport account
 
 cdef class Conversation:
     """

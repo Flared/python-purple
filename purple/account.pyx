@@ -17,6 +17,8 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+cimport glib
+
 from libpurple cimport account
 from libpurple cimport accountopt
 from libpurple cimport blist
