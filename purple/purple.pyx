@@ -17,12 +17,6 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import sys
-import os
-
-if not sys.getdlopenflags() & os.RTLD_GLOBAL:
-    raise Exception("Yous must set RTLD_GLOBAL for plugins to load")
-
 cimport glib
 
 from libpurple cimport purple

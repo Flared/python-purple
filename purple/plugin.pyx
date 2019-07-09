@@ -17,7 +17,17 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+cimport glib
+
 from libpurple cimport purple
+from libpurple cimport plugin
+from libpurple cimport accountopt
+from libpurple cimport prefs
+from libpurple cimport prpl
+from libpurple cimport account
+
+cdef extern from *:
+    ctypedef char const_char "const char"
 
 cdef class Plugin:
     cdef plugin.PurplePlugin* _c_plugin

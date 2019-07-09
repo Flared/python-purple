@@ -5,7 +5,7 @@ venv: requirements.txt
 		install \
 			-r requirements.txt \
 			-r requirements.tests.txt
-	venv/bin/python setup.py install
+	venv/bin/python setup.py develop
 
 .PHONY: format
 format: venv
@@ -21,7 +21,7 @@ test: install
 
 .PHONY: install
 install: venv
-	venv/bin/python setup.py install
+	venv/bin/python setup.py develop
 
 .PHONY: run-nullclient
 run-nullclient: install
@@ -33,3 +33,4 @@ clean:
 	rm -rf build
 	rm -rf *.egg-info
 	rm -rf dist
+	rm purple/*.so

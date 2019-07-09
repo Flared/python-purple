@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from setuptools import setup
+from setuptools import setup, find_packages
 from distutils.extension import Extension
 from Cython.Build import cythonize
 from subprocess import Popen, PIPE
@@ -20,8 +20,8 @@ ldflags = (
 
 ext_modules = cythonize(
     Extension(
-        "purple",
-        sources=["purple/c_purple.c", "purple/purple.pyx"],
+        "*",
+        sources=["purple/c_purple.c", "purple/*.pyx"],
         extra_compile_args=cflags,
         extra_link_args=ldflags,
     ),
@@ -41,4 +41,5 @@ setup(
     description="Python bindings for libpurple",
     long_description=long_description,
     ext_modules=ext_modules,
+    packages=find_packages(),
 )
