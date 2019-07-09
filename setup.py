@@ -29,6 +29,7 @@ ext_modules = cythonize(
         extra_link_args=ldflags,
     ),
     include_path=["include"],
+    build_dir="build",
 )
 
 long_description = "\

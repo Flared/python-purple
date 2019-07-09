@@ -31,4 +31,3 @@ run-nullclient: install
 clean:
 	rm -rf venv
 	rm -rf build
-	rm -f purple/purple.c
