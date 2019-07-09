@@ -17,7 +17,7 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-cimport account
+from libpurple cimport account
 
 cdef extern from *:
     ctypedef char const_char "const char"

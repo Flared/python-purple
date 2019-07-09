@@ -17,11 +17,12 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-cimport account
-cimport notify
 cimport glib
-cimport signals
-cimport xmlnode
+
+from libpurple cimport account
+from libpurple cimport notify
+from libpurple cimport signals
+from libpurple cimport xmlnode
 
 cdef extern from *:
     ctypedef int size_t

@@ -19,7 +19,7 @@
 
 cimport glib
 
-cimport prpl
+from libpurple cimport prpl
 
 cdef extern from "libpurple/plugin.h":
     ctypedef struct PurplePluginInfo:

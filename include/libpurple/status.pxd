@@ -19,10 +19,10 @@
 
 cimport glib
 
-cimport account
-cimport blist
-cimport conversation
-cimport value
+from libpurple cimport account
+from libpurple cimport blist
+from libpurple cimport conversation
+from libpurple cimport value
 
 cdef extern from *:
     ctypedef long int time_t

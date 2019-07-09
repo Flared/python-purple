@@ -19,7 +19,7 @@
 
 cimport glib
 
-cimport prefs
+from libpurple cimport prefs
 
 cdef extern from "libpurple/accountopt.h":
 

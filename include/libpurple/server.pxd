@@ -19,11 +19,11 @@
 
 cimport glib
 
-cimport account
-cimport blist
-cimport connection
-cimport conversation
-cimport prpl
+from libpurple cimport account
+from libpurple cimport blist
+from libpurple cimport connection
+from libpurple cimport conversation
+from libpurple cimport prpl
 
 cdef extern from *:
     ctypedef char const_char "const char"

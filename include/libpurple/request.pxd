@@ -19,8 +19,8 @@
 
 cimport glib
 
-cimport account
-cimport conversation
+from libpurple cimport account
+from libpurple cimport conversation
 
 cdef extern from *:
     ctypedef char const_char "const char"

@@ -29,6 +29,7 @@ ext_modules = cythonize(
     ),
     include_path=["include"],
     build_dir="build",
+    compiler_directives={"language_level": "3"},
 )
 
 long_description = "\

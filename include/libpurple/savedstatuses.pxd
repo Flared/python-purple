@@ -17,10 +17,11 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-cimport status
 cimport glib
-cimport account
-cimport status
+
+from libpurple cimport status
+from libpurple cimport account
+from libpurple cimport status
 
 cdef extern from *:
     ctypedef long int time_t

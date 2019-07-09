@@ -19,9 +19,9 @@
 
 cimport glib
 
-cimport account
-cimport connection
-cimport buddyicon
+from libpurple cimport account
+from libpurple cimport connection
+from libpurple cimport buddyicon
 
 cdef extern from "time.h":
     ctypedef long int time_t

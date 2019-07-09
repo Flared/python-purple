@@ -19,7 +19,7 @@
 
 cimport glib
 
-cimport connection
+from libpurple cimport connection
 
 cdef extern from *:
     ctypedef char const_char "const char"

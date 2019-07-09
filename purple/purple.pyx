@@ -192,10 +192,10 @@ cdef class Purple:
             c_ui_info = glib.g_hash_table_new(glib.g_str_hash, \
                     glib.g_str_equal)
 
-            glib.g_hash_table_insert(c_ui_info, "name", c_ui_name)
-            glib.g_hash_table_insert(c_ui_info, "version", c_ui_version)
-            glib.g_hash_table_insert(c_ui_info, "website", c_ui_website)
-            glib.g_hash_table_insert(c_ui_info, "dev_website", c_ui_dev_website)
+            glib.g_hash_table_insert(c_ui_info, b"name", c_ui_name)
+            glib.g_hash_table_insert(c_ui_info, b"version", c_ui_version)
+            glib.g_hash_table_insert(c_ui_info, b"website", c_ui_website)
+            glib.g_hash_table_insert(c_ui_info, b"dev_website", c_ui_dev_website)
         return c_ui_info
 
     def purple_init(self):

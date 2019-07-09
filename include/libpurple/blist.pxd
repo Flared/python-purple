@@ -19,8 +19,8 @@
 
 cimport glib
 
-cimport account
-cimport buddyicon
+from libpurple cimport account
+from libpurple cimport buddyicon
 
 # hack to avoid recursive loops by cython
 cdef extern from "libpurple/status.h":

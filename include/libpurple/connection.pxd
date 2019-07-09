@@ -19,8 +19,8 @@
 
 cimport glib
 
-cimport account
-cimport plugin
+from libpurple cimport account
+from libpurple cimport plugin
 
 cdef extern from *:
     ctypedef int size_t
