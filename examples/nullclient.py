@@ -19,7 +19,12 @@
 
 import getpass
 import sys
+import os
 import time
+
+dlopenflags = sys.getdlopenflags()
+if not dlopenflags & os.RTLD_GLOBAL:
+    sys.setdlopenflags(dlopenflags | os.RTLD_GLOBAL)
 
 import purple
 
