@@ -33,4 +33,4 @@ clean:
 	rm -rf build
 	rm -rf *.egg-info
 	rm -rf dist
-	rm -f purple/*.so
+	find purple -type f -name "*.so" -exec rm {} \;
