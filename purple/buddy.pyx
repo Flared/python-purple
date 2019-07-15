@@ -28,10 +28,6 @@ cdef class Buddy:
     @param account Buddy's account.
     '''
 
-    cdef object __account
-    cdef object __name
-    cdef object __exists
-
     def __init__(self, name, account):
         self.__name = name
         self.__account = account
