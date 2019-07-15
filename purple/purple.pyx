@@ -31,6 +31,7 @@ from libpurple cimport status as c_status
 from libpurple cimport notify as c_notify
 from libpurple cimport conversation as c_conversation
 from libpurple cimport request as c_request
+from libpurple cimport debug as c_debug
 
 from purple.signals cimport core as signals_core
 from purple.signals cimport blist as signals_blist
@@ -72,8 +73,7 @@ from purple.callbacks cimport blist as callbacks_blist
 from purple.callbacks cimport connection as callbacks_connection
 from purple.callbacks cimport conversation as callbacks_conversation
 from purple.callbacks cimport notify as callbacks_notify
-
-include "callbacks/request.pxd"
+from purple.callbacks cimport request as callbacks_request
 
 include "util.pxd"
 
@@ -255,13 +255,13 @@ cdef class Purple:
         c_notify_ui_ops.notify_uri = callbacks_notify.notify_uri
         c_notify_ui_ops.close_notify = callbacks_notify.close_notify
 
-        c_request_ui_ops.request_input = request_input
-        c_request_ui_ops.request_choice = request_choice
-        c_request_ui_ops.request_action = request_action
-        c_request_ui_ops.request_fields = request_fields
-        c_request_ui_ops.request_file = request_file
-        c_request_ui_ops.close_request = close_request
-        c_request_ui_ops.request_folder = request_folder
+        c_request_ui_ops.request_input = callbacks_request.request_input
+        c_request_ui_ops.request_choice = callbacks_request.request_choice
+        c_request_ui_ops.request_action = callbacks_request.request_action
+        c_request_ui_ops.request_fields = callbacks_request.request_fields
+        c_request_ui_ops.request_file = callbacks_request.request_file
+        c_request_ui_ops.close_request = callbacks_request.close_request
+        c_request_ui_ops.request_folder = callbacks_request.request_folder
 
         c_core_ui_ops.ui_prefs_init = <void (*)()> self.__core_ui_ops_ui_prefs_init
         c_core_ui_ops.debug_ui_init = <void (*)()> self.__core_ui_ops_debug_init
@@ -476,7 +476,7 @@ cdef class Purple:
         return protocol_list
 
     def call_action(self, i):
-        __call_action(i)
+        callbacks_request.__call_action(i)
 
 include "protocol.pyx"
 include "account.pyx"

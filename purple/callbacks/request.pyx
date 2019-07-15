@@ -32,7 +32,11 @@ cdef extern from *:
     glib.GCallback glibcb "GCallback"
     void* va_arg(void *action, void *type)
 
-cdef object request_cbs
+request_cbs = {}
+
+cdef c_request.PurpleRequestActionCb req_actions_cb[10]
+cdef object req_actions_list = []
+cdef void *req_action_user_data = NULL
 
 cdef void *request_input(const_char *title,
                          const_char *primary,
@@ -48,7 +52,13 @@ cdef void *request_input(const_char *title,
                          c_account.PurpleAccount *account,
                          const_char *who,
                          c_conversation.PurpleConversation *conv,
-                         void *user_data)
+                         void *user_data):
+    """
+    @see purple_request_input().
+    """
+    c_debug.purple_debug_info("request", "%s", "request-input\n")
+    if "request-input" in request_cbs:
+        (<object> request_cbs["request-input"])("request-input: TODO")
 
 cdef void *request_choice(const_char *title,
                           const_char *primary,
@@ -62,7 +72,24 @@ cdef void *request_choice(const_char *title,
                           const_char *who,
                           c_conversation.PurpleConversation *conv,
                           void *user_data,
-                          va_list choices)
+                          va_list choices):
+    """
+    @see purple_request_choice_varg().
+    """
+    c_debug.purple_debug_info("request", "%s", "request-choice\n")
+    if "request-choice" in request_cbs:
+        (<object> request_cbs["request-choice"])("request-choice: TODO")
+
+cdef void __call_action(int i):
+    global req_actions_cb
+    global req_actions_list
+    global req_action_user_data
+
+    cdef c_request.PurpleRequestActionCb cb 
+
+    if req_actions_list and len(req_actions_list) > i:
+        cb = req_actions_cb[i]
+        cb(req_action_user_data, i)
 
 cdef void *request_action(const_char *title,
                           const_char *primary,
@@ -72,7 +99,34 @@ cdef void *request_action(const_char *title,
                           const_char *who,
                           c_conversation.PurpleConversation *conv,
                           void *user_data,
-                          size_t action_count, va_list actions)
+                          size_t action_count, va_list actions):
+    """
+    @see purple_request_action_varg().
+    """
+    global req_actions_cb
+    global req_actions_list
+    global req_action_user_data
+    cdef int i
+    cdef char *btn_txt
+    cdef void *cb
+
+    i = 0
+
+    req_action_user_data = user_data
+    req_actions_list = []
+
+    #FIXME: i < 10 max size to req_actions_cb
+    while i < action_count and i < 10:
+        btn_txt = <char *> va_arg(actions, charptr)
+        req_actions_cb[i] = <c_request.PurpleRequestActionCb> va_arg(actions, glibcb)
+        req_actions_list.append(btn_txt)
+        i = i + 1
+
+    c_debug.purple_debug_info("request", "%s", "request-action\n")
+    if "request-action" in request_cbs:
+        (<object> request_cbs["request-action"]) \
+            (<char *> title, <char *> primary, <char *> secondary, \
+            default_action, req_actions_list)
 
 cdef void *request_fields(const_char *title,
                           const_char *primary,
@@ -85,7 +139,13 @@ cdef void *request_fields(const_char *title,
                           c_account.PurpleAccount *account,
                           const_char *who,
                           c_conversation.PurpleConversation *conv,
-                          void *user_data)
+                          void *user_data):
+    """
+    @see purple_request_fields().
+    """
+    c_debug.purple_debug_info("request", "%s", "request-fields\n")
+    if "request-fields" in request_cbs:
+        (<object> request_cbs["request-fields"])("request-fields: TODO")
 
 cdef void *request_file(const_char *title,
                         const_char *filename,
@@ -95,9 +155,21 @@ cdef void *request_file(const_char *title,
                         c_account.PurpleAccount *account,
                         const_char *who,
                         c_conversation.PurpleConversation *conv,
-                        void *user_data)
+                        void *user_data):
+    """
+    @see purple_request_file().
+    """
+    c_debug.purple_debug_info("request", "%s", "request-file\n")
+    if "request-file" in request_cbs:
+        (<object> request_cbs["request-file"])("request-file: TODO")
 
-cdef void close_request(c_request.PurpleRequestType type, void *ui_handle)
+cdef void close_request(c_request.PurpleRequestType type, void *ui_handle):
+    """
+    TODO
+    """
+    c_debug.purple_debug_info("request", "%s", "close-request\n")
+    if "close-request" in request_cbs:
+        (<object> request_cbs["close-request"])("close-request: TODO")
 
 cdef void *request_folder(const_char *title,
                           const_char *dirname,
@@ -106,6 +178,10 @@ cdef void *request_folder(const_char *title,
                           c_account.PurpleAccount *account,
                           const_char *who,
                           c_conversation.PurpleConversation *conv,
-                          void *user_data)
-
-cdef void __call_action(int i)
+                          void *user_data):
+    """
+    @see purple_request_folder().
+    """
+    c_debug.purple_debug_info("request", "%s", "request-folder\n")
+    if "request-folder" in request_cbs:
+        (<object> request_cbs["request-folder"])("request-folder: TODO")
