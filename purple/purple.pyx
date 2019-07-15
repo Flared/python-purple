@@ -19,9 +19,8 @@
 
 cimport glib
 
-from libpurple cimport purple
-from libpurple cimport eventloop
-from libpurple cimport account
+from libpurple cimport eventloop as c_eventloop
+from libpurple cimport account as c_account
 from libpurple cimport blist
 from libpurple cimport connection
 from libpurple cimport signals
@@ -41,7 +40,10 @@ from purple.signals cimport conversation as signals_conversation
 from purple cimport signals as p_signals
 
 cdef extern from "c_purple.h":
-    glib.guint glib_input_add(glib.gint fd, eventloop.PurpleInputCondition condition, eventloop.PurpleInputFunction function, glib.gpointer data)
+    glib.guint glib_input_add(glib.gint fd,
+                              c_eventloop.PurpleInputCondition condition,
+                              c_eventloop.PurpleInputFunction function,
+                              glib.gpointer data)
 
 import signal
 import sys
@@ -56,12 +58,12 @@ cdef char *c_ui_version
 cdef char *c_ui_website
 cdef char *c_ui_dev_website
 
-cdef account.PurpleAccountUiOps c_account_ui_ops
+cdef c_account.PurpleAccountUiOps c_account_ui_ops
 cdef blist.PurpleBlistUiOps c_blist_ui_ops
 cdef connection.PurpleConnectionUiOps c_conn_ui_ops
 cdef conversation.PurpleConversationUiOps c_conv_ui_ops
 cdef core.PurpleCoreUiOps c_core_ui_ops
-cdef eventloop.PurpleEventLoopUiOps c_eventloop_ui_ops
+cdef c_eventloop.PurpleEventLoopUiOps c_eventloop_ui_ops
 #cdef ft.PurpleXferUiOps c_ft_ui_ops
 cdef notify.PurpleNotifyUiOps c_notify_ui_ops
 #cdef privacy.PurplePrivacyUiOps c_privacy_ui_ops
@@ -151,7 +153,7 @@ cdef class Purple:
     cdef void __core_ui_ops_ui_init(self):
         debug.purple_debug_info("core_ui_ops", "%s", "ui_init")
 
-        account.purple_accounts_set_ui_ops(&c_account_ui_ops)
+        c_account.purple_accounts_set_ui_ops(&c_account_ui_ops)
         connection.purple_connections_set_ui_ops(&c_conn_ui_ops)
         blist.purple_blist_set_ui_ops(&c_blist_ui_ops)
         conversation.purple_conversations_set_ui_ops(&c_conv_ui_ops)
@@ -164,7 +166,7 @@ cdef class Purple:
     cdef void __core_ui_ops_quit(self):
         debug.purple_debug_info("core_ui_ops", "%s", "quit")
 
-        account.purple_accounts_set_ui_ops(NULL)
+        c_account.purple_accounts_set_ui_ops(NULL)
         connection.purple_connections_set_ui_ops(NULL)
         blist.purple_blist_set_ui_ops(NULL)
         conversation.purple_conversations_set_ui_ops(NULL)
@@ -277,7 +279,7 @@ cdef class Purple:
         c_eventloop_ui_ops.timeout_add_seconds = NULL
 
         core.purple_core_set_ui_ops(&c_core_ui_ops)
-        eventloop.purple_eventloop_set_ui_ops(&c_eventloop_ui_ops)
+        c_eventloop.purple_eventloop_set_ui_ops(&c_eventloop_ui_ops)
 
         # initialize purple core
         ret = core.purple_core_init(c_ui_name)
@@ -403,19 +405,19 @@ cdef class Purple:
         '''
 
         cdef glib.GList *iter
-        cdef account.PurpleAccount *acc
+        cdef c_account.PurpleAccount *acc
         cdef char *username
         cdef char *protocol_id
 
-        iter = account.purple_accounts_get_all()
+        iter = c_account.purple_accounts_get_all()
         account_list = []
 
         while iter:
-            acc = <account.PurpleAccount *> iter.data
+            acc = <c_account.PurpleAccount *> iter.data
 
-            if <account.PurpleAccount *>acc:
-                username = <char *> account.purple_account_get_username(acc)
-                protocol_id = <char *> account.purple_account_get_protocol_id(acc)
+            if <c_account.PurpleAccount *>acc:
+                username = <char *> c_account.purple_account_get_username(acc)
+                protocol_id = <char *> c_account.purple_account_get_protocol_id(acc)
 
                 if username != NULL and protocol_id != NULL:
                     account_list.append(Account(username, \
@@ -431,22 +433,22 @@ cdef class Purple:
         '''
 
         cdef glib.GList *iter
-        cdef account.PurpleAccount *acc
+        cdef c_account.PurpleAccount *acc
         cdef char *username
         cdef char *protocol_id
 
         #FIXME: The list is owned by the caller, and must be g_list_free()d
         #       to avoid leaking the nodes.
 
-        iter = account.purple_accounts_get_all_active()
+        iter = c_account.purple_accounts_get_all_active()
         account_list = []
 
         while iter:
-            acc = <account.PurpleAccount *> iter.data
+            acc = <c_account.PurpleAccount *> iter.data
 
-            if <account.PurpleAccount *>acc:
-                username = <char *> account.purple_account_get_username(acc)
-                protocol_id = <char *> account.purple_account_get_protocol_id(acc)
+            if <c_account.PurpleAccount *>acc:
+                username = <char *> c_account.purple_account_get_username(acc)
+                protocol_id = <char *> c_account.purple_account_get_protocol_id(acc)
 
                 if username != NULL and protocol_id != NULL:
                     account_list.append(Account(username, \

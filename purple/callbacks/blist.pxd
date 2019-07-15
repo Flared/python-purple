@@ -168,17 +168,18 @@ cdef void set_visible(blist.PurpleBuddyList *list, glib.gboolean show):
     if "set-visible" in blist_cbs:
         (<object> blist_cbs["set-visible"])("set-visible: TODO")
 
-cdef void request_add_buddy(account.PurpleAccount *c_account, \
-        const_char *c_buddy_username, const_char *c_buddy_group, \
-        const_char *c_buddy_alias):
+cdef void request_add_buddy(c_account.PurpleAccount *account,
+                            const_char *c_buddy_username,
+                            const_char *c_buddy_group,
+                            const_char *c_buddy_alias):
     """
     Requests from the user information needed to add a buddy to the buddy
     list.
     """
     debug.purple_debug_info("blist", "%s", "request-add-buddy\n")
 
-    username = account.purple_account_get_username(c_account)
-    protocol_id = account.purple_account_get_protocol_id(c_account)
+    username = c_account.purple_account_get_username(account)
+    protocol_id = c_account.purple_account_get_protocol_id(account)
 
     if c_buddy_username:
         buddy_username = <char *> c_buddy_username
@@ -199,8 +200,10 @@ cdef void request_add_buddy(account.PurpleAccount *c_account, \
         (<object> blist_cbs["request-add-buddy"])( \
             (username, protocol_id), buddy_username, buddy_group, buddy_alias)
 
-cdef void request_add_chat(account.PurpleAccount *acc, \
-        blist.PurpleGroup *group, const_char *alias, const_char *name):
+cdef void request_add_chat(c_account.PurpleAccount *acc,
+                           blist.PurpleGroup *group,
+                           const_char *alias,
+                           const_char *name):
     """
     TODO
     """

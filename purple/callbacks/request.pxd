@@ -34,13 +34,21 @@ cdef request.PurpleRequestActionCb req_actions_cb[10]
 cdef object req_actions_list = []
 cdef void *req_action_user_data = NULL
 
-cdef void *request_input(const_char *title, const_char *primary, \
-        const_char *secondary, const_char *default_value, \
-        glib.gboolean multiline, glib.gboolean masked, glib.gchar *hint, \
-        const_char *ok_text, glib.GCallback ok_cb, const_char *cancel_text, \
-        glib.GCallback cancel_cb, \
-        account.PurpleAccount *account, const_char *who, \
-        conversation.PurpleConversation *conv, void *user_data):
+cdef void *request_input(const_char *title,
+                         const_char *primary,
+                         const_char *secondary,
+                         const_char *default_value,
+                         glib.gboolean multiline,
+                         glib.gboolean masked,
+                         glib.gchar *hint,
+                         const_char *ok_text,
+                         glib.GCallback ok_cb,
+                         const_char *cancel_text,
+                         glib.GCallback cancel_cb,
+                         c_account.PurpleAccount *account,
+                         const_char *who,
+                         conversation.PurpleConversation *conv,
+                         void *user_data):
     """
     @see purple_request_input().
     """
@@ -48,12 +56,19 @@ cdef void *request_input(const_char *title, const_char *primary, \
     if "request-input" in request_cbs:
         (<object> request_cbs["request-input"])("request-input: TODO")
 
-cdef void *request_choice(const_char *title, const_char *primary, \
-        const_char *secondary, int default_value, const_char *ok_text, \
-        glib.GCallback ok_cb, const_char *cancel_text, \
-        glib.GCallback cancel_cb, account.PurpleAccount *account, \
-        const_char *who, conversation.PurpleConversation *conv, \
-        void *user_data, va_list choices):
+cdef void *request_choice(const_char *title,
+                          const_char *primary,
+                          const_char *secondary,
+                          int default_value,
+                          const_char *ok_text,
+                          glib.GCallback ok_cb,
+                          const_char *cancel_text,
+                          glib.GCallback cancel_cb,
+                          c_account.PurpleAccount *account,
+                          const_char *who,
+                          conversation.PurpleConversation *conv,
+                          void *user_data,
+                          va_list choices):
     """
     @see purple_request_choice_varg().
     """
@@ -72,11 +87,15 @@ cdef void __call_action(int i):
         cb = req_actions_cb[i]
         cb(req_action_user_data, i)
 
-cdef void *request_action(const_char *title, const_char *primary, \
-        const_char *secondary, int default_action, \
-        account.PurpleAccount *account, const_char *who, \
-        conversation.PurpleConversation *conv, void *user_data, \
-        size_t action_count, va_list actions):
+cdef void *request_action(const_char *title,
+                          const_char *primary,
+                          const_char *secondary,
+                          int default_action,
+                          c_account.PurpleAccount *account,
+                          const_char *who,
+                          conversation.PurpleConversation *conv,
+                          void *user_data,
+                          size_t action_count, va_list actions):
     """
     @see purple_request_action_varg().
     """
@@ -105,12 +124,18 @@ cdef void *request_action(const_char *title, const_char *primary, \
             (<char *> title, <char *> primary, <char *> secondary, \
             default_action, req_actions_list)
 
-cdef void *request_fields(const_char *title, const_char *primary, \
-        const_char *secondary, request.PurpleRequestFields *fields, \
-        const_char *ok_text, glib.GCallback ok_cb, const_char *cancel_text, \
-        glib.GCallback cancel_cb, account.PurpleAccount *account, \
-        const_char *who, conversation.PurpleConversation *conv, \
-        void *user_data):
+cdef void *request_fields(const_char *title,
+                          const_char *primary,
+                          const_char *secondary,
+                          request.PurpleRequestFields *fields,
+                          const_char *ok_text,
+                          glib.GCallback ok_cb,
+                          const_char *cancel_text,
+                          glib.GCallback cancel_cb,
+                          c_account.PurpleAccount *account,
+                          const_char *who,
+                          conversation.PurpleConversation *conv,
+                          void *user_data):
     """
     @see purple_request_fields().
     """
@@ -118,11 +143,15 @@ cdef void *request_fields(const_char *title, const_char *primary, \
     if "request-fields" in request_cbs:
         (<object> request_cbs["request-fields"])("request-fields: TODO")
 
-cdef void *request_file(const_char *title, const_char *filename, \
-        glib.gboolean savedialog, glib.GCallback ok_cb, \
-        glib.GCallback cancel_cb, account.PurpleAccount *account, \
-        const_char *who, conversation.PurpleConversation *conv, \
-        void *user_data):
+cdef void *request_file(const_char *title,
+                        const_char *filename,
+                        glib.gboolean savedialog,
+                        glib.GCallback ok_cb,
+                        glib.GCallback cancel_cb,
+                        c_account.PurpleAccount *account,
+                        const_char *who,
+                        conversation.PurpleConversation *conv,
+                        void *user_data):
     """
     @see purple_request_file().
     """
@@ -138,10 +167,14 @@ cdef void close_request(request.PurpleRequestType type, void *ui_handle):
     if "close-request" in request_cbs:
         (<object> request_cbs["close-request"])("close-request: TODO")
 
-cdef void *request_folder(const_char *title, const_char *dirname, \
-        glib.GCallback ok_cb, glib.GCallback cancel_cb, \
-        account.PurpleAccount *account, const_char *who, \
-        conversation.PurpleConversation *conv, void *user_data):
+cdef void *request_folder(const_char *title,
+                          const_char *dirname,
+                          glib.GCallback ok_cb,
+                          glib.GCallback cancel_cb,
+                          c_account.PurpleAccount *account,
+                          const_char *who,
+                          conversation.PurpleConversation *conv,
+                          void *user_data):
     """
     @see purple_request_folder().
     """

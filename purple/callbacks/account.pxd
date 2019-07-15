@@ -17,15 +17,13 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from libpurple cimport request
-
 cdef extern from *:
     ctypedef char const_char "const char"
 
 account_cbs = {}
 
-cdef account.PurpleAccountRequestAuthorizationCb c_request_authorize_authorize_cb = NULL
-cdef account.PurpleAccountRequestAuthorizationCb c_request_authorize_deny_cb = NULL
+cdef c_account.PurpleAccountRequestAuthorizationCb c_request_authorize_authorize_cb = NULL
+cdef c_account.PurpleAccountRequestAuthorizationCb c_request_authorize_deny_cb = NULL
 cdef void *c_request_authorize_user_data = NULL
 
 def call_authorize_cb():
@@ -50,15 +48,17 @@ def call_deny_cb():
     c_request_authorize_deny_cb = NULL
     c_request_authorize_user_data = NULL
 
-cdef void notify_added(account.PurpleAccount *c_account, \
-        const_char *remote_user, const_char *id, const_char *alias, \
-        const_char *c_message):
+cdef void notify_added(c_account.PurpleAccount *account,
+                       const_char *remote_user,
+                       const_char *id,
+                       const_char *alias,
+                       const_char *c_message):
     """
     A buddy who is already on this account's buddy list added this account to
     their buddy list.
     """
     cdef connection.PurpleConnection *gc = \
-        account.purple_account_get_connection(c_account)
+        c_account.purple_account_get_connection(account)
 
     debug.purple_debug_info("account", "%s", "notify-added\n")
 
@@ -72,9 +72,9 @@ cdef void notify_added(account.PurpleAccount *c_account, \
     elif connection.purple_connection_get_display_name(gc) != NULL:
         username = connection.purple_connection_get_display_name(gc)
     else:
-        username = account.purple_account_get_username(c_account)
+        username = c_account.purple_account_get_username(account)
 
-    protocol_id = account.purple_account_get_protocol_id(c_account)
+    protocol_id = c_account.purple_account_get_protocol_id(account)
 
     if c_message:
         message = <char *> c_message
@@ -86,15 +86,15 @@ cdef void notify_added(account.PurpleAccount *c_account, \
             (<char *> remote_user, remote_alias), \
             (username, protocol_id), message)
 
-cdef void status_changed(account.PurpleAccount *c_account, \
-        status.PurpleStatus *c_status):
+cdef void status_changed(c_account.PurpleAccount *account,
+                         status.PurpleStatus *c_status):
     """
     This account's status changed.
     """
     debug.purple_debug_info("account", "%s", "status-changed\n")
 
-    username = account.purple_account_get_username(c_account)
-    protocol_id = account.purple_account_get_protocol_id(c_account)
+    username = c_account.purple_account_get_username(account)
+    protocol_id = c_account.purple_account_get_protocol_id(account)
 
     status_id = status.purple_status_get_id(c_status)
     status_name = status.purple_status_get_name(c_status)
@@ -103,14 +103,15 @@ cdef void status_changed(account.PurpleAccount *c_account, \
         (<object> account_cbs["status-changed"])( \
             (username, protocol_id), status_id, status_name)
 
-cdef void request_add(account.PurpleAccount *c_account, \
-        const_char *remote_user, const_char *id, const_char *alias, \
-        const_char *c_message):
+cdef void request_add(c_account.PurpleAccount *account,
+                      const_char *remote_user,
+                      const_char *id,
+                      const_char *alias,
+                      const_char *c_message):
     """
     Someone we don't have on our list added us; prompt to add them.
     """
-    cdef connection.PurpleConnection *gc = \
-            account.purple_account_get_connection(c_account)
+    cdef connection.PurpleConnection *gc = c_account.purple_account_get_connection(account)
 
     debug.purple_debug_info("account", "%s", "request-add\n")
 
@@ -124,9 +125,9 @@ cdef void request_add(account.PurpleAccount *c_account, \
     elif connection.purple_connection_get_display_name(gc) != NULL:
         username = connection.purple_connection_get_display_name(gc)
     else:
-        username = account.purple_account_get_username(c_account)
+        username = c_account.purple_account_get_username(account)
 
-    protocol_id = account.purple_account_get_protocol_id(c_account)
+    protocol_id = c_account.purple_account_get_protocol_id(account)
 
     if c_message:
         message = <char *> c_message
@@ -138,20 +139,22 @@ cdef void request_add(account.PurpleAccount *c_account, \
             (<char *> remote_user, remote_alias), \
             (username, protocol_id), message)
 
-cdef void *request_authorize(account.PurpleAccount *c_account, \
-        const_char *remote_user, const_char *id, const_char *alias, \
-        const_char *c_message, glib.gboolean on_list, \
-        account.PurpleAccountRequestAuthorizationCb authorize_cb, \
-        account.PurpleAccountRequestAuthorizationCb deny_cb, \
-        void *user_data):
+cdef void *request_authorize(c_account.PurpleAccount *account,
+                             const_char *remote_user,
+                             const_char *id,
+                             const_char *alias,
+                             const_char *c_message,
+                             glib.gboolean on_list,
+                             c_account.PurpleAccountRequestAuthorizationCb authorize_cb,
+                             c_account.PurpleAccountRequestAuthorizationCb deny_cb,
+                             void *user_data):
     """
     Prompt for authorization when someone adds this account to their buddy
     list. To authorize them to see this account's presence, call
     authorize_cb(user_data) otherwise call deny_cb(user_data).
     @return a UI-specific handle, as passed to #close_account_request.
     """
-    cdef connection.PurpleConnection *gc = \
-            account.purple_account_get_connection(c_account)
+    cdef connection.PurpleConnection *gc = c_account.purple_account_get_connection(account)
 
     debug.purple_debug_info("account", "%s", "request-authorize\n")
 
@@ -173,9 +176,9 @@ cdef void *request_authorize(account.PurpleAccount *c_account, \
     elif connection.purple_connection_get_display_name(gc) != NULL:
         username = connection.purple_connection_get_display_name(gc)
     else:
-        username = account.purple_account_get_username(c_account)
+        username = c_account.purple_account_get_username(account)
 
-    protocol_id = account.purple_account_get_protocol_id(c_account)
+    protocol_id = c_account.purple_account_get_protocol_id(account)
 
     if c_message:
         message = <char *> c_message
