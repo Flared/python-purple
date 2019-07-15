@@ -313,18 +313,13 @@ cdef class Purple:
         @param callback Callback to be called
         '''
 
-        global connection_cbs
-        global conversation_cbs
-        global notify_cbs
-        global request_cbs
-
         {
             "account": callbacks_account.account_cbs,
             "blist": callbacks_blist.blist_cbs,
-            "connection": connection_cbs,
-            "conversation": conversation_cbs,
-            "notify": notify_cbs,
-            "request": request_cbs,
+            "connection": callbacks_connection.connection_cbs,
+            "conversation": callbacks_conversation.conversation_cbs,
+            "notify": callbacks_notify.notify_cbs,
+            "request": callbacks_request.request_cbs,
         }[type][name] = callback
 
     def signal_connect(self, str name=None, object cb=None):
