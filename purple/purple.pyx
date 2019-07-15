@@ -29,7 +29,7 @@ from libpurple cimport core as c_core
 from libpurple cimport util as c_util
 from libpurple cimport status as c_status
 from libpurple cimport notify as c_notify
-from libpurple cimport conversation
+from libpurple cimport conversation as c_conversation
 from libpurple cimport request
 
 from purple.signals cimport core as signals_core
@@ -61,7 +61,7 @@ cdef char *c_ui_dev_website
 cdef c_account.PurpleAccountUiOps c_account_ui_ops
 cdef c_blist.PurpleBlistUiOps c_blist_ui_ops
 cdef c_connection.PurpleConnectionUiOps c_conn_ui_ops
-cdef conversation.PurpleConversationUiOps c_conv_ui_ops
+cdef c_conversation.PurpleConversationUiOps c_conv_ui_ops
 cdef c_core.PurpleCoreUiOps c_core_ui_ops
 cdef c_eventloop.PurpleEventLoopUiOps c_eventloop_ui_ops
 #cdef ft.PurpleXferUiOps c_ft_ui_ops
@@ -156,7 +156,7 @@ cdef class Purple:
         c_account.purple_accounts_set_ui_ops(&c_account_ui_ops)
         c_connection.purple_connections_set_ui_ops(&c_conn_ui_ops)
         c_blist.purple_blist_set_ui_ops(&c_blist_ui_ops)
-        conversation.purple_conversations_set_ui_ops(&c_conv_ui_ops)
+        c_conversation.purple_conversations_set_ui_ops(&c_conv_ui_ops)
         c_notify.purple_notify_set_ui_ops(&c_notify_ui_ops)
         #privacy.purple_privacy_set_ui_ops(&c_privacy_ui_ops)
         request.purple_request_set_ui_ops(&c_request_ui_ops)
@@ -169,7 +169,7 @@ cdef class Purple:
         c_account.purple_accounts_set_ui_ops(NULL)
         c_connection.purple_connections_set_ui_ops(NULL)
         c_blist.purple_blist_set_ui_ops(NULL)
-        conversation.purple_conversations_set_ui_ops(NULL)
+        c_conversation.purple_conversations_set_ui_ops(NULL)
         c_notify.purple_notify_set_ui_ops(NULL)
         #privacy.purple_privacy_set_ui_ops(NULL)
         request.purple_request_set_ui_ops(NULL)
@@ -388,7 +388,7 @@ cdef class Purple:
         ##########################
         elif name == "receiving-im-msg":
             c_signals.purple_signal_connect(
-                    conversation.purple_conversations_get_handle(),
+                    c_conversation.purple_conversations_get_handle(),
                     "receiving-im-msg", &handle,
                     <c_signals.PurpleCallback> signals_conversation.signal_conversation_receiving_im_msg_cb, NULL)
 
