@@ -28,7 +28,7 @@ from libpurple cimport pounce as c_pounce
 from libpurple cimport core as c_core
 from libpurple cimport util as c_util
 from libpurple cimport status as c_status
-from libpurple cimport notify
+from libpurple cimport notify as c_notify
 from libpurple cimport conversation
 from libpurple cimport request
 
@@ -65,7 +65,7 @@ cdef conversation.PurpleConversationUiOps c_conv_ui_ops
 cdef c_core.PurpleCoreUiOps c_core_ui_ops
 cdef c_eventloop.PurpleEventLoopUiOps c_eventloop_ui_ops
 #cdef ft.PurpleXferUiOps c_ft_ui_ops
-cdef notify.PurpleNotifyUiOps c_notify_ui_ops
+cdef c_notify.PurpleNotifyUiOps c_notify_ui_ops
 #cdef privacy.PurplePrivacyUiOps c_privacy_ui_ops
 cdef request.PurpleRequestUiOps c_request_ui_ops
 #cdef roomlist.PurpleRoomlistUiOps c_rlist_ui_ops
@@ -157,7 +157,7 @@ cdef class Purple:
         c_connection.purple_connections_set_ui_ops(&c_conn_ui_ops)
         c_blist.purple_blist_set_ui_ops(&c_blist_ui_ops)
         conversation.purple_conversations_set_ui_ops(&c_conv_ui_ops)
-        notify.purple_notify_set_ui_ops(&c_notify_ui_ops)
+        c_notify.purple_notify_set_ui_ops(&c_notify_ui_ops)
         #privacy.purple_privacy_set_ui_ops(&c_privacy_ui_ops)
         request.purple_request_set_ui_ops(&c_request_ui_ops)
         #ft.purple_xfers_set_ui_ops(&c_ft_ui_ops)
@@ -170,7 +170,7 @@ cdef class Purple:
         c_connection.purple_connections_set_ui_ops(NULL)
         c_blist.purple_blist_set_ui_ops(NULL)
         conversation.purple_conversations_set_ui_ops(NULL)
-        notify.purple_notify_set_ui_ops(NULL)
+        c_notify.purple_notify_set_ui_ops(NULL)
         #privacy.purple_privacy_set_ui_ops(NULL)
         request.purple_request_set_ui_ops(NULL)
         #ft.purple_xfers_set_ui_ops(NULL)
