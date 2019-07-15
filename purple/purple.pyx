@@ -71,8 +71,8 @@ cdef c_request.PurpleRequestUiOps c_request_ui_ops
 #cdef roomlist.PurpleRoomlistUiOps c_rlist_ui_ops
 
 from purple.callbacks cimport account as callbacks_account
+from purple.callbacks cimport blist as callbacks_blist
 
-include "callbacks/blist.pxd"
 include "callbacks/connection.pxd"
 include "callbacks/conversation.pxd"
 include "callbacks/notify.pxd"
@@ -212,16 +212,16 @@ cdef class Purple:
         c_account_ui_ops.request_authorize = callbacks_account.request_authorize
         c_account_ui_ops.close_account_request = callbacks_account.close_account_request
 
-        c_blist_ui_ops.new_list = new_list
-        c_blist_ui_ops.new_node = new_node
-        c_blist_ui_ops.show = show
-        c_blist_ui_ops.update = update
-        c_blist_ui_ops.remove = remove
-        c_blist_ui_ops.destroy = destroy
-        c_blist_ui_ops.set_visible = set_visible
-        c_blist_ui_ops.request_add_buddy = request_add_buddy
-        c_blist_ui_ops.request_add_chat = request_add_chat
-        c_blist_ui_ops.request_add_group = request_add_group
+        c_blist_ui_ops.new_list = callbacks_blist.new_list
+        c_blist_ui_ops.new_node = callbacks_blist.new_node
+        c_blist_ui_ops.show = callbacks_blist.show
+        c_blist_ui_ops.update = callbacks_blist.update
+        c_blist_ui_ops.remove = callbacks_blist.remove
+        c_blist_ui_ops.destroy = callbacks_blist.destroy
+        c_blist_ui_ops.set_visible = callbacks_blist.set_visible
+        c_blist_ui_ops.request_add_buddy = callbacks_blist.request_add_buddy
+        c_blist_ui_ops.request_add_chat = callbacks_blist.request_add_chat
+        c_blist_ui_ops.request_add_group = callbacks_blist.request_add_group
 
         c_conn_ui_ops.connect_progress = connect_progress
         c_conn_ui_ops.connected = connected
@@ -313,7 +313,6 @@ cdef class Purple:
         @param callback Callback to be called
         '''
 
-        global blist_cbs
         global connection_cbs
         global conversation_cbs
         global notify_cbs
@@ -321,7 +320,7 @@ cdef class Purple:
 
         {
             "account": callbacks_account.account_cbs,
-            "blist": blist_cbs,
+            "blist": callbacks_blist.blist_cbs,
             "connection": connection_cbs,
             "conversation": conversation_cbs,
             "notify": notify_cbs,
