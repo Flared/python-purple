@@ -26,7 +26,7 @@ from libpurple cimport connection as c_connection
 from libpurple cimport signals as c_signals
 from libpurple cimport pounce as c_pounce
 from libpurple cimport core as c_core
-from libpurple cimport util
+from libpurple cimport util as c_util
 from libpurple cimport status
 from libpurple cimport notify
 from libpurple cimport conversation
@@ -116,7 +116,7 @@ cdef class Purple:
             debug.purple_debug_set_enabled(debug_enabled)
 
         if default_path != b"":
-            util.purple_util_set_user_dir(default_path)
+            c_util.purple_util_set_user_dir(default_path)
 
         # libpurple's built-in DNS resolution forks processes to perform
         # blocking lookups without blocking the main process.  It does not
