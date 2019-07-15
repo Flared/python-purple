@@ -22,8 +22,8 @@ cimport glib
 from libpurple cimport eventloop as c_eventloop
 from libpurple cimport account as c_account
 from libpurple cimport blist as c_blist
-from libpurple cimport connection
-from libpurple cimport signals
+from libpurple cimport connection as c_connection
+from libpurple cimport signals as c_signals
 from libpurple cimport pounce
 from libpurple cimport core
 from libpurple cimport util
@@ -60,7 +60,7 @@ cdef char *c_ui_dev_website
 
 cdef c_account.PurpleAccountUiOps c_account_ui_ops
 cdef c_blist.PurpleBlistUiOps c_blist_ui_ops
-cdef connection.PurpleConnectionUiOps c_conn_ui_ops
+cdef c_connection.PurpleConnectionUiOps c_conn_ui_ops
 cdef conversation.PurpleConversationUiOps c_conv_ui_ops
 cdef core.PurpleCoreUiOps c_core_ui_ops
 cdef c_eventloop.PurpleEventLoopUiOps c_eventloop_ui_ops
@@ -154,7 +154,7 @@ cdef class Purple:
         debug.purple_debug_info("core_ui_ops", "%s", "ui_init")
 
         c_account.purple_accounts_set_ui_ops(&c_account_ui_ops)
-        connection.purple_connections_set_ui_ops(&c_conn_ui_ops)
+        c_connection.purple_connections_set_ui_ops(&c_conn_ui_ops)
         c_blist.purple_blist_set_ui_ops(&c_blist_ui_ops)
         conversation.purple_conversations_set_ui_ops(&c_conv_ui_ops)
         notify.purple_notify_set_ui_ops(&c_notify_ui_ops)
@@ -167,7 +167,7 @@ cdef class Purple:
         debug.purple_debug_info("core_ui_ops", "%s", "quit")
 
         c_account.purple_accounts_set_ui_ops(NULL)
-        connection.purple_connections_set_ui_ops(NULL)
+        c_connection.purple_connections_set_ui_ops(NULL)
         c_blist.purple_blist_set_ui_ops(NULL)
         conversation.purple_conversations_set_ui_ops(NULL)
         notify.purple_notify_set_ui_ops(NULL)
@@ -345,52 +345,52 @@ cdef class Purple:
         ## Core Signals ##
         ##################
         if name == "quitting":
-            signals.purple_signal_connect(
+            c_signals.purple_signal_connect(
                 core.purple_get_core(),
                 "quitting", &handle,
-                <signals.PurpleCallback> signals_core.signal_core_quitting_cb, NULL)
+                <c_signals.PurpleCallback> signals_core.signal_core_quitting_cb, NULL)
 
         #######################
         ## Connection Sinals ##
         #######################
         elif name == "signed-on":
-            signals.purple_signal_connect(
-                    connection.purple_connections_get_handle(),
+            c_signals.purple_signal_connect(
+                    c_connection.purple_connections_get_handle(),
                     "signed-on", &handle,
-                    <signals.PurpleCallback> signals_connection.signal_connection_signed_on_cb, NULL)
+                    <c_signals.PurpleCallback> signals_connection.signal_connection_signed_on_cb, NULL)
         elif name == "signed-off":
-            signals.purple_signal_connect(
-                    connection.purple_connections_get_handle(),
+            c_signals.purple_signal_connect(
+                    c_connection.purple_connections_get_handle(),
                     "signed-off", &handle,
-                    <signals.PurpleCallback> signals_connection.signal_connection_signed_off_cb, NULL)
+                    <c_signals.PurpleCallback> signals_connection.signal_connection_signed_off_cb, NULL)
         elif name == "connection-error":
-            signals.purple_signal_connect(
-                    connection.purple_connections_get_handle(),
+            c_signals.purple_signal_connect(
+                    c_connection.purple_connections_get_handle(),
                     "connection-error", &handle,
-                    <signals.PurpleCallback> signals_connection.signal_connection_connection_error_cb, NULL)
+                    <c_signals.PurpleCallback> signals_connection.signal_connection_connection_error_cb, NULL)
 
         ########################
         ## Buddy List Signals ##
         ########################
         elif name == "buddy-signed-on":
-            signals.purple_signal_connect(
+            c_signals.purple_signal_connect(
                     c_blist.purple_blist_get_handle(),
                     "buddy-signed-on", &handle,
-                    <signals.PurpleCallback> signals_blist.signal_blist_buddy_signed_on_cb, NULL)
+                    <c_signals.PurpleCallback> signals_blist.signal_blist_buddy_signed_on_cb, NULL)
         elif name == "buddy-signed-off":
-            signals.purple_signal_connect(
+            c_signals.purple_signal_connect(
                     c_blist.purple_blist_get_handle(),
                     "buddy-signed-off", &handle,
-                    <signals.PurpleCallback> signals_blist.signal_blist_buddy_signed_off_cb, NULL)
+                    <c_signals.PurpleCallback> signals_blist.signal_blist_buddy_signed_off_cb, NULL)
 
         ##########################
         ## Conversation Signals ##
         ##########################
         elif name == "receiving-im-msg":
-            signals.purple_signal_connect(
+            c_signals.purple_signal_connect(
                     conversation.purple_conversations_get_handle(),
                     "receiving-im-msg", &handle,
-                    <signals.PurpleCallback> signals_conversation.signal_conversation_receiving_im_msg_cb, NULL)
+                    <c_signals.PurpleCallback> signals_conversation.signal_conversation_receiving_im_msg_cb, NULL)
 
         ####################
         ## Unknown Signal ##
