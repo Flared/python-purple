@@ -159,10 +159,7 @@ cdef class Purple:
         c_blist.purple_blist_set_ui_ops(&c_blist_ui_ops)
         c_conversation.purple_conversations_set_ui_ops(&c_conv_ui_ops)
         c_notify.purple_notify_set_ui_ops(&c_notify_ui_ops)
-        #privacy.purple_privacy_set_ui_ops(&c_privacy_ui_ops)
         c_request.purple_request_set_ui_ops(&c_request_ui_ops)
-        #ft.purple_xfers_set_ui_ops(&c_ft_ui_ops)
-        #roomlist.purple_roomlist_set_ui_ops(&c_rlist_ui_ops)
 
     cdef void __core_ui_ops_quit(self):
         c_debug.purple_debug_info("core_ui_ops", "%s", "quit")
@@ -172,10 +169,7 @@ cdef class Purple:
         c_blist.purple_blist_set_ui_ops(NULL)
         c_conversation.purple_conversations_set_ui_ops(NULL)
         c_notify.purple_notify_set_ui_ops(NULL)
-        #privacy.purple_privacy_set_ui_ops(NULL)
         c_request.purple_request_set_ui_ops(NULL)
-        #ft.purple_xfers_set_ui_ops(NULL)
-        #roomlist.purple_roomlist_set_ui_ops(NULL)
 
         global c_ui_info
         if c_ui_info:
