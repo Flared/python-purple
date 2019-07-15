@@ -32,8 +32,11 @@ from libpurple cimport notify as c_notify
 from libpurple cimport conversation as c_conversation
 from libpurple cimport request as c_request
 from libpurple cimport debug as c_debug
+from libpurple cimport plugin as c_plugin
+from libpurple cimport prefs as c_prefs
 
 from purple cimport protocol
+from purple cimport account
 
 from purple.signals cimport core as signals_core
 from purple.signals cimport blist as signals_blist
@@ -140,9 +143,9 @@ cdef class Purple:
 
     cdef void __core_ui_ops_ui_prefs_init(self):
         c_debug.purple_debug_info("core_ui_ops", "%s", "ui_prefs_init")
-        prefs.purple_prefs_load()
+        c_prefs.purple_prefs_load()
 
-        prefs.purple_prefs_add_none("/carman")
+        c_prefs.purple_prefs_add_none("/carman")
 
     cdef void __core_ui_ops_debug_init(self):
         c_debug.purple_debug_info("core_ui_ops", "%s", "debug_ui_init")
@@ -294,7 +297,7 @@ cdef class Purple:
             return False
 
         # create and load the buddy list
-        c_blist.purple_set_blist(blist.purple_blist_new())
+        c_blist.purple_set_blist(c_blist.purple_blist_new())
         c_blist.purple_blist_load()
 
         # load pounces
@@ -416,7 +419,7 @@ cdef class Purple:
                 protocol_id = <char *> c_account.purple_account_get_protocol_id(acc)
 
                 if username != NULL and protocol_id != NULL:
-                    account_list.append(Account(username, \
+                    account_list.append(account.Account(username, \
                             protocol.Protocol(protocol_id), self))
             iter = iter.next
 
@@ -447,7 +450,7 @@ cdef class Purple:
                 protocol_id = <char *> c_account.purple_account_get_protocol_id(acc)
 
                 if username != NULL and protocol_id != NULL:
-                    account_list.append(Account(username, \
+                    account_list.append(account.Account(username, \
                             protocol.Protocol(protocol_id), self))
             iter = iter.next
 
@@ -464,12 +467,12 @@ cdef class Purple:
         '''
 
         cdef glib.GList *iter
-        cdef plugin.PurplePlugin *pp
+        cdef c_plugin.PurplePlugin *pp
 
-        iter = plugin.purple_plugins_get_protocols()
+        iter = c_plugin.purple_plugins_get_protocols()
         protocol_list = []
         while iter:
-            pp = <plugin.PurplePlugin*> iter.data
+            pp = <c_plugin.PurplePlugin*> iter.data
             if <bint> pp.info and <bint> pp.info.name:
                 protocol_list.append(protocol.Protocol(pp.info.id))
             iter = iter.next
@@ -477,5 +480,3 @@ cdef class Purple:
 
     def call_action(self, i):
         callbacks_request.__call_action(i)
-
-include "account.pyx"

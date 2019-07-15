@@ -20,6 +20,7 @@
 cimport glib
 
 from libpurple cimport account
+from libpurple cimport account as c_account
 from libpurple cimport accountopt
 from libpurple cimport blist
 from libpurple cimport plugin
@@ -37,11 +38,6 @@ cdef class Account:
     @param core Purple class instance
     """
 
-    cdef object __username
-    cdef object __protocol
-    cdef object __core
-    cdef object __exists
-
     def __init__(self, username, protocol, core):
         self.__username = username
         self.__protocol = protocol
@@ -52,8 +48,8 @@ cdef class Account:
         else:
             self.__exists = False
 
-    cdef account.PurpleAccount *_get_structure(self):
-        return account.purple_accounts_find(
+    cdef c_account.PurpleAccount *_get_structure(self):
+        return c_account.purple_accounts_find(
             self.__username,
             self.__protocol.get_id(),
         )
