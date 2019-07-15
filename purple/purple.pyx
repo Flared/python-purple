@@ -75,8 +75,6 @@ from purple.callbacks cimport conversation as callbacks_conversation
 from purple.callbacks cimport notify as callbacks_notify
 from purple.callbacks cimport request as callbacks_request
 
-include "util.pxd"
-
 cdef class Purple:
     '''Purple class.
 
