@@ -31,7 +31,6 @@ cdef class Protocol:
     """
     Protocol class
     """
-    cdef plugin.PurplePlugin* _c_plugin
 
     def __init__(self):
         raise Exception("Use Protocol.find_with_id() instead.")

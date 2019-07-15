@@ -33,6 +33,8 @@ from libpurple cimport conversation as c_conversation
 from libpurple cimport request as c_request
 from libpurple cimport debug as c_debug
 
+from purple cimport protocol
+
 from purple.signals cimport core as signals_core
 from purple.signals cimport blist as signals_blist
 from purple.signals cimport connection as signals_connection
@@ -415,7 +417,7 @@ cdef class Purple:
 
                 if username != NULL and protocol_id != NULL:
                     account_list.append(Account(username, \
-                            Protocol(protocol_id), self))
+                            protocol.Protocol(protocol_id), self))
             iter = iter.next
 
         return account_list
@@ -446,7 +448,7 @@ cdef class Purple:
 
                 if username != NULL and protocol_id != NULL:
                     account_list.append(Account(username, \
-                            Protocol(protocol_id), self))
+                            protocol.Protocol(protocol_id), self))
             iter = iter.next
 
         return account_list
@@ -469,12 +471,11 @@ cdef class Purple:
         while iter:
             pp = <plugin.PurplePlugin*> iter.data
             if <bint> pp.info and <bint> pp.info.name:
-                protocol_list.append(Protocol(pp.info.id))
+                protocol_list.append(protocol.Protocol(pp.info.id))
             iter = iter.next
         return protocol_list
 
     def call_action(self, i):
         callbacks_request.__call_action(i)
 
-include "protocol.pyx"
 include "account.pyx"
