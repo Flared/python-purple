@@ -478,4 +478,3 @@ cdef class Purple:
 
 include "protocol.pyx"
 include "account.pyx"
-include "conversation.pyx"
