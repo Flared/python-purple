@@ -70,7 +70,8 @@ cdef c_notify.PurpleNotifyUiOps c_notify_ui_ops
 cdef c_request.PurpleRequestUiOps c_request_ui_ops
 #cdef roomlist.PurpleRoomlistUiOps c_rlist_ui_ops
 
-include "callbacks/account.pxd"
+from purple.callbacks cimport account as callbacks_account
+
 include "callbacks/blist.pxd"
 include "callbacks/connection.pxd"
 include "callbacks/conversation.pxd"
@@ -205,11 +206,11 @@ cdef class Purple:
 
         global c_ui_name
 
-        c_account_ui_ops.notify_added = notify_added
-        c_account_ui_ops.status_changed = status_changed
-        c_account_ui_ops.request_add = request_add
-        c_account_ui_ops.request_authorize = request_authorize
-        c_account_ui_ops.close_account_request = close_account_request
+        c_account_ui_ops.notify_added = callbacks_account.notify_added
+        c_account_ui_ops.status_changed = callbacks_account.status_changed
+        c_account_ui_ops.request_add = callbacks_account.request_add
+        c_account_ui_ops.request_authorize = callbacks_account.request_authorize
+        c_account_ui_ops.close_account_request = callbacks_account.close_account_request
 
         c_blist_ui_ops.new_list = new_list
         c_blist_ui_ops.new_node = new_node
@@ -312,7 +313,6 @@ cdef class Purple:
         @param callback Callback to be called
         '''
 
-        global account_cbs
         global blist_cbs
         global connection_cbs
         global conversation_cbs
@@ -320,7 +320,7 @@ cdef class Purple:
         global request_cbs
 
         {
-            "account": account_cbs,
+            "account": callbacks_account.account_cbs,
             "blist": blist_cbs,
             "connection": connection_cbs,
             "conversation": conversation_cbs,
