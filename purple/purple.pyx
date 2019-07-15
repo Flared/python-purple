@@ -24,7 +24,7 @@ from libpurple cimport account as c_account
 from libpurple cimport blist as c_blist
 from libpurple cimport connection as c_connection
 from libpurple cimport signals as c_signals
-from libpurple cimport pounce
+from libpurple cimport pounce as c_pounce
 from libpurple cimport core
 from libpurple cimport util
 from libpurple cimport status
@@ -300,7 +300,7 @@ cdef class Purple:
         c_blist.purple_blist_load()
 
         # load pounces
-        pounce.purple_pounces_load()
+        c_pounce.purple_pounces_load()
 
         return ret
 
