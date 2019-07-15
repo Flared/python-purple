@@ -43,7 +43,7 @@ from purple.signals cimport blist as signals_blist
 from purple.signals cimport connection as signals_connection
 from purple.signals cimport conversation as signals_conversation
 
-from purple cimport signals as p_signals
+from purple cimport signals
 
 cdef extern from "c_purple.h":
     glib.guint glib_input_add(glib.gint fd,
@@ -333,7 +333,7 @@ cdef class Purple:
 
         cdef int handle
 
-        p_signals.signal_cbs[name] = cb
+        signals.signal_cbs[name] = cb
 
         ##################
         ## Core Signals ##
