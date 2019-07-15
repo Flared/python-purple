@@ -64,11 +64,8 @@ cdef c_connection.PurpleConnectionUiOps c_conn_ui_ops
 cdef c_conversation.PurpleConversationUiOps c_conv_ui_ops
 cdef c_core.PurpleCoreUiOps c_core_ui_ops
 cdef c_eventloop.PurpleEventLoopUiOps c_eventloop_ui_ops
-#cdef ft.PurpleXferUiOps c_ft_ui_ops
 cdef c_notify.PurpleNotifyUiOps c_notify_ui_ops
-#cdef privacy.PurplePrivacyUiOps c_privacy_ui_ops
 cdef c_request.PurpleRequestUiOps c_request_ui_ops
-#cdef roomlist.PurpleRoomlistUiOps c_rlist_ui_ops
 
 from purple.callbacks cimport account as callbacks_account
 from purple.callbacks cimport blist as callbacks_blist
