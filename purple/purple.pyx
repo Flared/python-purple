@@ -30,7 +30,7 @@ from libpurple cimport util as c_util
 from libpurple cimport status as c_status
 from libpurple cimport notify as c_notify
 from libpurple cimport conversation as c_conversation
-from libpurple cimport request
+from libpurple cimport request as c_request
 
 from purple.signals cimport core as signals_core
 from purple.signals cimport blist as signals_blist
@@ -67,7 +67,7 @@ cdef c_eventloop.PurpleEventLoopUiOps c_eventloop_ui_ops
 #cdef ft.PurpleXferUiOps c_ft_ui_ops
 cdef c_notify.PurpleNotifyUiOps c_notify_ui_ops
 #cdef privacy.PurplePrivacyUiOps c_privacy_ui_ops
-cdef request.PurpleRequestUiOps c_request_ui_ops
+cdef c_request.PurpleRequestUiOps c_request_ui_ops
 #cdef roomlist.PurpleRoomlistUiOps c_rlist_ui_ops
 
 include "callbacks/account.pxd"
@@ -159,7 +159,7 @@ cdef class Purple:
         c_conversation.purple_conversations_set_ui_ops(&c_conv_ui_ops)
         c_notify.purple_notify_set_ui_ops(&c_notify_ui_ops)
         #privacy.purple_privacy_set_ui_ops(&c_privacy_ui_ops)
-        request.purple_request_set_ui_ops(&c_request_ui_ops)
+        c_request.purple_request_set_ui_ops(&c_request_ui_ops)
         #ft.purple_xfers_set_ui_ops(&c_ft_ui_ops)
         #roomlist.purple_roomlist_set_ui_ops(&c_rlist_ui_ops)
 
@@ -172,7 +172,7 @@ cdef class Purple:
         c_conversation.purple_conversations_set_ui_ops(NULL)
         c_notify.purple_notify_set_ui_ops(NULL)
         #privacy.purple_privacy_set_ui_ops(NULL)
-        request.purple_request_set_ui_ops(NULL)
+        c_request.purple_request_set_ui_ops(NULL)
         #ft.purple_xfers_set_ui_ops(NULL)
         #roomlist.purple_roomlist_set_ui_ops(NULL)
 
