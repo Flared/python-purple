@@ -17,8 +17,8 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from libpurple cimport notify
 from libpurple cimport notify as c_notify
+from libpurple cimport debug as c_debug
 from libpurple cimport conversation as c_conversation
 
 cdef extern from *:

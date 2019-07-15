@@ -70,8 +70,8 @@ cdef c_request.PurpleRequestUiOps c_request_ui_ops
 from purple.callbacks cimport account as callbacks_account
 from purple.callbacks cimport blist as callbacks_blist
 from purple.callbacks cimport connection as callbacks_connection
+from purple.callbacks cimport conversation as callbacks_conversation
 
-include "callbacks/conversation.pxd"
 include "callbacks/notify.pxd"
 include "callbacks/request.pxd"
 
@@ -229,21 +229,21 @@ cdef class Purple:
         c_conn_ui_ops.network_disconnected = callbacks_connection.network_disconnected
         c_conn_ui_ops.report_disconnect_reason = callbacks_connection.report_disconnect_reason
 
-        c_conv_ui_ops.create_conversation = create_conversation
-        c_conv_ui_ops.destroy_conversation = destroy_conversation
-        c_conv_ui_ops.write_chat = write_chat
-        c_conv_ui_ops.write_im = write_im
-        c_conv_ui_ops.write_conv = write_conv
-        c_conv_ui_ops.chat_add_users = chat_add_users
-        c_conv_ui_ops.chat_rename_user = chat_rename_user
-        c_conv_ui_ops.chat_remove_users = chat_remove_users
-        c_conv_ui_ops.chat_update_user = chat_update_user
-        c_conv_ui_ops.present = present
-        c_conv_ui_ops.has_focus = has_focus
-        c_conv_ui_ops.custom_smiley_add = custom_smiley_add
-        c_conv_ui_ops.custom_smiley_write = custom_smiley_write
-        c_conv_ui_ops.custom_smiley_close = custom_smiley_close
-        c_conv_ui_ops.send_confirm = send_confirm
+        c_conv_ui_ops.create_conversation = callbacks_conversation.create_conversation
+        c_conv_ui_ops.destroy_conversation = callbacks_conversation.destroy_conversation
+        c_conv_ui_ops.write_chat = callbacks_conversation.write_chat
+        c_conv_ui_ops.write_im = callbacks_conversation.write_im
+        c_conv_ui_ops.write_conv = callbacks_conversation.write_conv
+        c_conv_ui_ops.chat_add_users = callbacks_conversation.chat_add_users
+        c_conv_ui_ops.chat_rename_user = callbacks_conversation.chat_rename_user
+        c_conv_ui_ops.chat_remove_users = callbacks_conversation.chat_remove_users
+        c_conv_ui_ops.chat_update_user = callbacks_conversation.chat_update_user
+        c_conv_ui_ops.present = callbacks_conversation.present
+        c_conv_ui_ops.has_focus = callbacks_conversation.has_focus
+        c_conv_ui_ops.custom_smiley_add = callbacks_conversation.custom_smiley_add
+        c_conv_ui_ops.custom_smiley_write = callbacks_conversation.custom_smiley_write
+        c_conv_ui_ops.custom_smiley_close = callbacks_conversation.custom_smiley_close
+        c_conv_ui_ops.send_confirm = callbacks_conversation.send_confirm
 
         c_notify_ui_ops.notify_message = notify_message
         c_notify_ui_ops.notify_email = notify_email
