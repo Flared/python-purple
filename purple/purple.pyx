@@ -69,8 +69,8 @@ cdef c_request.PurpleRequestUiOps c_request_ui_ops
 
 from purple.callbacks cimport account as callbacks_account
 from purple.callbacks cimport blist as callbacks_blist
+from purple.callbacks cimport connection as callbacks_connection
 
-include "callbacks/connection.pxd"
 include "callbacks/conversation.pxd"
 include "callbacks/notify.pxd"
 include "callbacks/request.pxd"
@@ -111,7 +111,7 @@ cdef class Purple:
         c_ui_dev_website = ui_dev_website
 
         if debug_enabled:
-            debug.purple_debug_set_enabled(debug_enabled)
+            c_debug.purple_debug_set_enabled(debug_enabled)
 
         if default_path != b"":
             c_util.purple_util_set_user_dir(default_path)
@@ -139,17 +139,17 @@ cdef class Purple:
     ui_name = property(__get_ui_name)
 
     cdef void __core_ui_ops_ui_prefs_init(self):
-        debug.purple_debug_info("core_ui_ops", "%s", "ui_prefs_init")
+        c_debug.purple_debug_info("core_ui_ops", "%s", "ui_prefs_init")
         prefs.purple_prefs_load()
 
         prefs.purple_prefs_add_none("/carman")
 
     cdef void __core_ui_ops_debug_init(self):
-        debug.purple_debug_info("core_ui_ops", "%s", "debug_ui_init")
+        c_debug.purple_debug_info("core_ui_ops", "%s", "debug_ui_init")
         pass
 
     cdef void __core_ui_ops_ui_init(self):
-        debug.purple_debug_info("core_ui_ops", "%s", "ui_init")
+        c_debug.purple_debug_info("core_ui_ops", "%s", "ui_init")
 
         c_account.purple_accounts_set_ui_ops(&c_account_ui_ops)
         c_connection.purple_connections_set_ui_ops(&c_conn_ui_ops)
@@ -162,7 +162,7 @@ cdef class Purple:
         #roomlist.purple_roomlist_set_ui_ops(&c_rlist_ui_ops)
 
     cdef void __core_ui_ops_quit(self):
-        debug.purple_debug_info("core_ui_ops", "%s", "quit")
+        c_debug.purple_debug_info("core_ui_ops", "%s", "quit")
 
         c_account.purple_accounts_set_ui_ops(NULL)
         c_connection.purple_connections_set_ui_ops(NULL)
@@ -220,14 +220,14 @@ cdef class Purple:
         c_blist_ui_ops.request_add_chat = callbacks_blist.request_add_chat
         c_blist_ui_ops.request_add_group = callbacks_blist.request_add_group
 
-        c_conn_ui_ops.connect_progress = connect_progress
-        c_conn_ui_ops.connected = connected
-        c_conn_ui_ops.disconnected = disconnected
-        c_conn_ui_ops.notice = notice
-        c_conn_ui_ops.report_disconnect = report_disconnect
-        c_conn_ui_ops.network_connected = network_connected
-        c_conn_ui_ops.network_disconnected = network_disconnected
-        c_conn_ui_ops.report_disconnect_reason = report_disconnect_reason
+        c_conn_ui_ops.connect_progress = callbacks_connection.connect_progress
+        c_conn_ui_ops.connected = callbacks_connection.connected
+        c_conn_ui_ops.disconnected = callbacks_connection.disconnected
+        c_conn_ui_ops.notice = callbacks_connection.notice
+        c_conn_ui_ops.report_disconnect = callbacks_connection.report_disconnect
+        c_conn_ui_ops.network_connected = callbacks_connection.network_connected
+        c_conn_ui_ops.network_disconnected = callbacks_connection.network_disconnected
+        c_conn_ui_ops.report_disconnect_reason = callbacks_connection.report_disconnect_reason
 
         c_conv_ui_ops.create_conversation = create_conversation
         c_conv_ui_ops.destroy_conversation = destroy_conversation
@@ -282,13 +282,13 @@ cdef class Purple:
         # initialize purple core
         ret = c_core.purple_core_init(c_ui_name)
         if ret is False:
-            debug.purple_debug_fatal("main", "%s", "libpurple " \
+            c_debug.purple_debug_fatal("main", "%s", "libpurple " \
                                        "initialization failed.\n")
             return False
 
         # check if there is another instance of libpurple running
         if c_core.purple_core_ensure_single_instance() == False:
-            debug.purple_debug_fatal("main", "%s", "Another instance of " \
+            c_debug.purple_debug_fatal("main", "%s", "Another instance of " \
                                       "libpurple is already running.\n")
             c_core.purple_core_quit()
             return False
