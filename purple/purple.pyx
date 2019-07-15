@@ -21,7 +21,7 @@ cimport glib
 
 from libpurple cimport eventloop as c_eventloop
 from libpurple cimport account as c_account
-from libpurple cimport blist
+from libpurple cimport blist as c_blist
 from libpurple cimport connection
 from libpurple cimport signals
 from libpurple cimport pounce
@@ -59,7 +59,7 @@ cdef char *c_ui_website
 cdef char *c_ui_dev_website
 
 cdef c_account.PurpleAccountUiOps c_account_ui_ops
-cdef blist.PurpleBlistUiOps c_blist_ui_ops
+cdef c_blist.PurpleBlistUiOps c_blist_ui_ops
 cdef connection.PurpleConnectionUiOps c_conn_ui_ops
 cdef conversation.PurpleConversationUiOps c_conv_ui_ops
 cdef core.PurpleCoreUiOps c_core_ui_ops
@@ -155,7 +155,7 @@ cdef class Purple:
 
         c_account.purple_accounts_set_ui_ops(&c_account_ui_ops)
         connection.purple_connections_set_ui_ops(&c_conn_ui_ops)
-        blist.purple_blist_set_ui_ops(&c_blist_ui_ops)
+        c_blist.purple_blist_set_ui_ops(&c_blist_ui_ops)
         conversation.purple_conversations_set_ui_ops(&c_conv_ui_ops)
         notify.purple_notify_set_ui_ops(&c_notify_ui_ops)
         #privacy.purple_privacy_set_ui_ops(&c_privacy_ui_ops)
@@ -168,7 +168,7 @@ cdef class Purple:
 
         c_account.purple_accounts_set_ui_ops(NULL)
         connection.purple_connections_set_ui_ops(NULL)
-        blist.purple_blist_set_ui_ops(NULL)
+        c_blist.purple_blist_set_ui_ops(NULL)
         conversation.purple_conversations_set_ui_ops(NULL)
         notify.purple_notify_set_ui_ops(NULL)
         #privacy.purple_privacy_set_ui_ops(NULL)
@@ -296,8 +296,8 @@ cdef class Purple:
             return False
 
         # create and load the buddy list
-        blist.purple_set_blist(blist.purple_blist_new())
-        blist.purple_blist_load()
+        c_blist.purple_set_blist(blist.purple_blist_new())
+        c_blist.purple_blist_load()
 
         # load pounces
         pounce.purple_pounces_load()
@@ -374,12 +374,12 @@ cdef class Purple:
         ########################
         elif name == "buddy-signed-on":
             signals.purple_signal_connect(
-                    blist.purple_blist_get_handle(),
+                    c_blist.purple_blist_get_handle(),
                     "buddy-signed-on", &handle,
                     <signals.PurpleCallback> signals_blist.signal_blist_buddy_signed_on_cb, NULL)
         elif name == "buddy-signed-off":
             signals.purple_signal_connect(
-                    blist.purple_blist_get_handle(),
+                    c_blist.purple_blist_get_handle(),
                     "buddy-signed-off", &handle,
                     <signals.PurpleCallback> signals_blist.signal_blist_buddy_signed_off_cb, NULL)
 
