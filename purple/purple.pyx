@@ -71,8 +71,8 @@ from purple.callbacks cimport account as callbacks_account
 from purple.callbacks cimport blist as callbacks_blist
 from purple.callbacks cimport connection as callbacks_connection
 from purple.callbacks cimport conversation as callbacks_conversation
+from purple.callbacks cimport notify as callbacks_notify
 
-include "callbacks/notify.pxd"
 include "callbacks/request.pxd"
 
 include "util.pxd"
@@ -245,15 +245,15 @@ cdef class Purple:
         c_conv_ui_ops.custom_smiley_close = callbacks_conversation.custom_smiley_close
         c_conv_ui_ops.send_confirm = callbacks_conversation.send_confirm
 
-        c_notify_ui_ops.notify_message = notify_message
-        c_notify_ui_ops.notify_email = notify_email
-        c_notify_ui_ops.notify_emails = notify_emails
-        c_notify_ui_ops.notify_formatted = notify_formatted
-        c_notify_ui_ops.notify_searchresults = notify_searchresults
-        c_notify_ui_ops.notify_searchresults_new_rows = notify_searchresults_new_rows
-        c_notify_ui_ops.notify_userinfo = notify_userinfo
-        c_notify_ui_ops.notify_uri = notify_uri
-        c_notify_ui_ops.close_notify = close_notify
+        c_notify_ui_ops.notify_message = callbacks_notify.notify_message
+        c_notify_ui_ops.notify_email = callbacks_notify.notify_email
+        c_notify_ui_ops.notify_emails = callbacks_notify.notify_emails
+        c_notify_ui_ops.notify_formatted = callbacks_notify.notify_formatted
+        c_notify_ui_ops.notify_searchresults = callbacks_notify.notify_searchresults
+        c_notify_ui_ops.notify_searchresults_new_rows = callbacks_notify.notify_searchresults_new_rows
+        c_notify_ui_ops.notify_userinfo = callbacks_notify.notify_userinfo
+        c_notify_ui_ops.notify_uri = callbacks_notify.notify_uri
+        c_notify_ui_ops.close_notify = callbacks_notify.close_notify
 
         c_request_ui_ops.request_input = request_input
         c_request_ui_ops.request_choice = request_choice

@@ -17,38 +17,29 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+cimport glib
+
 from libpurple cimport notify as c_notify
 from libpurple cimport debug as c_debug
 from libpurple cimport conversation as c_conversation
+from libpurple cimport connection as c_connection
 
 cdef extern from *:
     ctypedef char const_char "const char"
     ctypedef int size_t
 
-notify_cbs = {}
+cdef object notify_cbs
 
 cdef void *notify_message(c_notify.PurpleNotifyMsgType type,
                           const_char *title,
                           const_char *primary,
-                          const_char *secondary):
-    """
-    TODO
-    """
-    c_debug.purple_debug_info("notify", "%s", "notify-message\n")
-    if "notify-message" in notify_cbs:
-        (<object> notify_cbs["notify-message"])("notify-message: TODO")
+                          const_char *secondary)
 
 cdef void *notify_email(c_connection.PurpleConnection *gc,
                         const_char *subject,
                         const_char *_from,
                         const_char *to,
-                        const_char *url):
-    """
-    TODO
-    """
-    c_debug.purple_debug_info("notify", "%s", "notify-email\n")
-    if "notify-email" in notify_cbs:
-        (<object> notify_cbs["notify-email"])("notify-email: TODO")
+                        const_char *url)
 
 cdef void *notify_emails(c_connection.PurpleConnection *gc,
                          size_t count,
@@ -56,72 +47,28 @@ cdef void *notify_emails(c_connection.PurpleConnection *gc,
                          const_char **subjects,
                          const_char **froms,
                          const_char **tos,
-                         const_char **urls):
-    """
-    TODO
-    """
-    c_debug.purple_debug_info("notify", "%s", "notify-emails\n")
-    if "notify-emails" in notify_cbs:
-        (<object> notify_cbs["notify-emails"])("notify-emails: TODO")
+                         const_char **urls)
 
 cdef void *notify_formatted(const_char *title,
                             const_char *primary,
                             const_char *secondary,
-                            const_char *text):
-    """
-    TODO
-    """
-    c_debug.purple_debug_info("notify", "%s", "notify-formatted\n")
-    if "notify-formatted" in notify_cbs:
-        (<object> notify_cbs["notify-formatted"])("notify-formatted: TODO")
+                            const_char *text)
 
 cdef void *notify_searchresults(c_connection.PurpleConnection *gc,
                                 const_char *title,
                                 const_char *primary,
                                 const_char *secondary,
                                 c_notify.PurpleNotifySearchResults *results,
-                                glib.gpointer user_data):
-    """
-    TODO
-    """
-    c_debug.purple_debug_info("notify", "%s", "notify-searchresults\n")
-    if "notify-searchresults" in notify_cbs:
-        (<object> notify_cbs["notify-searchresults"]) \
-            ("notify-searchresults: TODO")
+                                glib.gpointer user_data)
 
 cdef void notify_searchresults_new_rows(c_connection.PurpleConnection *gc,
                                         c_notify.PurpleNotifySearchResults *results,
-                                        void *data):
-    """
-    TODO
-    """
-    c_debug.purple_debug_info("notify", "%s", "notify-searchresults-new-rows\n")
-    if "notify-searchresults-new-rows" in notify_cbs:
-        (<object> notify_cbs["notify-searchresults-new-rows"]) \
-            ("notify-searchresults-new-rows: TODO")
+                                        void *data)
 
 cdef void *notify_userinfo(c_connection.PurpleConnection *gc,
                            const_char *who,
-                           c_notify.PurpleNotifyUserInfo *user_info):
-    """
-    TODO
-    """
-    c_debug.purple_debug_info("notify", "%s", "notify-userinfo\n")
-    if "notify-userinfo" in notify_cbs:
-        (<object> notify_cbs["notify-userinfo"])("notify-userinfo: TODO")
+                           c_notify.PurpleNotifyUserInfo *user_info)
 
-cdef void *notify_uri(const_char *uri):
-    """
-    TODO
-    """
-    c_debug.purple_debug_info("notify", "%s", "notify-uri\n")
-    if "notify-uri" in notify_cbs:
-        (<object> notify_cbs["notify-uri"])("notify-uri: TODO")
+cdef void *notify_uri(const_char *uri)
 
-cdef void close_notify(c_notify.PurpleNotifyType type, void *ui_handle):
-    """
-    TODO
-    """
-    c_debug.purple_debug_info("notify", "%s", "close-notify\n")
-    if "close-notify" in notify_cbs:
-        (<object> notify_cbs["close-notify"])("close-notify: TODO")
+cdef void close_notify(c_notify.PurpleNotifyType type, void *ui_handle)
