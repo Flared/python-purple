@@ -341,50 +341,70 @@ cdef class Purple:
         if name == "quitting":
             c_signals.purple_signal_connect(
                 c_core.purple_get_core(),
-                "quitting", &handle,
-                <c_signals.PurpleCallback> signals_core.signal_core_quitting_cb, NULL)
+                "quitting",
+                &handle,
+                <c_signals.PurpleCallback> signals_core.signal_core_quitting_cb,
+                NULL,
+            )
 
         #######################
         ## Connection Sinals ##
         #######################
         elif name == "signed-on":
             c_signals.purple_signal_connect(
-                    c_connection.purple_connections_get_handle(),
-                    "signed-on", &handle,
-                    <c_signals.PurpleCallback> signals_connection.signal_connection_signed_on_cb, NULL)
+                c_connection.purple_connections_get_handle(),
+                "signed-on",
+                &handle,
+                <c_signals.PurpleCallback> signals_connection.signal_connection_signed_on_cb,
+                NULL,
+            )
         elif name == "signed-off":
             c_signals.purple_signal_connect(
-                    c_connection.purple_connections_get_handle(),
-                    "signed-off", &handle,
-                    <c_signals.PurpleCallback> signals_connection.signal_connection_signed_off_cb, NULL)
+                c_connection.purple_connections_get_handle(),
+                "signed-off",
+                &handle,
+                <c_signals.PurpleCallback> signals_connection.signal_connection_signed_off_cb,
+                NULL,
+            )
         elif name == "connection-error":
             c_signals.purple_signal_connect(
-                    c_connection.purple_connections_get_handle(),
-                    "connection-error", &handle,
-                    <c_signals.PurpleCallback> signals_connection.signal_connection_connection_error_cb, NULL)
+                c_connection.purple_connections_get_handle(),
+                "connection-error",
+                &handle,
+                <c_signals.PurpleCallback> signals_connection.signal_connection_connection_error_cb,
+                NULL,
+            )
 
         ########################
         ## Buddy List Signals ##
         ########################
         elif name == "buddy-signed-on":
             c_signals.purple_signal_connect(
-                    c_blist.purple_blist_get_handle(),
-                    "buddy-signed-on", &handle,
-                    <c_signals.PurpleCallback> signals_blist.signal_blist_buddy_signed_on_cb, NULL)
+                c_blist.purple_blist_get_handle(),
+                "buddy-signed-on",
+                &handle,
+                <c_signals.PurpleCallback> signals_blist.signal_blist_buddy_signed_on_cb,
+                NULL,
+            )
         elif name == "buddy-signed-off":
             c_signals.purple_signal_connect(
-                    c_blist.purple_blist_get_handle(),
-                    "buddy-signed-off", &handle,
-                    <c_signals.PurpleCallback> signals_blist.signal_blist_buddy_signed_off_cb, NULL)
+                c_blist.purple_blist_get_handle(),
+                "buddy-signed-off", &handle,
+                <c_signals.PurpleCallback> signals_blist.signal_blist_buddy_signed_off_cb,
+                NULL
+            )
 
         ##########################
         ## Conversation Signals ##
         ##########################
         elif name == "receiving-im-msg":
             c_signals.purple_signal_connect(
-                    c_conversation.purple_conversations_get_handle(),
-                    "receiving-im-msg", &handle,
-                    <c_signals.PurpleCallback> signals_conversation.signal_conversation_receiving_im_msg_cb, NULL)
+                c_conversation.purple_conversations_get_handle(),
+                "receiving-im-msg",
+                &handle,
+                <c_signals.PurpleCallback> signals_conversation.signal_conversation_receiving_im_msg_cb,
+                NULL,
+             )
 
         ####################
         ## Unknown Signal ##
