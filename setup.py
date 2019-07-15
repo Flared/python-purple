@@ -5,6 +5,7 @@ from setuptools import setup, find_packages
 from distutils.extension import Extension
 from Cython.Build import cythonize
 from subprocess import Popen, PIPE
+from collections import namedtuple
 
 cflags = (
     Popen(["pkg-config", "--cflags", "purple"], stdout=PIPE)
@@ -24,22 +25,33 @@ ldflags = (
 
 # scan the 'purple' directory for extension files, converting
 # them to extension names in dotted notation
-def scandir(dir, files=[]):
+
+ExtensionInfo = namedtuple("ExtensionInfo", ["name", "sources"])
+
+
+def scandir(dir, ext_infos=[]):
+
     for file in os.listdir(dir):
         path = os.path.join(dir, file)
+
         if os.path.isfile(path) and path.endswith(".pyx"):
-            files.append(path.replace(os.path.sep, ".")[:-4])
+            ext_infos.append(
+                ExtensionInfo(
+                    name=path.rstrip(".pyx").replace(os.path.sep, "."),
+                    sources=[path],
+                )
+            )
+
         elif os.path.isdir(path):
-            scandir(path, files)
-    return files
+            scandir(path, ext_infos)
+
+    return ext_infos
 
 
-# generate an Extension object from its dotted name
-def make_extension(ext_name):
-    ext_path = ext_name.replace(".", os.path.sep) + ".pyx"
+def make_extension(ext_info):
     return Extension(
-        ext_name,
-        ["purple/c_purple.c", ext_path],
+        ext_info.name,
+        ["purple/c_purple.c"] + ext_info.sources,
         include_dirs=[
             "include",
             ".",
@@ -49,9 +61,9 @@ def make_extension(ext_name):
     )
 
 
-ext_names = scandir("purple")
+ext_infos = scandir("purple")
 
-ext_modules = [make_extension(name) for name in ext_names]
+ext_modules = [make_extension(ext_info) for ext_info in ext_infos]
 
 cythonized_modules = cythonize(
     ext_modules,
