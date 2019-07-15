@@ -68,15 +68,12 @@ cdef notify.PurpleNotifyUiOps c_notify_ui_ops
 cdef request.PurpleRequestUiOps c_request_ui_ops
 #cdef roomlist.PurpleRoomlistUiOps c_rlist_ui_ops
 
-include "account_cbs.pxd"
-include "blist_cbs.pxd"
-include "connection_cbs.pxd"
-include "conversation_cbs.pxd"
-#include "xfer_cbs.pxd"
-include "notify_cbs.pxd"
-#include "privacy_cbs.pxd"
-include "request_cbs.pxd"
-#include "roomlist_cbs.pxd"
+include "callbacks/account.pxd"
+include "callbacks/blist.pxd"
+include "callbacks/connection.pxd"
+include "callbacks/conversation.pxd"
+include "callbacks/notify.pxd"
+include "callbacks/request.pxd"
 
 include "util.pxd"
 
