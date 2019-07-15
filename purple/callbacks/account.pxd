@@ -87,7 +87,7 @@ cdef void notify_added(c_account.PurpleAccount *account,
             (username, protocol_id), message)
 
 cdef void status_changed(c_account.PurpleAccount *account,
-                         status.PurpleStatus *c_status):
+                         c_status.PurpleStatus *status):
     """
     This account's status changed.
     """
@@ -96,8 +96,8 @@ cdef void status_changed(c_account.PurpleAccount *account,
     username = c_account.purple_account_get_username(account)
     protocol_id = c_account.purple_account_get_protocol_id(account)
 
-    status_id = status.purple_status_get_id(c_status)
-    status_name = status.purple_status_get_name(c_status)
+    status_id = c_status.purple_status_get_id(status)
+    status_name = c_status.purple_status_get_name(status)
 
     if "status-changed" in account_cbs:
         (<object> account_cbs["status-changed"])( \

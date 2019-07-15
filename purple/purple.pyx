@@ -27,7 +27,7 @@ from libpurple cimport signals as c_signals
 from libpurple cimport pounce as c_pounce
 from libpurple cimport core as c_core
 from libpurple cimport util as c_util
-from libpurple cimport status
+from libpurple cimport status as c_status
 from libpurple cimport notify
 from libpurple cimport conversation
 from libpurple cimport request
