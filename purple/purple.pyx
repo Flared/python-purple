@@ -25,7 +25,7 @@ from libpurple cimport blist as c_blist
 from libpurple cimport connection as c_connection
 from libpurple cimport signals as c_signals
 from libpurple cimport pounce as c_pounce
-from libpurple cimport core
+from libpurple cimport core as c_core
 from libpurple cimport util
 from libpurple cimport status
 from libpurple cimport notify
@@ -62,7 +62,7 @@ cdef c_account.PurpleAccountUiOps c_account_ui_ops
 cdef c_blist.PurpleBlistUiOps c_blist_ui_ops
 cdef c_connection.PurpleConnectionUiOps c_conn_ui_ops
 cdef conversation.PurpleConversationUiOps c_conv_ui_ops
-cdef core.PurpleCoreUiOps c_core_ui_ops
+cdef c_core.PurpleCoreUiOps c_core_ui_ops
 cdef c_eventloop.PurpleEventLoopUiOps c_eventloop_ui_ops
 #cdef ft.PurpleXferUiOps c_ft_ui_ops
 cdef notify.PurpleNotifyUiOps c_notify_ui_ops
@@ -125,10 +125,10 @@ cdef class Purple:
         signal.signal(signal.SIGCHLD, signal.SIG_IGN)
 
     def destroy(self):
-        core.purple_core_quit()
+        c_core.purple_core_quit()
 
     def get_version(self):
-        return core.purple_core_get_version()
+        return c_core.purple_core_get_version()
 
     def __get_ui_name(self):
         '''Returns the UI name.
@@ -278,21 +278,21 @@ cdef class Purple:
         c_eventloop_ui_ops.input_get_error = NULL
         c_eventloop_ui_ops.timeout_add_seconds = NULL
 
-        core.purple_core_set_ui_ops(&c_core_ui_ops)
+        c_core.purple_core_set_ui_ops(&c_core_ui_ops)
         c_eventloop.purple_eventloop_set_ui_ops(&c_eventloop_ui_ops)
 
         # initialize purple core
-        ret = core.purple_core_init(c_ui_name)
+        ret = c_core.purple_core_init(c_ui_name)
         if ret is False:
             debug.purple_debug_fatal("main", "%s", "libpurple " \
                                        "initialization failed.\n")
             return False
 
         # check if there is another instance of libpurple running
-        if core.purple_core_ensure_single_instance() == False:
+        if c_core.purple_core_ensure_single_instance() == False:
             debug.purple_debug_fatal("main", "%s", "Another instance of " \
                                       "libpurple is already running.\n")
-            core.purple_core_quit()
+            c_core.purple_core_quit()
             return False
 
         # create and load the buddy list
@@ -346,7 +346,7 @@ cdef class Purple:
         ##################
         if name == "quitting":
             c_signals.purple_signal_connect(
-                core.purple_get_core(),
+                c_core.purple_get_core(),
                 "quitting", &handle,
                 <c_signals.PurpleCallback> signals_core.signal_core_quitting_cb, NULL)
 
