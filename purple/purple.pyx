@@ -33,6 +33,13 @@ from libpurple cimport notify
 from libpurple cimport conversation
 from libpurple cimport request
 
+from purple.signals cimport core as signals_core
+from purple.signals cimport blist as signals_blist
+from purple.signals cimport connection as signals_connection
+from purple.signals cimport conversation as signals_conversation
+
+from purple cimport signals as p_signals
+
 cdef extern from "c_purple.h":
     glib.guint glib_input_add(glib.gint fd, eventloop.PurpleInputCondition condition, eventloop.PurpleInputFunction function, glib.gpointer data)
 
@@ -70,7 +77,6 @@ include "notify_cbs.pxd"
 #include "privacy_cbs.pxd"
 include "request_cbs.pxd"
 #include "roomlist_cbs.pxd"
-include "signal_cbs.pxd"
 
 include "util.pxd"
 
@@ -334,8 +340,7 @@ cdef class Purple:
 
         cdef int handle
 
-        global signal_cbs
-        signal_cbs[name] = cb
+        p_signals.signal_cbs[name] = cb
 
         ##################
         ## Core Signals ##
@@ -344,7 +349,7 @@ cdef class Purple:
             signals.purple_signal_connect(
                 core.purple_get_core(),
                 "quitting", &handle,
-                <signals.PurpleCallback> signal_core_quitting_cb, NULL)
+                <signals.PurpleCallback> signals_core.signal_core_quitting_cb, NULL)
 
         #######################
         ## Connection Sinals ##
@@ -353,17 +358,17 @@ cdef class Purple:
             signals.purple_signal_connect(
                     connection.purple_connections_get_handle(),
                     "signed-on", &handle,
-                    <signals.PurpleCallback> signal_connection_signed_on_cb, NULL)
+                    <signals.PurpleCallback> signals_connection.signal_connection_signed_on_cb, NULL)
         elif name == "signed-off":
             signals.purple_signal_connect(
                     connection.purple_connections_get_handle(),
                     "signed-off", &handle,
-                    <signals.PurpleCallback> signal_connection_signed_off_cb, NULL)
+                    <signals.PurpleCallback> signals_connection.signal_connection_signed_off_cb, NULL)
         elif name == "connection-error":
             signals.purple_signal_connect(
                     connection.purple_connections_get_handle(),
                     "connection-error", &handle,
-                    <signals.PurpleCallback> signal_connection_connection_error_cb, NULL)
+                    <signals.PurpleCallback> signals_connection.signal_connection_connection_error_cb, NULL)
 
         ########################
         ## Buddy List Signals ##
@@ -372,12 +377,12 @@ cdef class Purple:
             signals.purple_signal_connect(
                     blist.purple_blist_get_handle(),
                     "buddy-signed-on", &handle,
-                    <signals.PurpleCallback> signal_blist_buddy_signed_on_cb, NULL)
+                    <signals.PurpleCallback> signals_blist.signal_blist_buddy_signed_on_cb, NULL)
         elif name == "buddy-signed-off":
             signals.purple_signal_connect(
                     blist.purple_blist_get_handle(),
                     "buddy-signed-off", &handle,
-                    <signals.PurpleCallback> signal_blist_buddy_signed_off_cb, NULL)
+                    <signals.PurpleCallback> signals_blist.signal_blist_buddy_signed_off_cb, NULL)
 
         ##########################
         ## Conversation Signals ##
@@ -386,7 +391,7 @@ cdef class Purple:
             signals.purple_signal_connect(
                     conversation.purple_conversations_get_handle(),
                     "receiving-im-msg", &handle,
-                    <signals.PurpleCallback> signal_conversation_receiving_im_msg_cb, NULL)
+                    <signals.PurpleCallback> signals_conversation.signal_conversation_receiving_im_msg_cb, NULL)
 
         ####################
         ## Unknown Signal ##

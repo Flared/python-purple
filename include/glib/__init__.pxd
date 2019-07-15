@@ -19,6 +19,7 @@
 
 cdef extern from *:
     ctypedef int volatile_gint "volatile int"
+    ctypedef char const_gchar "const gchar"
 
 cdef extern from "glib.h":
     ctypedef void *gpointer
