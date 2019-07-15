@@ -37,7 +37,7 @@ def scandir(dir, ext_infos=[]):
         if os.path.isfile(path) and path.endswith(".pyx"):
             ext_infos.append(
                 ExtensionInfo(
-                    name=path[:-len(".pyx")].replace(os.path.sep, "."),
+                    name=path[: -len(".pyx")].replace(os.path.sep, "."),
                     sources=[path],
                 )
             )
