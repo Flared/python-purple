@@ -9,3 +9,4 @@ from .purple import Purple
 from .protocol import Protocol
 from .plugin import Plugins
 from .plugin import Plugin
+from .account import Account

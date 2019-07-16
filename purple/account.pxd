@@ -25,5 +25,10 @@ cdef class Account:
     cdef object __protocol
     cdef object __core
     cdef object __exists
+    cdef c_account.PurpleAccount* _c_account
 
-    cdef c_account.PurpleAccount *_get_structure(self)
+    @staticmethod
+    cdef Account _new(object core,
+                      c_account.PurpleAccount* _c_account)
+
+    cdef c_account.PurpleAccount* _get_structure(self)

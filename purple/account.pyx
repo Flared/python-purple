@@ -30,6 +30,7 @@ from libpurple cimport server as c_server
 from libpurple cimport status
 
 from purple.buddy cimport Buddy
+from purple.protocol cimport Protocol
 
 cdef class Account:
     """
@@ -39,21 +40,50 @@ cdef class Account:
     @param core Purple class instance
     """
 
-    def __init__(self, username, protocol, core):
-        self.__username = username
-        self.__protocol = protocol
-        self.__core = core
+    def __init__(self):
+        raise Exception("Use Account.find() or Account.new() instead.")
 
-        if self._get_structure() != NULL:
-            self.__exists = True
-        else:
-            self.__exists = False
-
-    cdef c_account.PurpleAccount *_get_structure(self):
-        return c_account.purple_accounts_find(
-            self.__username,
-            self.__protocol.get_id(),
+    @staticmethod
+    def new(object core, Protocol protocol, char* username):
+        c_account.purple_accounts_add(
+            c_account.purple_account_new(
+                username,
+                protocol.get_id()
+            )
         )
+
+        cdef Account account = Account.find(
+            core,
+            protocol,
+            username
+        )
+
+        if not account:
+            raise Exception("Could not create account!")
+
+        return account
+
+    @staticmethod
+    cdef Account _new(object core,
+                      c_account.PurpleAccount* _c_account):
+        cdef Account account = Account.__new__(Account)
+        account._c_account = _c_account
+        account.__core = core
+        return account
+
+    @staticmethod
+    def find(object core, Protocol protocol, char* username):
+        cdef object account = None
+        cdef c_account.PurpleAccount* _c_account = c_account.purple_accounts_find(
+            username,
+            protocol.get_id()
+        )
+        if _c_account != NULL:
+            account = Account._new(core, _c_account)
+        return account
+
+    cdef c_account.PurpleAccount* _get_structure(self):
+        return self._c_account
 
     def __is_connected(self):
         if self.__exists:
@@ -85,18 +115,12 @@ cdef class Account:
         return self.__exists
     exists = property(__get_exists)
 
-    def __get_username(self):
+    def get_username(self):
         cdef char *username = NULL
-        if self.__exists:
-            username = <char *> c_account.purple_account_get_username( \
-                    self._get_structure())
-            if username:
-                return username
-            else:
-                return None
-        else:
-            return self.__username
-    username = property(__get_username)
+        username = <char *> c_account.purple_account_get_username(
+            self._c_account,
+        )
+        return username
 
     def __get_protocol(self):
         return self.__protocol
@@ -443,25 +467,6 @@ cdef class Account:
             return True
         else:
             return False
-
-    def new(self):
-        """
-        Creates a new account.
-
-        @return True if successful, False if account already exists
-        """
-        if self.__exists:
-            return False
-        else:
-            c_account.purple_accounts_add(
-                c_account.purple_account_new(
-                    self.__username,
-                    self.__protocol.get_id(),
-                )
-            )
-
-            self.__exists = True
-            return True
 
     def remove(self):
         """
