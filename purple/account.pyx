@@ -247,13 +247,13 @@ cdef class Account:
             return None
     remember_password = property(__get_remember_password)
 
-    def __get_enabled(self):
-        if self.__exists:
-            return c_account.purple_account_get_enabled(self._get_structure(), \
-                    self.__core.ui_name)
-        else:
-            return None
-    enabled = property(__get_enabled)
+    def is_enabled(self):
+        cdef bint is_enabled = False
+        is_enabled = c_account.purple_account_get_enabled(
+            self._get_structure(),
+            self.__core.ui_name
+        )
+        return is_enabled
 
     def __get_status_types(self):
         cdef glib.GList *iter = NULL
@@ -451,22 +451,18 @@ cdef class Account:
         else:
             return False
 
-    def set_enabled(self, value):
+    def set_enabled(self, bint value):
         """
         Sets wheter or not this account is enabled.
 
         @param value True if it is enabled, or False otherwise
         @return True if successful, False if account doesn't exists
         """
-        if self.__exists:
-            c_account.purple_account_set_enabled(
-                self._get_structure(),
-                self.__core.ui_name,
-                bool(value)
-            )
-            return True
-        else:
-            return False
+        c_account.purple_account_set_enabled(
+            self._get_structure(),
+            self.__core.ui_name,
+            value
+        )
 
     def remove(self):
         """
