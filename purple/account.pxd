@@ -24,7 +24,6 @@ cdef class Account:
     cdef object __username
     cdef object __protocol
     cdef object __core
-    cdef object __exists
     cdef c_account.PurpleAccount* _c_account
 
     @staticmethod

@@ -85,12 +85,12 @@ cdef class Account:
     cdef c_account.PurpleAccount* _get_structure(self):
         return self._c_account
 
-    def __is_connected(self):
-        if self.__exists:
-            return c_account.purple_account_is_connected(self._get_structure())
-        else:
-            return None
-    is_connected = property(__is_connected)
+    def is_connected(self):
+        cdef bint _is_connected = False
+        _is_connected = c_account.purple_account_is_connected(
+            self._get_structure()
+        )
+        return _is_connected
 
     def __is_connecting(self):
         if self.__exists:

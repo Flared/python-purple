@@ -44,3 +44,8 @@ def test_enable_account(core):
     assert account.is_enabled() is False
     account.set_enabled(True)
     assert account.is_enabled() is True
+
+
+def test_is_connected(core):
+    account = _get_test_account(core)
+    assert account.is_connected() is False
