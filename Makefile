@@ -23,9 +23,9 @@ test: install
 install: venv
 	venv/bin/python setup.py develop
 
-.PHONY: run-nullclient
-run-nullclient: install
-	venv/bin/python examples/nullclient.py
+.PHONY: run-simpleclient
+run-simpleclient: install
+	venv/bin/python examples/simpleclient.py
 
 .PHONY: clean
 clean:

@@ -15,6 +15,10 @@ Notable changes since then include:
 
 No API stability promises are made at this time.
 
+# Examples
+
+See [simpleclient.py](examples/simpleclient.py) for usage examples.
+
 # Roadmap
 - [ ] Strings should be used instead of bytes wherever it makes sense.
 
