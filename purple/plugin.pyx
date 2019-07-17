@@ -221,17 +221,13 @@ cdef class Plugin:
 
 cdef class Plugins:
 
-    cdef protocols
-    cdef plugins
 
-    def __init__(self):
-        self.protocols = None
-        self.plugins = None
-
-    def plugins_enabled(self):
+    @staticmethod
+    def plugins_enabled():
         return bool(c_libplugin.purple_plugins_enabled())
 
-    def get_search_paths(self):
+    @staticmethod
+    def get_search_paths():
         search_paths = []
         cdef glib.GList* iter
         iter = c_libplugin.purple_plugins_get_search_paths()
@@ -240,15 +236,16 @@ cdef class Plugins:
             iter = iter.next
         return search_paths
 
-    def add_search_path(self, path):
+    @staticmethod
+    def add_search_path(path):
         c_libplugin.purple_plugins_add_search_path(path)
 
-    def probe(self, ext):
+    @staticmethod
+    def probe(ext):
         c_libplugin.purple_plugins_probe(ext)
 
-    def get_plugins(self):
-        if self.plugins:
-            return self.plugins
+    @staticmethod
+    def get_plugins():
         cdef glib.GList* iter
         cdef c_libplugin.PurplePlugin *pp
         plugins = []
@@ -263,12 +260,10 @@ cdef class Plugins:
                 raise Exception("Plugin without info or name")
             iter = iter.next
         glib.g_list_free(iter)
-        self.plugins = plugins
         return plugins
 
-    def get_protocols(self):
-        if self.protocols:
-            return self.protocols
+    @staticmethod
+    def get_protocols():
         cdef glib.GList *iter
         cdef c_libplugin.PurplePlugin *pp
         protocols = []
@@ -281,5 +276,4 @@ cdef class Plugins:
                     protocols += [p]
             iter = iter.next
         glib.g_list_free(iter)
-        self.protocols = protocols
         return protocols
