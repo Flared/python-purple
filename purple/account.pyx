@@ -202,18 +202,12 @@ cdef class Account:
         return po
     protocol_options = property(_get_protocol_options)
 
-    def __get_password(self):
-        cdef char *password = NULL
-        if self.__exists:
-            password = <char *> c_libaccount.purple_account_get_password( \
-                    self._get_structure())
-            if password:
-                return password
-            else:
-                return None
-        else:
-            return None
-    password = property(__get_password)
+    def get_password(self):
+        cdef char* password = NULL
+        password = <char *> c_libaccount.purple_account_get_password(
+            self._get_structure()
+        )
+        return password or None
 
     def __get_alias(self):
         cdef char *alias = NULL
@@ -394,19 +388,17 @@ cdef class Account:
 
         return True
 
-    def set_password(self, password):
+    def set_password(self, char* password):
         """
         Sets the account's password.
 
         @param password The password
         @return True if successful, False if account doesn't exists
         """
-        if self.__exists:
-            c_libaccount.purple_account_set_password(self._get_structure(), \
-                    password)
-            return True
-        else:
-            return False
+        c_libaccount.purple_account_set_password(
+            self._get_structure(),
+            password
+        )
 
     def set_alias(self, alias):
         """

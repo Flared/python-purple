@@ -49,3 +49,11 @@ def test_enable_account(core):
 def test_is_connected(core):
     account = _get_test_account(core)
     assert account.is_connected() is False
+
+
+def test_set_password(core):
+    account = _get_test_account(core)
+    assert account.get_password() is None
+
+    account.set_password(b"pass123")
+    assert account.get_password() == b"pass123"
