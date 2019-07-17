@@ -28,22 +28,43 @@ import purple
 
 
 class SimpleClient:
-    def __init__(self):
+    def __init__(self, *, protocol_id=None, username=None, password=None):
         self.core = None
 
+        self.protocol_id = protocol_id
+        self.username = username
+        self.password = password
+
     def protocol_selection(self):
+        # If self.protocol_id is set, try to use it
+        # before asking anything to the user.
+        if self.protocol_id:
+            protocol = purple.Protocol.find_with_id(self.protocol_id.encode())
+            if protocol is not None:
+                return protocol
+            else:
+                click.echo(
+                    "{protocol_id} is not a valid protocol id.".format(
+                        protocol_id=self.protocol_id
+                    )
+                )
+
         plugins = purple.Plugins.get_protocols()
 
         click.echo("Please select a protocol:")
         for index, plugin in enumerate(plugins):
             click.echo(
-                "[{index}]: {plugin_name}".format(
-                    index=index, plugin_name=plugin.get_name().decode()
+                "[{index}]: {plugin_name} ({plugin_id})".format(
+                    index=index,
+                    plugin_name=plugin.get_name().decode(),
+                    plugin_id=plugin.get_id().decode(),
                 )
             )
 
         selected_index = click.prompt(
-            text="Enter the id",
+            text="Enter the index [{min}-{max}]".format(
+                min=0, max=len(plugins) - 1
+            ),
             type=click.IntRange(min=0, max=len(plugins) - 1),
         )
 
@@ -69,10 +90,15 @@ class SimpleClient:
         protocol = self.protocol_selection()
 
         # Get username/password from user
-        username = click.prompt(text="Enter the username", type=str).encode()
+        username = (
+            self.username or click.prompt(text="Enter the username", type=str)
+        ).encode()
 
-        password = click.prompt(
-            text="Enter the password", type=str, hide_input=True
+        password = (
+            self.password
+            or click.prompt(
+                text="Enter the password", type=str, hide_input=True
+            )
         ).encode()
 
         # Creates new account inside libpurple
@@ -102,8 +128,14 @@ class SimpleClient:
                 break
 
 
-def main():
-    client = SimpleClient()
+@click.command()
+@click.option("--protocol_id", default=None, type=str)
+@click.option("--username", default=None, type=str)
+@click.option("--password", default=None, type=str)
+def main(*, protocol_id, username, password):
+    client = SimpleClient(
+        protocol_id=protocol_id, username=username, password=password
+    )
     client.run()
 
 
