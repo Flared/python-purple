@@ -17,7 +17,7 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from libpurple cimport account
+from libpurple cimport account as c_libaccount
 
 cdef extern from *:
     ctypedef char const_char "const char"
@@ -31,10 +31,10 @@ cdef extern from "libpurple/privacy.h":
         PURPLE_PRIVACY_ALLOW_BUDDYLIST
 
     ctypedef struct PurplePrivacyUiOps:
-        void (*permit_added) (account.PurpleAccount *account, const_char *name)
-        void (*permit_removed) (account.PurpleAccount *account, const_char *name)
-        void (*deny_added) (account.PurpleAccount *account, const_char *name)
-        void (*deny_removed) (account.PurpleAccount *account, const_char *name)
+        void (*permit_added) (c_libaccount.PurpleAccount *account, const_char *name)
+        void (*permit_removed) (c_libaccount.PurpleAccount *account, const_char *name)
+        void (*deny_added) (c_libaccount.PurpleAccount *account, const_char *name)
+        void (*deny_removed) (c_libaccount.PurpleAccount *account, const_char *name)
 
     void c_purple_privacy_set_ui_ops "purple_privacy_set_ui_ops" (PurplePrivacyUiOps *ops)
     PurplePrivacyUiOps *c_purple_privacy_get_ui_ops "purple_privacy_get_ui_ops" ()

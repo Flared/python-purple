@@ -19,10 +19,10 @@
 
 cimport glib
 
-from libpurple cimport accountopt
-from libpurple cimport plugin
-from libpurple cimport prefs
-from libpurple cimport prpl
+from libpurple cimport accountopt as c_libaccountopt
+from libpurple cimport plugin as c_libplugin
+from libpurple cimport prefs as c_libprefs
+from libpurple cimport prpl as c_libprpl
 
 cdef extern from *:
     ctypedef char const_char "const char"
@@ -36,7 +36,7 @@ cdef class Protocol:
         raise Exception("Use Protocol.find_with_id() instead.")
 
     @staticmethod
-    cdef Protocol _new(plugin.PurplePlugin* c_plugin):
+    cdef Protocol _new(c_libplugin.PurplePlugin* c_plugin):
         cdef Protocol protocol = Protocol.__new__(Protocol)
         protocol._c_plugin = c_plugin
         return protocol
@@ -44,9 +44,9 @@ cdef class Protocol:
     @staticmethod
     def find_with_id(char* id):
         cdef object protocol = None
-        cdef plugin.PurplePlugin* c_plugin = plugin.purple_plugins_find_with_id(id)
+        cdef c_libplugin.PurplePlugin* c_plugin = c_libplugin.purple_plugins_find_with_id(id)
         if c_plugin != NULL:
-            protocol = Protocol._new(plugin.purple_plugins_find_with_id(id))
+            protocol = Protocol._new(c_libplugin.purple_plugins_find_with_id(id))
         return protocol
 
     def get_name(self):
@@ -62,17 +62,17 @@ cdef class Protocol:
         )
 
     def get_options_labels(self):
-        cdef prpl.PurplePluginProtocolInfo *prpl_info
+        cdef c_libprpl.PurplePluginProtocolInfo *prpl_info
         cdef glib.GList *iter
-        cdef accountopt.PurpleAccountOption *option
-        cdef prefs.PurplePrefType type
+        cdef c_libaccountopt.PurpleAccountOption *option
+        cdef c_libprefs.PurplePrefType type
         cdef const_char *label_name
         cdef const_char *setting
 
         if not self.__exists:
             return None
 
-        prpl_info = plugin.PURPLE_PLUGIN_PROTOCOL_INFO(self._c_plugin)
+        prpl_info = c_libplugin.PURPLE_PLUGIN_PROTOCOL_INFO(self._c_plugin)
 
         po = {}
 
@@ -80,10 +80,10 @@ cdef class Protocol:
 
         while iter:
 
-            option = <accountopt.PurpleAccountOption *> iter.data
-            type = accountopt.purple_account_option_get_type(option)
-            label_name = accountopt.purple_account_option_get_text(option)
-            setting = accountopt.purple_account_option_get_setting(option)
+            option = <c_libaccountopt.PurpleAccountOption *> iter.data
+            type = c_libaccountopt.purple_account_option_get_type(option)
+            label_name = c_libaccountopt.purple_account_option_get_text(option)
+            setting = c_libaccountopt.purple_account_option_get_setting(option)
 
             sett = str(<char *> setting)
             label = str(<char *> label_name)
@@ -95,10 +95,10 @@ cdef class Protocol:
         return po
 
     def get_options_values(self):
-        cdef prpl.PurplePluginProtocolInfo *prpl_info
+        cdef c_libprpl.PurplePluginProtocolInfo *prpl_info
         cdef glib.GList *iter
-        cdef accountopt.PurpleAccountOption *option
-        cdef prefs.PurplePrefType type
+        cdef c_libaccountopt.PurpleAccountOption *option
+        cdef c_libprefs.PurplePrefType type
         cdef const_char *str_value
         cdef const_char *setting
         cdef int int_value
@@ -107,7 +107,7 @@ cdef class Protocol:
         if not self.__exists:
             return None
 
-        prpl_info = plugin.PURPLE_PLUGIN_PROTOCOL_INFO(self._c_plugin)
+        prpl_info = c_libplugin.PURPLE_PLUGIN_PROTOCOL_INFO(self._c_plugin)
 
         po = {}
 
@@ -115,31 +115,31 @@ cdef class Protocol:
 
         while iter:
 
-            option = <accountopt.PurpleAccountOption *> iter.data
-            type = accountopt.purple_account_option_get_type(option)
-            setting = accountopt.purple_account_option_get_setting(option)
+            option = <c_libaccountopt.PurpleAccountOption *> iter.data
+            type = c_libaccountopt.purple_account_option_get_type(option)
+            setting = c_libaccountopt.purple_account_option_get_setting(option)
 
             sett = str(<char *> setting)
 
-            if type == prefs.PURPLE_PREF_STRING:
-                str_value = accountopt.purple_account_option_get_default_string(option)
+            if type == c_libprefs.PURPLE_PREF_STRING:
+                str_value = c_libaccountopt.purple_account_option_get_default_string(option)
                 # Hack to set string "" as default value when the
                 # protocol's option is NULL
                 if str_value == NULL:
                     str_value = ""
                 val = str(<char *> str_value)
 
-            elif type == prefs.PURPLE_PREF_INT:
-                int_value = accountopt.purple_account_option_get_default_int(option)
+            elif type == c_libprefs.PURPLE_PREF_INT:
+                int_value = c_libaccountopt.purple_account_option_get_default_int(option)
                 val = int(int_value)
 
-            elif type == prefs.PURPLE_PREF_BOOLEAN:
-                bool_value = accountopt.purple_account_option_get_default_bool(option)
+            elif type == c_libprefs.PURPLE_PREF_BOOLEAN:
+                bool_value = c_libaccountopt.purple_account_option_get_default_bool(option)
 
                 val = bool(bool_value)
 
-            elif type == prefs.PURPLE_PREF_STRING_LIST:
-                str_value = accountopt.purple_account_option_get_default_list_value(option)
+            elif type == c_libprefs.PURPLE_PREF_STRING_LIST:
+                str_value = c_libaccountopt.purple_account_option_get_default_list_value(option)
 
                 val = str(<char *> str_value)
 

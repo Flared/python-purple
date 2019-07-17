@@ -19,7 +19,7 @@
 
 cimport glib
 
-from libpurple cimport prefs
+from libpurple cimport prefs as c_libprefs
 
 cdef extern from "libpurple/accountopt.h":
 
@@ -30,7 +30,7 @@ cdef extern from "libpurple/accountopt.h":
         glib.GList *list
 
     ctypedef struct PurpleAccountOption:
-        prefs.PurplePrefType type
+        c_libprefs.PurplePrefType type
         char *text
         char *pref_name
         UnionType default_value
@@ -43,7 +43,7 @@ cdef extern from "libpurple/accountopt.h":
         glib.gboolean reverse
 
     # Account Option API
-    PurpleAccountOption *purple_account_option_new(prefs.PurplePrefType type, \
+    PurpleAccountOption *purple_account_option_new(c_libprefs.PurplePrefType type, \
             char *text, char *pref_name)
     PurpleAccountOption *purple_account_option_bool_new(char *text, \
             char *pref_name, glib.gboolean default_value)
@@ -66,7 +66,7 @@ cdef extern from "libpurple/accountopt.h":
             glib.GList *values)
     void purple_account_option_add_list_item(PurpleAccountOption *option, \
             char *key,  char *value)
-    prefs.PurplePrefType purple_account_option_get_type( \
+    c_libprefs.PurplePrefType purple_account_option_get_type( \
             PurpleAccountOption *option)
     char *purple_account_option_get_text( PurpleAccountOption *option)
     char *purple_account_option_get_setting( PurpleAccountOption *option)

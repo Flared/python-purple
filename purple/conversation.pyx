@@ -17,8 +17,8 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from libpurple cimport conversation
-from libpurple cimport account
+from libpurple cimport conversation as c_libconversation
+from libpurple cimport account as c_libaccount
 
 cdef class Conversation:
     """
@@ -35,11 +35,11 @@ cdef class Conversation:
 
     def __init__(self, type, account, name):
         self.__type = {
-            "UNKNOWN": conversation.PURPLE_CONV_TYPE_UNKNOWN,
-            "IM": conversation.PURPLE_CONV_TYPE_IM,
-            "CHAT": conversation.PURPLE_CONV_TYPE_CHAT,
-            "MISC": conversation.PURPLE_CONV_TYPE_MISC,
-            "ANY": conversation.PURPLE_CONV_TYPE_ANY }[type]
+            "UNKNOWN": c_libconversation.PURPLE_CONV_TYPE_UNKNOWN,
+            "IM": c_libconversation.PURPLE_CONV_TYPE_IM,
+            "CHAT": c_libconversation.PURPLE_CONV_TYPE_CHAT,
+            "MISC": c_libconversation.PURPLE_CONV_TYPE_MISC,
+            "ANY": c_libconversation.PURPLE_CONV_TYPE_ANY }[type]
         self.__account = account
         self.__name = name
 
@@ -48,10 +48,15 @@ cdef class Conversation:
         else:
             self.__exists = False
 
-    cdef conversation.PurpleConversation *_get_structure(self):
-        return conversation.purple_find_conversation_with_account( \
-            self.__type, self.__name, account.purple_accounts_find( \
-            self.__account.username, self.__account.protocol.id))
+    cdef c_libconversation.PurpleConversation *_get_structure(self):
+        return c_libconversation.purple_find_conversation_with_account(
+            self.__type,
+            self.__name,
+            c_libaccount.purple_accounts_find(
+                self.__account.username,
+                self.__account.protocol.id
+            )
+        )
 
     def __get_exists(self):
         return self.__exists
@@ -66,8 +71,9 @@ cdef class Conversation:
 
     def __get_name(self):
         if self.__exists:
-            return <char *> conversation.purple_conversation_get_name( \
-                    self._get_structure())
+            return <char *> c_libconversation.purple_conversation_get_name(
+                self._get_structure()
+            )
         else:
             return None
     name = property(__get_name)
@@ -81,9 +87,14 @@ cdef class Conversation:
         if self.__exists:
             return False
         else:
-            conversation.purple_conversation_new(self.__type, \
-                    account.purple_accounts_find(self.__account.username, \
-                    self.__account.protocol.id), self.__name)
+            c_libconversation.purple_conversation_new(
+                self.__type, \
+                c_libaccount.purple_accounts_find(
+                    self.__account.username,
+                    self.__account.protocol.id
+                ),
+                self.__name
+            )
             self.__exists = True
             return True
 
@@ -94,7 +105,7 @@ cdef class Conversation:
         @return True if successful, False if conversation doesn't exists
         """
         if self.__exists:
-            conversation.purple_conversation_destroy(self._get_structure())
+            c_libconversation.purple_conversation_destroy(self._get_structure())
             self.__exists = False
             return True
         else:
@@ -107,7 +118,7 @@ cdef class Conversation:
         @return True if sucessful, False otherwise
         """
         # FIXME: We may need to create c-functions for each of these?
-        cdef conversation.PurpleConversationUiOps c_conv_ui_ops
+        cdef c_libconversation.PurpleConversationUiOps c_conv_ui_ops
 
         c_conv_ui_ops.create_conversation = NULL
         c_conv_ui_ops.destroy_conversation = NULL
@@ -125,7 +136,7 @@ cdef class Conversation:
         c_conv_ui_ops.custom_smiley_close = NULL
         c_conv_ui_ops.send_confirm = NULL
 
-        conversation.purple_conversation_set_ui_ops(self._get_structure(), \
+        c_libconversation.purple_conversation_set_ui_ops(self._get_structure(), \
                 &c_conv_ui_ops)
         return True
 
@@ -135,10 +146,13 @@ cdef class Conversation:
 
         @return True if successful, False if conversation is not IM or conversation doesn't exists
         """
-        if self.__exists and self.__type == conversation.PURPLE_CONV_TYPE_IM:
-            conversation.purple_conv_im_send( \
-                    conversation.purple_conversation_get_im_data( \
-                    self._get_structure()), message)
+        if self.__exists and self.__type == c_libconversation.PURPLE_CONV_TYPE_IM:
+            c_libconversation.purple_conv_im_send(
+                c_libconversation.purple_conversation_get_im_data(
+                    self._get_structure()
+                ),
+                message
+            )
             return True
         else:
             return False

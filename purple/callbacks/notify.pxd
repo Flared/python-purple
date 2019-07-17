@@ -19,10 +19,8 @@
 
 cimport glib
 
-from libpurple cimport notify as c_notify
-from libpurple cimport debug as c_debug
-from libpurple cimport conversation as c_conversation
-from libpurple cimport connection as c_connection
+from libpurple cimport notify as c_libnotify
+from libpurple cimport connection as c_libconnection
 
 cdef extern from *:
     ctypedef char const_char "const char"
@@ -30,18 +28,18 @@ cdef extern from *:
 
 cdef object notify_cbs
 
-cdef void *notify_message(c_notify.PurpleNotifyMsgType type,
+cdef void *notify_message(c_libnotify.PurpleNotifyMsgType type,
                           const_char *title,
                           const_char *primary,
                           const_char *secondary)
 
-cdef void *notify_email(c_connection.PurpleConnection *gc,
+cdef void *notify_email(c_libconnection.PurpleConnection *gc,
                         const_char *subject,
                         const_char *_from,
                         const_char *to,
                         const_char *url)
 
-cdef void *notify_emails(c_connection.PurpleConnection *gc,
+cdef void *notify_emails(c_libconnection.PurpleConnection *gc,
                          size_t count,
                          glib.gboolean detailed,
                          const_char **subjects,
@@ -54,21 +52,21 @@ cdef void *notify_formatted(const_char *title,
                             const_char *secondary,
                             const_char *text)
 
-cdef void *notify_searchresults(c_connection.PurpleConnection *gc,
+cdef void *notify_searchresults(c_libconnection.PurpleConnection *gc,
                                 const_char *title,
                                 const_char *primary,
                                 const_char *secondary,
-                                c_notify.PurpleNotifySearchResults *results,
+                                c_libnotify.PurpleNotifySearchResults *results,
                                 glib.gpointer user_data)
 
-cdef void notify_searchresults_new_rows(c_connection.PurpleConnection *gc,
-                                        c_notify.PurpleNotifySearchResults *results,
+cdef void notify_searchresults_new_rows(c_libconnection.PurpleConnection *gc,
+                                        c_libnotify.PurpleNotifySearchResults *results,
                                         void *data)
 
-cdef void *notify_userinfo(c_connection.PurpleConnection *gc,
+cdef void *notify_userinfo(c_libconnection.PurpleConnection *gc,
                            const_char *who,
-                           c_notify.PurpleNotifyUserInfo *user_info)
+                           c_libnotify.PurpleNotifyUserInfo *user_info)
 
 cdef void *notify_uri(const_char *uri)
 
-cdef void close_notify(c_notify.PurpleNotifyType type, void *ui_handle)
+cdef void close_notify(c_libnotify.PurpleNotifyType type, void *ui_handle)

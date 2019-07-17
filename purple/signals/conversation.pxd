@@ -1,10 +1,10 @@
 cimport glib
 
-from libpurple cimport conversation as c_conversation
-from libpurple cimport account as c_account
+from libpurple cimport conversation as c_libconversation
+from libpurple cimport account as c_libaccount
 
-cdef glib.gboolean signal_conversation_receiving_im_msg_cb(c_account.PurpleAccount *account,
+cdef glib.gboolean signal_conversation_receiving_im_msg_cb(c_libaccount.PurpleAccount *account,
                                                            char **sender,
                                                            char **message,
-                                                           c_conversation.PurpleConversation *conv,
-                                                           c_conversation.PurpleMessageFlags *flags)
+                                                           c_libconversation.PurpleConversation *conv,
+                                                           c_libconversation.PurpleMessageFlags *flags)

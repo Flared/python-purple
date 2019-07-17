@@ -19,33 +19,33 @@
 
 cimport glib
 
-from libpurple cimport account
-from libpurple cimport accountopt
-from libpurple cimport buddyicon
-from libpurple cimport blist
-from libpurple cimport connection
-from libpurple cimport conversation
-from libpurple cimport core
-from libpurple cimport debug
-from libpurple cimport eventloop
-from libpurple cimport ft
-from libpurple cimport idle
-from libpurple cimport notify
-from libpurple cimport plugin
-from libpurple cimport pounce
-from libpurple cimport prefs
-from libpurple cimport privacy
-from libpurple cimport proxy
-from libpurple cimport prpl
-from libpurple cimport request
-from libpurple cimport roomlist
-from libpurple cimport server
-from libpurple cimport signals
-from libpurple cimport status
-from libpurple cimport savedstatuses
-from libpurple cimport value
-from libpurple cimport util
-from libpurple cimport xmlnode
+from libpurple cimport account as c_libaccount
+from libpurple cimport accountopt as c_libaccountopt
+from libpurple cimport buddyicon as c_libbuddyicon
+from libpurple cimport blist as c_libblist
+from libpurple cimport connection as c_libconnection
+from libpurple cimport conversation as c_libconversation
+from libpurple cimport core as c_libcore
+from libpurple cimport debug as c_libdebug
+from libpurple cimport eventloop as c_libeventloop
+from libpurple cimport ft as c_libft
+from libpurple cimport idle as c_libidle
+from libpurple cimport notify as c_libnotify
+from libpurple cimport plugin as c_libplugin
+from libpurple cimport pounce as c_libpounce
+from libpurple cimport prefs as c_libprefs
+from libpurple cimport privacy as c_libprivacy
+from libpurple cimport proxy as c_libproxy
+from libpurple cimport prpl as c_libprpl
+from libpurple cimport request as c_librequest
+from libpurple cimport roomlist as c_libroomlist
+from libpurple cimport server as c_libserver
+from libpurple cimport signals as c_libsignals
+from libpurple cimport status as c_libstatus
+from libpurple cimport savedstatuses as c_libsavedstatuses
+from libpurple cimport value as c_libvalue
+from libpurple cimport util as c_libutil
+from libpurple cimport xmlnode as c_libxmlnode
 
 cdef extern from "libpurple/purple.h":
     pass

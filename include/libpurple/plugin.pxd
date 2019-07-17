@@ -19,7 +19,7 @@
 
 cimport glib
 
-from libpurple cimport prpl
+from libpurple cimport prpl as c_libprpl
 
 cdef extern from "libpurple/plugin.h":
     ctypedef struct PurplePluginInfo:
@@ -38,7 +38,7 @@ cdef extern from "libpurple/plugin.h":
         glib.gboolean unloadable
         glib.GList* dependent_plugins
 
-    prpl.PurplePluginProtocolInfo* PURPLE_PLUGIN_PROTOCOL_INFO(PurplePlugin* plugin)
+    c_libprpl.PurplePluginProtocolInfo* PURPLE_PLUGIN_PROTOCOL_INFO(PurplePlugin* plugin)
     PurplePlugin* purple_plugin_new(glib.gboolean native, char* path)
 
     void purple_plugins_add_search_path(char* path)

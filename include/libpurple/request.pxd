@@ -19,8 +19,8 @@
 
 cimport glib
 
-from libpurple cimport account
-from libpurple cimport conversation
+from libpurple cimport account as c_libaccount
+from libpurple cimport conversation as c_libconversation
 
 cdef extern from *:
     ctypedef char const_char "const char"
@@ -74,24 +74,24 @@ cdef extern from "libpurple/request.h":
                                 glib.gchar *hint, const_char *ok_text,
                                 glib.GCallback ok_cb, const_char *cancel_text,
                                 glib.GCallback cancel_cb,
-                                account.PurpleAccount *account,
+                                c_libaccount.PurpleAccount *account,
                                 const_char *who,
-                                conversation.PurpleConversation *conv,
+                                c_libconversation.PurpleConversation *conv,
                                 void *user_data)
         void *(*request_choice) (const_char *title, const_char *primary,
                                  const_char *secondary, int default_value,
                                  const_char *ok_text, glib.GCallback ok_cb,
                                  const_char *cancel_text,
                                  glib.GCallback cancel_cb,
-                                 account.PurpleAccount *account,
+                                 c_libaccount.PurpleAccount *account,
                                  const_char *who,
-                                 conversation.PurpleConversation *conv,
+                                 c_libconversation.PurpleConversation *conv,
                                  void *user_data, va_list choices)
         void *(*request_action) (const_char *title, const_char *primary,
                                  const_char *secondary, int default_action,
-                                 account.PurpleAccount *account,
+                                 c_libaccount.PurpleAccount *account,
                                  const_char *who,
-                                 conversation.PurpleConversation *conv,
+                                 c_libconversation.PurpleConversation *conv,
                                  void *user_data, size_t action_count,
                                  va_list actions)
         void *(*request_fields) (const_char *title, const_char *primary,
@@ -100,24 +100,24 @@ cdef extern from "libpurple/request.h":
                                  const_char *ok_text, glib.GCallback ok_cb,
                                  const_char *cancel_text,
                                  glib.GCallback cancel_cb,
-                                 account.PurpleAccount *account,
+                                 c_libaccount.PurpleAccount *account,
                                  const_char *who,
-                                 conversation.PurpleConversation *conv,
+                                 c_libconversation.PurpleConversation *conv,
                                  void *user_data)
         void *(*request_file) (const_char *title, const_char *filename,
                                glib.gboolean savedialog, glib.GCallback ok_cb,
                                glib.GCallback cancel_cb,
-                               account.PurpleAccount *account,
+                               c_libaccount.PurpleAccount *account,
                                const_char *who,
-                               conversation.PurpleConversation *conv,
+                               c_libconversation.PurpleConversation *conv,
                                void *user_data)
         void (*close_request) (PurpleRequestType type, void *ui_handle)
         void *(*request_folder) (const_char *title, const_char *dirname,
                                  glib.GCallback ok_cb,
                                  glib.GCallback cancel_cb,
-                                 account.PurpleAccount *account,
+                                 c_libaccount.PurpleAccount *account,
                                  const_char *who,
-                                 conversation.PurpleConversation *conv,
+                                 c_libconversation.PurpleConversation *conv,
                                  void *user_data)
 
     void purple_request_close(PurpleRequestType type, void *uihandle)

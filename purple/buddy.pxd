@@ -17,9 +17,7 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from libpurple cimport account
-from libpurple cimport blist
-from libpurple cimport status
+from libpurple cimport blist as c_libblist
 
 cdef class Buddy:
 
@@ -27,4 +25,4 @@ cdef class Buddy:
     cdef object __name
     cdef object __exists
 
-    cdef blist.PurpleBuddy *_get_structure(self)
+    cdef c_libblist.PurpleBuddy *_get_structure(self)

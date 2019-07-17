@@ -17,8 +17,7 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from libpurple cimport connection
-from libpurple cimport debug
+from libpurple cimport connection as c_libconnection
 
 cdef extern from *:
     ctypedef char const_char "const char"
@@ -28,23 +27,23 @@ cdef object connection_cbs
 cdef extern from *:
     ctypedef int size_t
 
-cdef void connect_progress(connection.PurpleConnection *gc,
+cdef void connect_progress(c_libconnection.PurpleConnection *gc,
                            const_char *text,
                            size_t step,
                            size_t step_count)
 
-cdef void connected(connection.PurpleConnection *gc)
+cdef void connected(c_libconnection.PurpleConnection *gc)
 
-cdef void disconnected(connection.PurpleConnection *gc)
+cdef void disconnected(c_libconnection.PurpleConnection *gc)
 
-cdef void notice(connection.PurpleConnection *gc, const_char *text)
+cdef void notice(c_libconnection.PurpleConnection *gc, const_char *text)
 
-cdef void report_disconnect(connection.PurpleConnection *gc, const_char *text)
+cdef void report_disconnect(c_libconnection.PurpleConnection *gc, const_char *text)
 
 cdef void network_connected()
 
 cdef void network_disconnected()
 
-cdef void report_disconnect_reason(connection.PurpleConnection *gc,
-                                   connection.PurpleConnectionError reason,
+cdef void report_disconnect_reason(c_libconnection.PurpleConnection *gc,
+                                   c_libconnection.PurpleConnectionError reason,
                                    const_char *c_text)

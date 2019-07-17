@@ -19,8 +19,8 @@
 
 cimport glib
 
-from libpurple cimport account
-from libpurple cimport buddyicon
+from libpurple cimport account as c_libaccount
+from libpurple cimport buddyicon as c_libbuddyicon
 
 # hack to avoid recursive loops by cython
 cdef extern from "libpurple/status.h":
@@ -61,8 +61,8 @@ cdef extern from "libpurple/blist.h":
         char *alias
         char *server_alias
         void *proto_data
-        buddyicon.PurpleBuddyIcon *icon
-        account.PurpleAccount *account
+        c_libbuddyicon.PurpleBuddyIcon *icon
+        c_libaccount.PurpleAccount *account
         PurplePresence *presence
 
     ctypedef struct PurpleContact:
@@ -85,7 +85,7 @@ cdef extern from "libpurple/blist.h":
         PurpleBlistNode node
         char *alias
         glib.GHashTable *components
-        account.PurpleAccount *account
+        c_libaccount.PurpleAccount *account
 
     ctypedef struct PurpleBuddyList:
         PurpleBlistNode *root
@@ -100,8 +100,8 @@ cdef extern from "libpurple/blist.h":
         void (*remove) (PurpleBuddyList *list, PurpleBlistNode *node)
         void (*destroy) (PurpleBuddyList *list)
         void (*set_visible) (PurpleBuddyList *list, glib.gboolean show)
-        void (*request_add_buddy) (account.PurpleAccount *account, char *username, char *group, char *alias)
-        void (*request_add_chat) (account.PurpleAccount *account, PurpleGroup *group, char *alias, char *name)
+        void (*request_add_buddy) (c_libaccount.PurpleAccount *account, char *username, char *group, char *alias)
+        void (*request_add_chat) (c_libaccount.PurpleAccount *account, PurpleGroup *group, char *alias, char *name)
         void (*request_add_group) ()
 
     # Buddy List API
@@ -127,17 +127,17 @@ cdef extern from "libpurple/blist.h":
     void purple_blist_server_alias_buddy(PurpleBuddy *buddy, char *alias)
     void purple_blist_alias_chat(PurpleChat *chat, char *alias)
     void purple_blist_rename_group(PurpleGroup *group, char *name)
-    PurpleChat *purple_chat_new(account.PurpleAccount *account, char *alias, \
+    PurpleChat *purple_chat_new(c_libaccount.PurpleAccount *account, char *alias, \
             glib.GHashTable *components)
     void purple_blist_add_chat(PurpleChat *chat, PurpleGroup *group, \
             PurpleBlistNode *node)
-    PurpleBuddy *purple_buddy_new(account.PurpleAccount *account, \
+    PurpleBuddy *purple_buddy_new(c_libaccount.PurpleAccount *account, \
             char *screenname, char *alias)
     void purple_buddy_set_icon(PurpleBuddy *buddy, \
-            buddyicon.PurpleBuddyIcon *icon)
-    account.PurpleAccount *purple_buddy_get_account(PurpleBuddy *buddy)
+            c_libbuddyicon.PurpleBuddyIcon *icon)
+    c_libaccount.PurpleAccount *purple_buddy_get_account(PurpleBuddy *buddy)
     char *purple_buddy_get_name(PurpleBuddy *buddy)
-    buddyicon.PurpleBuddyIcon *purple_buddy_get_icon(PurpleBuddy *buddy)
+    c_libbuddyicon.PurpleBuddyIcon *purple_buddy_get_icon(PurpleBuddy *buddy)
     PurpleContact *purple_buddy_get_contact(PurpleBuddy *buddy)
     PurplePresence *purple_buddy_get_presence(PurpleBuddy *buddy)
     void purple_blist_add_buddy(PurpleBuddy *buddy, PurpleContact *contact, \
@@ -152,7 +152,7 @@ cdef extern from "libpurple/blist.h":
     PurpleBuddy *purple_contact_get_priority_buddy(PurpleContact *contact)
     char *purple_contact_get_alias(PurpleContact *contact)
     glib.gboolean purple_contact_on_account(PurpleContact *contact, \
-            account.PurpleAccount *account)
+            c_libaccount.PurpleAccount *account)
     void purple_contact_invalidate_priority_buddy(PurpleContact *contact)
     void purple_blist_remove_buddy(PurpleBuddy *buddy)
     void purple_blist_remove_contact(PurpleContact *contact)
@@ -164,33 +164,33 @@ cdef extern from "libpurple/blist.h":
     char *purple_buddy_get_local_alias(PurpleBuddy *buddy)
     char *purple_buddy_get_alias(PurpleBuddy *buddy)
     char *purple_chat_get_name(PurpleChat *chat)
-    PurpleBuddy *purple_find_buddy(account.PurpleAccount *account, char *name)
-    PurpleBuddy *purple_find_buddy_in_group(account.PurpleAccount *account, \
+    PurpleBuddy *purple_find_buddy(c_libaccount.PurpleAccount *account, char *name)
+    PurpleBuddy *purple_find_buddy_in_group(c_libaccount.PurpleAccount *account, \
             char *name, PurpleGroup *group)
-    glib.GSList *purple_find_buddies(account.PurpleAccount *account, \
+    glib.GSList *purple_find_buddies(c_libaccount.PurpleAccount *account, \
             char *name)
     PurpleGroup *purple_find_group(char *name)
-    PurpleChat *purple_blist_find_chat(account.PurpleAccount *account, \
+    PurpleChat *purple_blist_find_chat(c_libaccount.PurpleAccount *account, \
             char *name)
     PurpleGroup *purple_chat_get_group(PurpleChat *chat)
-    account.PurpleAccount *purple_chat_get_account(PurpleChat *chat)
+    c_libaccount.PurpleAccount *purple_chat_get_account(PurpleChat *chat)
     glib.GHashTable *purple_chat_get_components(PurpleChat *chat)
     PurpleGroup *purple_buddy_get_group(PurpleBuddy *buddy)
     glib.GSList *purple_group_get_accounts(PurpleGroup *g)
     glib.gboolean purple_group_on_account(PurpleGroup *g, \
-            account.PurpleAccount *account)
+            c_libaccount.PurpleAccount *account)
     char *purple_group_get_name(PurpleGroup *group)
-    void purple_blist_add_account(account.PurpleAccount *account)
-    void purple_blist_remove_account(account.PurpleAccount *account)
+    void purple_blist_add_account(c_libaccount.PurpleAccount *account)
+    void purple_blist_remove_account(c_libaccount.PurpleAccount *account)
     int purple_blist_get_group_size(PurpleGroup *group, glib.gboolean offline)
     int purple_blist_get_group_online_count(PurpleGroup *group)
 
     # Buddy list file management API
     void purple_blist_load()
     void purple_blist_schedule_save()
-    void purple_blist_request_add_buddy(account.PurpleAccount *account, \
+    void purple_blist_request_add_buddy(c_libaccount.PurpleAccount *account, \
             char *username, char *group, char *alias)
-    void purple_blist_request_add_chat(account.PurpleAccount *account, \
+    void purple_blist_request_add_chat(c_libaccount.PurpleAccount *account, \
             PurpleGroup *group, char *alias, char *name)
     void purple_blist_request_add_group()
     void purple_blist_node_set_bool(PurpleBlistNode *node, char *key, \

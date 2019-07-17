@@ -19,35 +19,35 @@
 
 cimport glib
 
-from libpurple cimport blist as c_blist
-from libpurple cimport account as c_account
+from libpurple cimport blist as c_libblist
+from libpurple cimport account as c_libaccount
 
 cdef extern from *:
     ctypedef char const_char "const char"
 
 cdef object blist_cbs
 
-cdef void new_list(c_blist.PurpleBuddyList *list)
+cdef void new_list(c_libblist.PurpleBuddyList *list)
 
-cdef void new_node(c_blist.PurpleBlistNode *node)
+cdef void new_node(c_libblist.PurpleBlistNode *node)
 
-cdef void show(c_blist.PurpleBuddyList *list)
+cdef void show(c_libblist.PurpleBuddyList *list)
 
-cdef void update(c_blist.PurpleBuddyList *list, c_blist.PurpleBlistNode *node)
+cdef void update(c_libblist.PurpleBuddyList *list, c_libblist.PurpleBlistNode *node)
 
-cdef void remove(c_blist.PurpleBuddyList *list, c_blist.PurpleBlistNode *node)
+cdef void remove(c_libblist.PurpleBuddyList *list, c_libblist.PurpleBlistNode *node)
 
-cdef void destroy(c_blist.PurpleBuddyList *list)
+cdef void destroy(c_libblist.PurpleBuddyList *list)
 
-cdef void set_visible(c_blist.PurpleBuddyList *list, glib.gboolean show)
+cdef void set_visible(c_libblist.PurpleBuddyList *list, glib.gboolean show)
 
-cdef void request_add_buddy(c_account.PurpleAccount *account,
+cdef void request_add_buddy(c_libaccount.PurpleAccount *account,
                             const_char *c_buddy_username,
                             const_char *c_buddy_group,
                             const_char *c_buddy_alias)
 
-cdef void request_add_chat(c_account.PurpleAccount *acc,
-                           c_blist.PurpleGroup *group,
+cdef void request_add_chat(c_libaccount.PurpleAccount *acc,
+                           c_libblist.PurpleGroup *group,
                            const_char *alias,
                            const_char *name)
 

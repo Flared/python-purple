@@ -19,8 +19,8 @@
 
 cimport glib
 
-from libpurple cimport account
-from libpurple cimport plugin
+from libpurple cimport account as c_libaccount
+from libpurple cimport plugin as c_libplugin
 
 cdef extern from *:
     ctypedef int size_t
@@ -79,10 +79,10 @@ cdef extern from "libpurple/connection.h":
         void (*report_disconnect_reason) (PurpleConnection *gc, PurpleConnectionError reason, char *text)
 
     ctypedef struct PurpleConnection:
-        plugin.PurplePlugin *prpl
+        c_libplugin.PurplePlugin *prpl
         PurpleConnectionFlags flags
         PurpleConnectionState state
-        account.PurpleAccount *account
+        c_libaccount.PurpleAccount *account
         char *password
         int inpa
         glib.GSList *buddy_chats
@@ -97,11 +97,11 @@ cdef extern from "libpurple/connection.h":
     void purple_connection_set_state(PurpleConnection *gc, \
             PurpleConnectionState state)
     void purple_connection_set_account(PurpleConnection *gc, \
-            account.PurpleAccount *account)
+            c_libaccount.PurpleAccount *account)
     void purple_connection_set_display_name(PurpleConnection *gc, char *name)
     PurpleConnectionState purple_connection_get_state(PurpleConnection *gc)
-    account.PurpleAccount *purple_connection_get_account(PurpleConnection *gc)
-    plugin.PurplePlugin * purple_connection_get_prpl(PurpleConnection *gc)
+    c_libaccount.PurpleAccount *purple_connection_get_account(PurpleConnection *gc)
+    c_libplugin.PurplePlugin * purple_connection_get_prpl(PurpleConnection *gc)
     char *purple_connection_get_password(PurpleConnection *gc)
     char *purple_connection_get_display_name(PurpleConnection *gc)
     void purple_connection_update_progress(PurpleConnection *gc, char *text, \

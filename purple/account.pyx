@@ -19,18 +19,18 @@
 
 cimport glib
 
-from libpurple cimport account as c_account
-from libpurple cimport accountopt
-from libpurple cimport blist
-from libpurple cimport plugin
-from libpurple cimport prefs
-from libpurple cimport prpl
-from libpurple cimport savedstatuses as c_savedstatuses
-from libpurple cimport server as c_server
-from libpurple cimport status
+from libpurple cimport account as c_libaccount
+from libpurple cimport accountopt as c_libaccountopt
+from libpurple cimport blist as c_libblist
+from libpurple cimport plugin as c_libplugin
+from libpurple cimport prefs as c_libprefs
+from libpurple cimport prpl as c_libprpl
+from libpurple cimport savedstatuses as c_libsavedstatuses
+from libpurple cimport server as c_libserver
+from libpurple cimport status as c_libstatus
 
-from purple.buddy cimport Buddy
-from purple.protocol cimport Protocol
+from purple cimport buddy as libbuddy
+from purple cimport protocol as libprotocol
 
 cdef class Account:
     """
@@ -44,9 +44,9 @@ cdef class Account:
         raise Exception("Use Account.find() or Account.new() instead.")
 
     @staticmethod
-    def new(object core, Protocol protocol, char* username):
-        c_account.purple_accounts_add(
-            c_account.purple_account_new(
+    def new(object core, libprotocol.Protocol protocol, char* username):
+        c_libaccount.purple_accounts_add(
+            c_libaccount.purple_account_new(
                 username,
                 protocol.get_id()
             )
@@ -65,16 +65,16 @@ cdef class Account:
 
     @staticmethod
     cdef Account _new(object core,
-                      c_account.PurpleAccount* _c_account):
+                      c_libaccount.PurpleAccount* _c_account):
         cdef Account account = Account.__new__(Account)
         account._c_account = _c_account
         account.__core = core
         return account
 
     @staticmethod
-    def find(object core, Protocol protocol, char* username):
+    def find(object core, libprotocol.Protocol protocol, char* username):
         cdef object account = None
-        cdef c_account.PurpleAccount* _c_account = c_account.purple_accounts_find(
+        cdef c_libaccount.PurpleAccount* _c_account = c_libaccount.purple_accounts_find(
             username,
             protocol.get_id()
         )
@@ -82,26 +82,26 @@ cdef class Account:
             account = Account._new(core, _c_account)
         return account
 
-    cdef c_account.PurpleAccount* _get_structure(self):
+    cdef c_libaccount.PurpleAccount* _get_structure(self):
         return self._c_account
 
     def is_connected(self):
         cdef bint _is_connected = False
-        _is_connected = c_account.purple_account_is_connected(
+        _is_connected = c_libaccount.purple_account_is_connected(
             self._get_structure()
         )
         return _is_connected
 
     def __is_connecting(self):
         if self.__exists:
-            return c_account.purple_account_is_connecting(self._get_structure())
+            return c_libaccount.purple_account_is_connecting(self._get_structure())
         else:
             return None
     is_connecting = property(__is_connecting)
 
     def __is_disconnected(self):
         if self.__exists:
-            return c_account.purple_account_is_disconnected( \
+            return c_libaccount.purple_account_is_disconnected( \
                     self._get_structure())
         else:
             return None
@@ -117,7 +117,7 @@ cdef class Account:
 
     def get_username(self):
         cdef char *username = NULL
-        username = <char *> c_account.purple_account_get_username(
+        username = <char *> c_libaccount.purple_account_get_username(
             self._c_account,
         )
         return username
@@ -131,11 +131,11 @@ cdef class Account:
         @return Dictionary {'setting': value, ...}
         """
         cdef glib.GList *iter
-        cdef c_account.PurpleAccount *account
-        cdef plugin.PurplePlugin *c_plugin
-        cdef prpl.PurplePluginProtocolInfo *prpl_info
-        cdef accountopt.PurpleAccountOption *option
-        cdef prefs.PurplePrefType type
+        cdef c_libaccount.PurpleAccount *account
+        cdef c_libplugin.PurplePlugin *c_plugin
+        cdef c_libprpl.PurplePluginProtocolInfo *prpl_info
+        cdef c_libaccountopt.PurpleAccountOption *option
+        cdef c_libprefs.PurplePrefType type
         cdef char *label_name
         cdef char *str_value
         cdef char *setting
@@ -149,49 +149,49 @@ cdef class Account:
 
         po = {}
 
-        c_plugin = plugin.purple_plugins_find_with_id(self.__protocol.id)
-        prpl_info = plugin.PURPLE_PLUGIN_PROTOCOL_INFO(c_plugin)
+        c_plugin = c_libplugin.purple_plugins_find_with_id(self.__protocol.id)
+        prpl_info = c_libplugin.PURPLE_PLUGIN_PROTOCOL_INFO(c_plugin)
         iter = prpl_info.protocol_options
 
         while iter:
 
-            option = <accountopt.PurpleAccountOption *> iter.data
-            type = accountopt.purple_account_option_get_type(option)
-            label_name = <char *> accountopt.purple_account_option_get_text(option)
-            setting = <char *> accountopt.purple_account_option_get_setting(option)
+            option = <c_libaccountopt.PurpleAccountOption *> iter.data
+            type = c_libaccountopt.purple_account_option_get_type(option)
+            label_name = <char *> c_libaccountopt.purple_account_option_get_text(option)
+            setting = <char *> c_libaccountopt.purple_account_option_get_setting(option)
 
             sett = str(<char *> setting)
 
-            if type == prefs.PURPLE_PREF_STRING:
+            if type == c_libprefs.PURPLE_PREF_STRING:
 
-                str_value = <char *> accountopt.purple_account_option_get_default_string(option)
+                str_value = <char *> c_libaccountopt.purple_account_option_get_default_string(option)
 
                 # Hack to set string "" as default value to Account options when
                 # the default value of the protocol is NULL
                 if str_value == NULL:
                     str_value = ""
-                str_value = <char *> c_account.purple_account_get_string(account, setting, str_value)
+                str_value = <char *> c_libaccount.purple_account_get_string(account, setting, str_value)
 
                 val = str(<char *> str_value)
 
-            elif type == prefs.PURPLE_PREF_INT:
+            elif type == c_libprefs.PURPLE_PREF_INT:
 
-                int_value = accountopt.purple_account_option_get_default_int(option)
-                int_value = c_account.purple_account_get_int(account, setting, int_value)
+                int_value = c_libaccountopt.purple_account_option_get_default_int(option)
+                int_value = c_libaccount.purple_account_get_int(account, setting, int_value)
 
                 val = int(int_value)
 
-            elif type == prefs.PURPLE_PREF_BOOLEAN:
+            elif type == c_libprefs.PURPLE_PREF_BOOLEAN:
 
-                bool_value = accountopt.purple_account_option_get_default_bool(option)
-                bool_value = c_account.purple_account_get_bool(account, setting, bool_value)
+                bool_value = c_libaccountopt.purple_account_option_get_default_bool(option)
+                bool_value = c_libaccount.purple_account_get_bool(account, setting, bool_value)
 
                 val = bool(bool_value)
 
-            elif type == prefs.PURPLE_PREF_STRING_LIST:
+            elif type == c_libprefs.PURPLE_PREF_STRING_LIST:
 
-                str_value = <char *> accountopt.purple_account_option_get_default_list_value(option)
-                str_value = <char *> c_account.purple_account_get_string(account, setting, str_value)
+                str_value = <char *> c_libaccountopt.purple_account_option_get_default_list_value(option)
+                str_value = <char *> c_libaccount.purple_account_get_string(account, setting, str_value)
 
                 val = str(<char *> str_value)
 
@@ -205,7 +205,7 @@ cdef class Account:
     def __get_password(self):
         cdef char *password = NULL
         if self.__exists:
-            password = <char *> c_account.purple_account_get_password( \
+            password = <char *> c_libaccount.purple_account_get_password( \
                     self._get_structure())
             if password:
                 return password
@@ -218,7 +218,7 @@ cdef class Account:
     def __get_alias(self):
         cdef char *alias = NULL
         if self.__exists:
-            alias = <char *> c_account.purple_account_get_alias(self._get_structure())
+            alias = <char *> c_libaccount.purple_account_get_alias(self._get_structure())
             if alias:
                 return alias
             else:
@@ -230,7 +230,7 @@ cdef class Account:
     def __get_user_info(self):
         cdef char *user_info = NULL
         if self.__exists:
-            user_info = <char *> c_account.purple_account_get_user_info(self._get_structure())
+            user_info = <char *> c_libaccount.purple_account_get_user_info(self._get_structure())
             if user_info:
                 return user_info
             else:
@@ -241,7 +241,7 @@ cdef class Account:
 
     def __get_remember_password(self):
         if self.__exists:
-            return c_account.purple_account_get_remember_password( \
+            return c_libaccount.purple_account_get_remember_password( \
                     self._get_structure())
         else:
             return None
@@ -249,7 +249,7 @@ cdef class Account:
 
     def is_enabled(self):
         cdef bint is_enabled = False
-        is_enabled = c_account.purple_account_get_enabled(
+        is_enabled = c_libaccount.purple_account_get_enabled(
             self._get_structure(),
             self.__core.ui_name
         )
@@ -257,17 +257,17 @@ cdef class Account:
 
     def __get_status_types(self):
         cdef glib.GList *iter = NULL
-        cdef status.PurpleStatusType *c_statustype = NULL
+        cdef c_libstatus.PurpleStatusType *c_statustype = NULL
         cdef char *id = NULL
         cdef char *name = NULL
 
         status_types = []
         if self.__exists:
-            iter = c_account.purple_account_get_status_types(self._get_structure())
+            iter = c_libaccount.purple_account_get_status_types(self._get_structure())
             while iter:
-                c_statustype = <status.PurpleStatusType *> iter.data
-                id = <char *> status.purple_status_type_get_id(c_statustype)
-                name = <char *> status.purple_status_type_get_name(c_statustype)
+                c_statustype = <c_libstatus.PurpleStatusType *> iter.data
+                id = <char *> c_libstatus.purple_status_type_get_id(c_statustype)
+                name = <char *> c_libstatus.purple_status_type_get_name(c_statustype)
                 status_types.append((id, name))
                 iter = iter.next
 
@@ -276,16 +276,16 @@ cdef class Account:
     status_types = property(__get_status_types)
 
     def __get_active_status(self):
-        cdef status.PurpleStatus* c_status = NULL
+        cdef c_libstatus.PurpleStatus* c_status = NULL
         cdef char *type = NULL
         cdef char *name = NULL
         cdef char *msg = NULL
         if self.__exists:
             active = {}
-            c_status = <status.PurpleStatus*> c_account.purple_account_get_active_status(self._get_structure())
-            type = <char *> status.purple_status_get_id(c_status)
-            name = <char *> status.purple_status_get_name(c_status)
-            msg = <char *> status.purple_status_get_attr_string(c_status,
+            c_status = <c_libstatus.PurpleStatus*> c_libaccount.purple_account_get_active_status(self._get_structure())
+            type = <char *> c_libstatus.purple_status_get_id(c_status)
+            name = <char *> c_libstatus.purple_status_get_name(c_status)
+            msg = <char *> c_libstatus.purple_status_get_attr_string(c_status,
                 "message")
 
             active['type'] = type
@@ -306,7 +306,7 @@ cdef class Account:
         @return True if successful, False if account doesn't exists
         """
         if self.__exists:
-            c_account.purple_account_set_username(self._get_structure(), \
+            c_libaccount.purple_account_set_username(self._get_structure(), \
                     username)
             return True
         else:
@@ -320,7 +320,7 @@ cdef class Account:
         @return True if successful, False if account doesn't exists
         """
         if protocol.exists and self.__exists:
-            c_account.purple_account_set_protocol_id(self._get_structure(), \
+            c_libaccount.purple_account_set_protocol_id(self._get_structure(), \
                         protocol.id)
             self.__protocol = protocol
             return True
@@ -333,11 +333,11 @@ cdef class Account:
         @return True to success or False to failure
         """
         cdef glib.GList *iter
-        cdef c_account.PurpleAccount *account
-        cdef plugin.PurplePlugin *c_plugin
-        cdef prpl.PurplePluginProtocolInfo *prpl_info
-        cdef accountopt.PurpleAccountOption *option
-        cdef prefs.PurplePrefType type
+        cdef c_libaccount.PurpleAccount *account
+        cdef c_libplugin.PurplePlugin *c_plugin
+        cdef c_libprpl.PurplePluginProtocolInfo *prpl_info
+        cdef c_libaccountopt.PurpleAccountOption *option
+        cdef c_libprefs.PurplePrefType type
         cdef char *str_value
         cdef char *setting
         cdef int int_value
@@ -348,21 +348,21 @@ cdef class Account:
         if account == NULL:
             return False
 
-        c_plugin = plugin.purple_plugins_find_with_id(self.__protocol.get_id())
+        c_plugin = c_libplugin.purple_plugins_find_with_id(self.__protocol.get_id())
         if c_plugin == NULL:
             raise Exception(
                 "Could not find plugin matching protocol id {id}".format(
                     id=self.__protocol.id,
                 )
             )
-        prpl_info = plugin.PURPLE_PLUGIN_PROTOCOL_INFO(c_plugin)
+        prpl_info = c_libplugin.PURPLE_PLUGIN_PROTOCOL_INFO(c_plugin)
         iter = prpl_info.protocol_options
 
         while iter:
 
-            option = <accountopt.PurpleAccountOption *> iter.data
-            type = accountopt.purple_account_option_get_type(option)
-            setting = <char *> accountopt.purple_account_option_get_setting(option)
+            option = <c_libaccountopt.PurpleAccountOption *> iter.data
+            type = c_libaccountopt.purple_account_option_get_type(option)
+            setting = <char *> c_libaccountopt.purple_account_option_get_setting(option)
 
             sett = str(<char *> setting)
 
@@ -370,25 +370,25 @@ cdef class Account:
                 iter = iter.next
                 continue
 
-            if type == prefs.PURPLE_PREF_STRING:
+            if type == c_libprefs.PURPLE_PREF_STRING:
 
                 str_value = <char *> po[sett]
-                c_account.purple_account_set_string(account, setting, str_value)
+                c_libaccount.purple_account_set_string(account, setting, str_value)
 
-            elif type == prefs.PURPLE_PREF_INT:
+            elif type == c_libprefs.PURPLE_PREF_INT:
 
                 int_value = int(po[sett])
-                c_account.purple_account_set_int(account, setting, int_value)
+                c_libaccount.purple_account_set_int(account, setting, int_value)
 
-            elif type == prefs.PURPLE_PREF_BOOLEAN:
+            elif type == c_libprefs.PURPLE_PREF_BOOLEAN:
 
                 bool_value = bool(po[sett])
-                c_account.purple_account_set_bool(account, setting, bool_value)
+                c_libaccount.purple_account_set_bool(account, setting, bool_value)
 
-            elif type == prefs.PURPLE_PREF_STRING_LIST:
+            elif type == c_libprefs.PURPLE_PREF_STRING_LIST:
 
                 str_value = <char *> po[sett]
-                c_account.purple_account_set_string(account, setting, str_value)
+                c_libaccount.purple_account_set_string(account, setting, str_value)
 
             iter = iter.next
 
@@ -402,7 +402,7 @@ cdef class Account:
         @return True if successful, False if account doesn't exists
         """
         if self.__exists:
-            c_account.purple_account_set_password(self._get_structure(), \
+            c_libaccount.purple_account_set_password(self._get_structure(), \
                     password)
             return True
         else:
@@ -416,7 +416,7 @@ cdef class Account:
         @return True if successful, False if account doesn't exists
         """
         if self.__exists:
-            c_account.purple_account_set_alias(self._get_structure(), \
+            c_libaccount.purple_account_set_alias(self._get_structure(), \
                     alias)
             return True
         else:
@@ -430,7 +430,7 @@ cdef class Account:
         @return True if successful, False if account doesn't exists
         """
         if self.__exists:
-            c_account.purple_account_set_user_info(self._get_structure(), \
+            c_libaccount.purple_account_set_user_info(self._get_structure(), \
                     user_info)
             return True
         else:
@@ -445,7 +445,7 @@ cdef class Account:
         @return True if successful, False if account doesn't exists
         """
         if self.__exists:
-            c_account.purple_account_set_remember_password( \
+            c_libaccount.purple_account_set_remember_password( \
                 self._get_structure(), remember_password)
             return True
         else:
@@ -458,7 +458,7 @@ cdef class Account:
         @param value True if it is enabled, or False otherwise
         @return True if successful, False if account doesn't exists
         """
-        c_account.purple_account_set_enabled(
+        c_libaccount.purple_account_set_enabled(
             self._get_structure(),
             self.__core.ui_name,
             value
@@ -471,7 +471,7 @@ cdef class Account:
         @return True if successful, False if account doesn't exists
         """
         if self.__exists:
-            c_account.purple_accounts_delete(self._get_structure())
+            c_libaccount.purple_accounts_delete(self._get_structure())
             self__exists = False
             return True
         else:
@@ -484,7 +484,7 @@ cdef class Account:
         @return True if successful, False if account doesn't exists
         """
         if self.__exists:
-            c_account.purple_account_connect(self._get_structure())
+            c_libaccount.purple_account_connect(self._get_structure())
             return True
         else:
             return False
@@ -496,7 +496,7 @@ cdef class Account:
         @return True if successful, False if account doesn't exists
         """
         if self.__exists:
-            c_account.purple_account_disconnect(self._get_structure())
+            c_libaccount.purple_account_disconnect(self._get_structure())
             return True
         else:
             return False
@@ -509,8 +509,8 @@ cdef class Account:
         @param alias Buddy alias (optional)
         @return True if successfull, False otherwise
         """
-        cdef blist.PurpleBuddy *c_buddy = NULL
-        cdef blist.PurpleGroup *c_group = NULL
+        cdef c_libblist.PurpleBuddy *c_buddy = NULL
+        cdef c_libblist.PurpleGroup *c_group = NULL
         cdef char *c_alias = NULL
 
         if alias:
@@ -519,25 +519,25 @@ cdef class Account:
             c_alias = NULL
 
         if self.__exists and \
-                c_account.purple_account_is_connected(self._get_structure()):
-            if blist.purple_find_buddy(self._get_structure(), name):
+                c_libaccount.purple_account_is_connected(self._get_structure()):
+            if c_libblist.purple_find_buddy(self._get_structure(), name):
                 return False
 
             if group:
-                c_group = blist.purple_find_group(group)
+                c_group = c_libblist.purple_find_group(group)
                 if c_group == NULL:
-                    c_group = blist.purple_group_new(group)
+                    c_group = c_libblist.purple_group_new(group)
 
-            c_buddy = blist.purple_buddy_new(self._get_structure(), \
+            c_buddy = c_libblist.purple_buddy_new(self._get_structure(), \
                     name, c_alias)
             if c_buddy == NULL:
                 return False
 
-            blist.purple_blist_add_buddy(c_buddy, NULL, c_group, NULL)
-            c_account.purple_account_add_buddy(self._get_structure(), c_buddy)
+            c_libblist.purple_blist_add_buddy(c_buddy, NULL, c_group, NULL)
+            c_libaccount.purple_account_add_buddy(self._get_structure(), c_buddy)
             if c_alias:
-                blist.purple_blist_alias_buddy(c_buddy, c_alias)
-                c_server.serv_alias_buddy(c_buddy)
+                c_libblist.purple_blist_alias_buddy(c_buddy, c_alias)
+                c_libserver.serv_alias_buddy(c_buddy)
 
             return True
 
@@ -551,45 +551,45 @@ cdef class Account:
         @param name Buddy name
         @return True if successful, False otherwise
         """
-        cdef blist.PurpleBuddy *c_buddy = NULL
-        cdef blist.PurpleGroup *c_group = NULL
+        cdef c_libblist.PurpleBuddy *c_buddy = NULL
+        cdef c_libblist.PurpleGroup *c_group = NULL
 
         if self.__exists and \
-                c_account.purple_account_is_connected(self._get_structure()):
-            c_buddy = blist.purple_find_buddy(self._get_structure(), name)
+                c_libaccount.purple_account_is_connected(self._get_structure()):
+            c_buddy = c_libblist.purple_find_buddy(self._get_structure(), name)
             if c_buddy == NULL:
                 return False
 
-            c_group = blist.purple_buddy_get_group(c_buddy)
+            c_group = c_libblist.purple_buddy_get_group(c_buddy)
 
-            c_account.purple_account_remove_buddy(self._get_structure(), \
+            c_libaccount.purple_account_remove_buddy(self._get_structure(), \
                     c_buddy, c_group)
-            blist.purple_blist_remove_buddy(c_buddy)
+            c_libblist.purple_blist_remove_buddy(c_buddy)
             return True
         else:
             return None
 
     def get_buddies_online(self):
         cdef glib.GSList *iter = NULL
-        cdef blist.PurpleBuddy *c_buddy = NULL
+        cdef c_libblist.PurpleBuddy *c_buddy = NULL
         cdef char *c_alias = NULL
 
         buddies_list = []
         if self.__exists and \
-                c_account.purple_account_is_connected(self._get_structure()):
-            iter = blist.purple_find_buddies(self._get_structure(), NULL)
+                c_libaccount.purple_account_is_connected(self._get_structure()):
+            iter = c_libblist.purple_find_buddies(self._get_structure(), NULL)
 
             while iter:
                 c_alias = NULL
-                c_buddy = <blist.PurpleBuddy *> iter.data
-                if <bint> (<blist.PurpleBuddy *> c_buddy) and \
-                        <bint> status.purple_presence_is_online( \
-                                blist.purple_buddy_get_presence(c_buddy)):
-                    name = <char *> blist.purple_buddy_get_name(c_buddy)
+                c_buddy = <c_libblist.PurpleBuddy *> iter.data
+                if <bint> (<c_libblist.PurpleBuddy *> c_buddy) and \
+                        <bint> c_libstatus.purple_presence_is_online( \
+                                c_libblist.purple_buddy_get_presence(c_buddy)):
+                    name = <char *> c_libblist.purple_buddy_get_name(c_buddy)
 
-                    new_buddy = Buddy(name, self)
+                    new_buddy = libbuddy.Buddy(name, self)
 
-                    c_alias = <char *> blist.purple_buddy_get_alias_only(c_buddy)
+                    c_alias = <char *> c_libblist.purple_buddy_get_alias_only(c_buddy)
                     if c_alias:
                         new_buddy.set_alias(c_alias)
 
@@ -603,21 +603,21 @@ cdef class Account:
         @return Account's buddies list
         """
         cdef glib.GSList *iter = NULL
-        cdef blist.PurpleBuddy *c_buddy = NULL
+        cdef c_libblist.PurpleBuddy *c_buddy = NULL
         cdef char *c_alias = NULL
 
         buddies_list = []
         if self.__exists:
-            iter = blist.purple_find_buddies(self._get_structure(), NULL)
+            iter = c_libblist.purple_find_buddies(self._get_structure(), NULL)
 
             while iter:
                 c_alias = NULL
-                c_buddy = <blist.PurpleBuddy *> iter.data
+                c_buddy = <c_libblist.PurpleBuddy *> iter.data
 
-                name = <char *> blist.purple_buddy_get_name(c_buddy)
-                new_buddy = Buddy(name, self)
+                name = <char *> c_libblist.purple_buddy_get_name(c_buddy)
+                new_buddy = libbuddy.Buddy(name, self)
 
-                c_alias = <char *> blist.purple_buddy_get_alias_only(c_buddy)
+                c_alias = <char *> c_libblist.purple_buddy_get_alias_only(c_buddy)
                 if c_alias:
                     new_buddy.set_alias(c_alias)
 
@@ -628,67 +628,67 @@ cdef class Account:
 
     def request_add_buddy(self, buddy_username, buddy_alias):
         if buddy_alias:
-            blist.purple_blist_request_add_buddy(self._get_structure(), \
+            c_libblist.purple_blist_request_add_buddy(self._get_structure(), \
                     buddy_username, NULL, buddy_alias)
         else:
-            blist.purple_blist_request_add_buddy(self._get_structure(), \
+            c_libblist.purple_blist_request_add_buddy(self._get_structure(), \
                     buddy_username, NULL, NULL)
 
     def set_active_status(self, type, msg=None):
-        cdef status.PurpleStatusType *c_statustype = NULL
-        cdef c_savedstatuses.PurpleSavedStatus *c_savedstatus = NULL
+        cdef c_libstatus.PurpleStatusType *c_statustype = NULL
+        cdef c_libsavedstatuses.PurpleSavedStatus *c_savedstatus = NULL
 
         if self.__exists:
             if msg:
-                c_account.purple_account_set_status(self._get_structure(),
+                c_libaccount.purple_account_set_status(self._get_structure(),
                         <char *> type, True, <char *> "message", <char *> msg, NULL)
             else:
-                c_account.purple_account_set_status(self._get_structure(),
+                c_libaccount.purple_account_set_status(self._get_structure(),
                         <char *> type, True, NULL)
 
             # FIXME: We can create only a savedstatus for each statustype
-            c_savedstatus = c_savedstatuses.purple_savedstatus_find(type)
+            c_savedstatus = c_libsavedstatuses.purple_savedstatus_find(type)
             if c_savedstatus == NULL:
-                c_statustype = c_account.purple_account_get_status_type( \
+                c_statustype = c_libaccount.purple_account_get_status_type( \
                         self._get_structure(), type)
-                c_savedstatus = c_savedstatuses.purple_savedstatus_new( \
-                        NULL, status.purple_status_type_get_primitive( \
+                c_savedstatus = c_libsavedstatuses.purple_savedstatus_new( \
+                        NULL, c_libstatus.purple_status_type_get_primitive( \
                                 c_statustype))
-                c_savedstatuses.purple_savedstatus_set_title(c_savedstatus,
+                c_libsavedstatuses.purple_savedstatus_set_title(c_savedstatus,
                         type)
 
-            c_savedstatuses.purple_savedstatus_set_message(c_savedstatus, msg)
-            prefs.purple_prefs_set_int("/purple/savedstatus/idleaway",
-                    c_savedstatuses.purple_savedstatus_get_creation_time(c_savedstatus))
+            c_libsavedstatuses.purple_savedstatus_set_message(c_savedstatus, msg)
+            c_libprefs.purple_prefs_set_int("/purple/savedstatus/idleaway",
+                    c_libsavedstatuses.purple_savedstatus_get_creation_time(c_savedstatus))
 
             return True
         else:
             return False
 
     def set_status_message(self, type, msg):
-        cdef status.PurpleStatus* c_status = NULL
-        cdef status.PurpleStatusType *c_statustype = NULL
-        cdef c_savedstatuses.PurpleSavedStatus *c_savedstatus = NULL
+        cdef c_libstatus.PurpleStatus* c_status = NULL
+        cdef c_libstatus.PurpleStatusType *c_statustype = NULL
+        cdef c_libsavedstatuses.PurpleSavedStatus *c_savedstatus = NULL
 
         if self.__exists and msg:
-            c_status = c_account.purple_account_get_status(self._get_structure(),
+            c_status = c_libaccount.purple_account_get_status(self._get_structure(),
                     type)
             if c_status == NULL:
                 return False
-            status.purple_status_set_attr_string(c_status, "message", msg)
+            c_libstatus.purple_status_set_attr_string(c_status, "message", msg)
 
             # FIXME: We can create only a savedstatus for each statustype
-            c_savedstatus = c_savedstatuses.purple_savedstatus_find(type)
+            c_savedstatus = c_libsavedstatuses.purple_savedstatus_find(type)
             if c_savedstatus == NULL:
-                c_statustype = c_account.purple_account_get_status_type( \
+                c_statustype = c_libaccount.purple_account_get_status_type( \
                         self._get_structure(), type)
-                c_savedstatus = c_savedstatuses.purple_savedstatus_new( \
-                        NULL, status.purple_status_type_get_primitive( \
+                c_savedstatus = c_libsavedstatuses.purple_savedstatus_new( \
+                        NULL, c_libstatus.purple_status_type_get_primitive( \
                                 c_statustype))
-                c_savedstatuses.purple_savedstatus_set_title(c_savedstatus,
+                c_libsavedstatuses.purple_savedstatus_set_title(c_savedstatus,
                         type)
 
-            c_savedstatuses.purple_savedstatus_set_message(c_savedstatus, msg)
+            c_libsavedstatuses.purple_savedstatus_set_message(c_savedstatus, msg)
             return True
         else:
             return False

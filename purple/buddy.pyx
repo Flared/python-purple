@@ -17,9 +17,9 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from libpurple cimport account
-from libpurple cimport blist
-from libpurple cimport status
+from libpurple cimport account as c_libaccount
+from libpurple cimport blist as c_libblist
+from libpurple cimport status as c_libstatus
 
 cdef class Buddy:
     '''Buddy class
@@ -37,15 +37,19 @@ cdef class Buddy:
         else:
             self.__exists = False
 
-    cdef blist.PurpleBuddy *_get_structure(self):
+    cdef c_libblist.PurpleBuddy *_get_structure(self):
         '''Returns the buddy's C struct from purple.
 
         @return A pointer to buddy's C struct from purple.
         '''
 
-        return blist.purple_find_buddy(account.purple_accounts_find( \
-                self.__account.username, self.__account.protocol.id), \
-                self.__name)
+        return c_libblist.purple_find_buddy(
+            c_libaccount.purple_accounts_find(
+                self.__account.username,
+                self.__account.protocol.id
+            ),
+            self.__name
+        )
 
     def __get_exists(self):
         '''Answer if exists corresponding buddy in the purple.
@@ -63,7 +67,7 @@ cdef class Buddy:
         '''
 
         if self.__exists:
-            return <char *> blist.purple_buddy_get_name(self._get_structure())
+            return <char *> c_libblist.purple_buddy_get_name(self._get_structure())
         else:
             return self.__name
     name = property(__get_name)
@@ -75,7 +79,7 @@ cdef class Buddy:
         '''
 
         cdef char *c_alias = NULL
-        c_alias = <char *> blist.purple_buddy_get_alias_only( \
+        c_alias = <char *> c_libblist.purple_buddy_get_alias_only( \
                 self._get_structure())
         if c_alias:
             return unicode(c_alias, 'utf-8')
@@ -101,10 +105,10 @@ cdef class Buddy:
         @return The group or None if buddy is not in a group.
         '''
 
-        cdef blist.PurpleGroup *c_group = NULL
+        cdef c_libblist.PurpleGroup *c_group = NULL
         if self.__exists:
-            c_group = blist.purple_buddy_get_group(self._get_structure())
-            return <char *> blist.purple_group_get_name(c_group)
+            c_group = c_libblist.purple_buddy_get_group(self._get_structure())
+            return <char *> c_libblist.purple_group_get_name(c_group)
         else:
             return None
     group = property(__get_group)
@@ -116,7 +120,7 @@ cdef class Buddy:
         '''
 
         cdef char *c_server_alias = NULL
-        c_server_alias = <char *> blist.purple_buddy_get_server_alias( \
+        c_server_alias = <char *> c_libblist.purple_buddy_get_server_alias( \
                 self._get_structure())
         if c_server_alias:
             return c_server_alias
@@ -134,7 +138,7 @@ cdef class Buddy:
         '''
 
         cdef char *c_contact_alias = NULL
-        c_contact_alias = <char *> blist.purple_buddy_get_contact_alias( \
+        c_contact_alias = <char *> c_libblist.purple_buddy_get_contact_alias( \
                 self._get_structure())
         if c_contact_alias:
             return c_contact_alias
@@ -151,7 +155,7 @@ cdef class Buddy:
         '''
 
         cdef char *c_local_alias = NULL
-        c_local_alias = <char *> blist.purple_buddy_get_local_alias( \
+        c_local_alias = <char *> c_libblist.purple_buddy_get_local_alias( \
                 self._get_structure())
         if c_local_alias:
             return c_local_alias
@@ -167,8 +171,8 @@ cdef class Buddy:
         '''
 
         if self.__exists:
-            return status.purple_presence_is_available( \
-                    blist.purple_buddy_get_presence(self._get_structure()))
+            return c_libstatus.purple_presence_is_available( \
+                    c_libblist.purple_buddy_get_presence(self._get_structure()))
         else:
             return False
     available = property(__get_available)
@@ -180,8 +184,8 @@ cdef class Buddy:
         '''
 
         if self.__exists:
-            return status.purple_presence_is_online( \
-                    blist.purple_buddy_get_presence(self._get_structure()))
+            return c_libstatus.purple_presence_is_online( \
+                    c_libblist.purple_buddy_get_presence(self._get_structure()))
         else:
             return False
     online = property(__get_online)
@@ -193,8 +197,8 @@ cdef class Buddy:
         '''
 
         if self.__exists:
-            return status.purple_presence_is_idle( \
-                    blist.purple_buddy_get_presence(self._get_structure()))
+            return c_libstatus.purple_presence_is_idle( \
+                    c_libblist.purple_buddy_get_presence(self._get_structure()))
         else:
             return False
     idle = property(__get_idle)
@@ -205,17 +209,17 @@ cdef class Buddy:
         @return The active status.
         '''
 
-        cdef status.PurpleStatus* c_status = NULL
+        cdef c_libstatus.PurpleStatus* c_status = NULL
         cdef char *type = NULL
         cdef char *name = NULL
         cdef char *msg = NULL
         if self.__exists:
             active = {}
-            c_status = status.purple_presence_get_active_status( \
-                    blist.purple_buddy_get_presence(self._get_structure()))
-            type = <char *> status.purple_status_get_id(c_status)
-            name = <char *> status.purple_status_get_name(c_status)
-            msg = <char *> status.purple_status_get_attr_string(c_status,
+            c_status = c_libstatus.purple_presence_get_active_status( \
+                    c_libblist.purple_buddy_get_presence(self._get_structure()))
+            type = <char *> c_libstatus.purple_status_get_id(c_status)
+            name = <char *> c_libstatus.purple_status_get_name(c_status)
+            msg = <char *> c_libstatus.purple_status_get_attr_string(c_status,
                 "message")
 
             active['type'] = type
@@ -236,7 +240,7 @@ cdef class Buddy:
         '''
 
         if self.__exists:
-            blist.purple_blist_alias_buddy(self._get_structure(), alias)
+            c_libblist.purple_blist_alias_buddy(self._get_structure(), alias)
             return True
         else:
             return False
@@ -248,15 +252,15 @@ cdef class Buddy:
         @return True if success or False if failure to set.
         '''
 
-        cdef blist.PurpleContact *c_contact = NULL
-        cdef blist.PurpleGroup *c_group = NULL
+        cdef c_libblist.PurpleContact *c_contact = NULL
+        cdef c_libblist.PurpleGroup *c_group = NULL
         if self.__exists and group:
-            c_group = blist.purple_find_group(group)
+            c_group = c_libblist.purple_find_group(group)
             if c_group == NULL:
-                c_group = blist.purple_group_new(group)
+                c_group = c_libblist.purple_group_new(group)
 
-            c_contact = blist.purple_buddy_get_contact(self._get_structure())
-            blist.purple_blist_add_contact(c_contact, c_group, NULL)
+            c_contact = c_libblist.purple_buddy_get_contact(self._get_structure())
+            c_libblist.purple_blist_add_contact(c_contact, c_group, NULL)
             return True
         else:
             return False

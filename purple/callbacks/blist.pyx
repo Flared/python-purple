@@ -19,36 +19,36 @@
 
 cimport glib
 
-from libpurple cimport blist as c_blist
-from libpurple cimport account as c_account
-from libpurple cimport debug as c_debug
+from libpurple cimport blist as c_libblist
+from libpurple cimport account as c_libaccount
+from libpurple cimport debug as c_libdebug
 
 cdef extern from *:
     ctypedef char const_char "const char"
 
 blist_cbs = {}
 
-cdef void __group_node_cb(c_blist.PurpleBlistNode *node, object callback):
-    cdef c_blist.PurpleGroup *group = <c_blist.PurpleGroup *>node
+cdef void __group_node_cb(c_libblist.PurpleBlistNode *node, object callback):
+    cdef c_libblist.PurpleGroup *group = <c_libblist.PurpleGroup *>node
     cdef char *c_name = NULL
 
-    c_name = <char *> c_blist.purple_group_get_name(group)
+    c_name = <char *> c_libblist.purple_group_get_name(group)
     if c_name == NULL:
         name = None
     else:
         name = c_name
 
-    currentsize = c_blist.purple_blist_get_group_size(group, False)
-    totalsize = c_blist.purple_blist_get_group_size(group, True)
-    online = c_blist.purple_blist_get_group_online_count(group)
+    currentsize = c_libblist.purple_blist_get_group_size(group, False)
+    totalsize = c_libblist.purple_blist_get_group_size(group, True)
+    online = c_libblist.purple_blist_get_group_online_count(group)
 
     callback(node.type, name, totalsize, currentsize, online)
 
-cdef void __contact_node_cb(c_blist.PurpleBlistNode *node, object callback):
-    cdef c_blist.PurpleContact *contact = <c_blist.PurpleContact *>node
+cdef void __contact_node_cb(c_libblist.PurpleBlistNode *node, object callback):
+    cdef c_libblist.PurpleContact *contact = <c_libblist.PurpleContact *>node
     cdef char *c_alias = NULL
 
-    c_alias = <char *> c_blist.purple_contact_get_alias(contact)
+    c_alias = <char *> c_libblist.purple_contact_get_alias(contact)
     if c_alias == NULL:
         alias = None
     else:
@@ -57,18 +57,18 @@ cdef void __contact_node_cb(c_blist.PurpleBlistNode *node, object callback):
     callback(node.type, alias, contact.totalsize, contact.currentsize, \
              contact.online)
 
-cdef void __buddy_node_cb(c_blist.PurpleBlistNode *node, object callback):
-    cdef c_blist.PurpleBuddy *buddy = <c_blist.PurpleBuddy *>node
+cdef void __buddy_node_cb(c_libblist.PurpleBlistNode *node, object callback):
+    cdef c_libblist.PurpleBuddy *buddy = <c_libblist.PurpleBuddy *>node
     cdef char *c_name = NULL
     cdef char *c_alias = NULL
 
-    c_name = <char *> c_blist.purple_buddy_get_name(buddy)
+    c_name = <char *> c_libblist.purple_buddy_get_name(buddy)
     if c_name == NULL:
         name = None
     else:
         name = c_name
 
-    c_alias = <char *> c_blist.purple_buddy_get_alias_only(buddy)
+    c_alias = <char *> c_libblist.purple_buddy_get_alias_only(buddy)
     if c_alias == NULL:
         alias = None
     else:
@@ -76,11 +76,11 @@ cdef void __buddy_node_cb(c_blist.PurpleBlistNode *node, object callback):
 
     callback(node.type, name, alias)
 
-cdef void __chat_node_cb(c_blist.PurpleBlistNode *node, object callback):
-    cdef c_blist.PurpleChat *chat = <c_blist.PurpleChat *>node
+cdef void __chat_node_cb(c_libblist.PurpleBlistNode *node, object callback):
+    cdef c_libblist.PurpleChat *chat = <c_libblist.PurpleChat *>node
     cdef char *c_name = NULL
 
-    c_name = <char *> c_blist.purple_chat_get_name(chat)
+    c_name = <char *> c_libblist.purple_chat_get_name(chat)
     if c_name == NULL:
         name = None
     else:
@@ -88,93 +88,93 @@ cdef void __chat_node_cb(c_blist.PurpleBlistNode *node, object callback):
 
     callback(node.type, name)
 
-cdef void __other_node_cb(c_blist.PurpleBlistNode *node, object callback):
+cdef void __other_node_cb(c_libblist.PurpleBlistNode *node, object callback):
     callback(node.type)
 
-cdef void new_list(c_blist.PurpleBuddyList *list):
+cdef void new_list(c_libblist.PurpleBuddyList *list):
     """
     Sets UI-specific data on a buddy list.
     """
-    c_debug.purple_debug_info("blist", "%s", "new-list\n")
+    c_libdebug.purple_debug_info("blist", "%s", "new-list\n")
     if "new-list" in blist_cbs:
         (<object> blist_cbs["new-list"])("new-list: TODO")
 
-cdef void new_node(c_blist.PurpleBlistNode *node):
+cdef void new_node(c_libblist.PurpleBlistNode *node):
     """
     Sets UI-specific data on a node.
     """
-    c_debug.purple_debug_info("blist", "%s", "new-node\n")
+    c_libdebug.purple_debug_info("blist", "%s", "new-node\n")
     if "new-node" in blist_cbs:
-        if node.type == c_blist.PURPLE_BLIST_GROUP_NODE:
+        if node.type == c_libblist.PURPLE_BLIST_GROUP_NODE:
             __group_node_cb(node, blist_cbs["new-node"])
-        elif node.type == c_blist.PURPLE_BLIST_CONTACT_NODE:
+        elif node.type == c_libblist.PURPLE_BLIST_CONTACT_NODE:
             __contact_node_cb(node, blist_cbs["new-node"])
-        elif node.type == c_blist.PURPLE_BLIST_BUDDY_NODE:
+        elif node.type == c_libblist.PURPLE_BLIST_BUDDY_NODE:
             __buddy_node_cb(node, blist_cbs["new-node"])
-        elif node.type == c_blist.PURPLE_BLIST_CHAT_NODE:
+        elif node.type == c_libblist.PURPLE_BLIST_CHAT_NODE:
             __chat_node_cb(node, blist_cbs["new-node"])
-        elif node.type == c_blist.PURPLE_BLIST_OTHER_NODE:
+        elif node.type == c_libblist.PURPLE_BLIST_OTHER_NODE:
             __other_node_cb(node, blist_cbs["new-node"])
 
-cdef void show(c_blist.PurpleBuddyList *list):
+cdef void show(c_libblist.PurpleBuddyList *list):
     """
     The core will call this when it's finished doing its core stuff.
     """
-    c_debug.purple_debug_info("blist", "%s", "show")
+    c_libdebug.purple_debug_info("blist", "%s", "show")
     if "show" in blist_cbs:
         (<object> blist_cbs["show"])("show: TODO")
 
-cdef void update(c_blist.PurpleBuddyList *list, c_blist.PurpleBlistNode *node):
+cdef void update(c_libblist.PurpleBuddyList *list, c_libblist.PurpleBlistNode *node):
     """
     This will update a node in the buddy list.
     """
-    c_debug.purple_debug_info("blist", "%s", "update")
+    c_libdebug.purple_debug_info("blist", "%s", "update")
     if "update" in blist_cbs:
-        if node.type == c_blist.PURPLE_BLIST_GROUP_NODE:
+        if node.type == c_libblist.PURPLE_BLIST_GROUP_NODE:
             __group_node_cb(node, blist_cbs["update"])
-        elif node.type == c_blist.PURPLE_BLIST_CONTACT_NODE:
+        elif node.type == c_libblist.PURPLE_BLIST_CONTACT_NODE:
             __contact_node_cb(node, blist_cbs["update"])
-        elif node.type == c_blist.PURPLE_BLIST_BUDDY_NODE:
+        elif node.type == c_libblist.PURPLE_BLIST_BUDDY_NODE:
             __buddy_node_cb(node, blist_cbs["update"])
-        elif node.type == c_blist.PURPLE_BLIST_CHAT_NODE:
+        elif node.type == c_libblist.PURPLE_BLIST_CHAT_NODE:
             __chat_node_cb(node, blist_cbs["update"])
-        elif node.type == c_blist.PURPLE_BLIST_OTHER_NODE:
+        elif node.type == c_libblist.PURPLE_BLIST_OTHER_NODE:
             __other_node_cb(node, blist_cbs["update"])
 
-cdef void remove(c_blist.PurpleBuddyList *list, c_blist.PurpleBlistNode *node):
+cdef void remove(c_libblist.PurpleBuddyList *list, c_libblist.PurpleBlistNode *node):
     """
     This removes a node from the list.
     """
-    c_debug.purple_debug_info("blist", "%s", "remove")
+    c_libdebug.purple_debug_info("blist", "%s", "remove")
     if "remove" in blist_cbs:
-        if node.type == c_blist.PURPLE_BLIST_GROUP_NODE:
+        if node.type == c_libblist.PURPLE_BLIST_GROUP_NODE:
             __group_node_cb(node, blist_cbs["remove"])
-        elif node.type == c_blist.PURPLE_BLIST_CONTACT_NODE:
+        elif node.type == c_libblist.PURPLE_BLIST_CONTACT_NODE:
             __contact_node_cb(node, blist_cbs["remove"])
-        elif node.type == c_blist.PURPLE_BLIST_BUDDY_NODE:
+        elif node.type == c_libblist.PURPLE_BLIST_BUDDY_NODE:
             __buddy_node_cb(node, blist_cbs["remove"])
-        elif node.type == c_blist.PURPLE_BLIST_CHAT_NODE:
+        elif node.type == c_libblist.PURPLE_BLIST_CHAT_NODE:
             __chat_node_cb(node, blist_cbs["remove"])
-        elif node.type == c_blist.PURPLE_BLIST_OTHER_NODE:
+        elif node.type == c_libblist.PURPLE_BLIST_OTHER_NODE:
             __other_node_cb(node, blist_cbs["remove"])
 
-cdef void destroy(c_blist.PurpleBuddyList *list):
+cdef void destroy(c_libblist.PurpleBuddyList *list):
     """
     When the list gets destroyed, this gets called to destroy the UI.
     """
-    c_debug.purple_debug_info("blist", "%s", "destroy")
+    c_libdebug.purple_debug_info("blist", "%s", "destroy")
     if "destroy" in blist_cbs:
         (<object> blist_cbs["destroy"])("destroy: TODO")
 
-cdef void set_visible(c_blist.PurpleBuddyList *list, glib.gboolean show):
+cdef void set_visible(c_libblist.PurpleBuddyList *list, glib.gboolean show):
     """
     Hides or unhides the buddy list.
     """
-    c_debug.purple_debug_info("blist", "%s", "set-visible\n")
+    c_libdebug.purple_debug_info("blist", "%s", "set-visible\n")
     if "set-visible" in blist_cbs:
         (<object> blist_cbs["set-visible"])("set-visible: TODO")
 
-cdef void request_add_buddy(c_account.PurpleAccount *account,
+cdef void request_add_buddy(c_libaccount.PurpleAccount *account,
                             const_char *c_buddy_username,
                             const_char *c_buddy_group,
                             const_char *c_buddy_alias):
@@ -182,10 +182,10 @@ cdef void request_add_buddy(c_account.PurpleAccount *account,
     Requests from the user information needed to add a buddy to the buddy
     list.
     """
-    c_debug.purple_debug_info("blist", "%s", "request-add-buddy\n")
+    c_libdebug.purple_debug_info("blist", "%s", "request-add-buddy\n")
 
-    username = c_account.purple_account_get_username(account)
-    protocol_id = c_account.purple_account_get_protocol_id(account)
+    username = c_libaccount.purple_account_get_username(account)
+    protocol_id = c_libaccount.purple_account_get_protocol_id(account)
 
     if c_buddy_username:
         buddy_username = <char *> c_buddy_username
@@ -206,14 +206,14 @@ cdef void request_add_buddy(c_account.PurpleAccount *account,
         (<object> blist_cbs["request-add-buddy"])( \
             (username, protocol_id), buddy_username, buddy_group, buddy_alias)
 
-cdef void request_add_chat(c_account.PurpleAccount *acc,
-                           c_blist.PurpleGroup *group,
+cdef void request_add_chat(c_libaccount.PurpleAccount *acc,
+                           c_libblist.PurpleGroup *group,
                            const_char *alias,
                            const_char *name):
     """
     TODO
     """
-    c_debug.purple_debug_info("blist", "%s", "request-add-chat\n")
+    c_libdebug.purple_debug_info("blist", "%s", "request-add-chat\n")
     if "request-add-chat" in blist_cbs:
         (<object> blist_cbs["request-add-chat"])("request-add-chat: TODO")
 
@@ -221,6 +221,6 @@ cdef void request_add_group():
     """
     TODO
     """
-    c_debug.purple_debug_info("blist", "%s", "request-add-group\n")
+    c_libdebug.purple_debug_info("blist", "%s", "request-add-group\n")
     if "request-add-group" in blist_cbs:
         (<object>blist_cbs["request-add-group"])("request-add-group: TODO")

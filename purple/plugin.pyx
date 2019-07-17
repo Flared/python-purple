@@ -19,35 +19,34 @@
 
 cimport glib
 
-from libpurple cimport purple
-from libpurple cimport plugin
-from libpurple cimport accountopt
-from libpurple cimport prefs
-from libpurple cimport prpl
-from libpurple cimport account
+from libpurple cimport plugin as c_libplugin
+from libpurple cimport accountopt as c_libaccountopt
+from libpurple cimport prefs as c_libprefs
+from libpurple cimport prpl as c_libprpl
+from libpurple cimport account as c_libaccount
 
 cdef extern from *:
     ctypedef char const_char "const char"
 
 cdef class Plugin:
-    cdef plugin.PurplePlugin* _c_plugin
-    cdef prpl.PurplePluginProtocolInfo* _c_protocol_info
-    cdef plugin.PurplePluginInfo* _c_plugin_info
+    cdef c_libplugin.PurplePlugin* _c_plugin
+    cdef c_libprpl.PurplePluginProtocolInfo* _c_protocol_info
+    cdef c_libplugin.PurplePluginInfo* _c_plugin_info
 
     def __init__(self):
         raise Exception("Use Plugin.find_with_id() instead.")
 
     @staticmethod
-    cdef Plugin _new(plugin.PurplePlugin* c_plugin):
+    cdef Plugin _new(c_libplugin.PurplePlugin* c_plugin):
         cdef Plugin _plugin = Plugin.__new__(Plugin)
         _plugin._c_plugin = c_plugin
-        _plugin._c_protocol_info = plugin.PURPLE_PLUGIN_PROTOCOL_INFO(_plugin._c_plugin)
+        _plugin._c_protocol_info = c_libplugin.PURPLE_PLUGIN_PROTOCOL_INFO(_plugin._c_plugin)
         return _plugin
 
     @staticmethod
     def find_with_id(char* id):
         cdef object _plugin = None
-        cdef plugin.PurplePlugin* c_plugin = plugin.purple_plugins_find_with_id(id)
+        cdef c_libplugin.PurplePlugin* c_plugin = c_libplugin.purple_plugins_find_with_id(id)
         if c_plugin != NULL:
             _plugin = Plugin._new(c_plugin)
         return _plugin
@@ -68,13 +67,13 @@ cdef class Plugin:
         ''' @return A string list of protocols' (id, name) '''
         '''    [('prpl-jabber', 'XMPP'), ('foo', 'MSN'), ...] '''
         cdef glib.GList *iter
-        cdef plugin.PurplePlugin *pp
+        cdef c_libplugin.PurplePlugin *pp
 
         protocols = []
 
-        iter = plugin.purple_plugins_get_protocols()
+        iter = c_libplugin.purple_plugins_get_protocols()
         while iter:
-            pp = <plugin.PurplePlugin*> iter.data
+            pp = <c_libplugin.PurplePlugin*> iter.data
             if pp.info and pp.info.name:
                 protocols.append((pp.info.id, pp.info.name))
             iter = iter.next
@@ -86,12 +85,12 @@ cdef class Plugin:
         ''' @param username The account's username '''
         ''' @return {'setting type': ('UI label', str|int|bool value)} '''
 
-        cdef plugin.PurplePlugin *c_plugin
-        cdef prpl.PurplePluginProtocolInfo *c_prpl_info
-        cdef account.PurpleAccount *c_account
+        cdef c_libplugin.PurplePlugin *c_plugin
+        cdef c_libprpl.PurplePluginProtocolInfo *c_prpl_info
+        cdef c_libaccount.PurpleAccount *c_account
         cdef glib.GList *iter
-        cdef accountopt.PurpleAccountOption *option
-        cdef prefs.PurplePrefType type
+        cdef c_libaccountopt.PurpleAccountOption *option
+        cdef c_libprefs.PurplePrefType type
         cdef const_char *label_name
         cdef const_char *str_value
         cdef const_char *setting
@@ -101,10 +100,10 @@ cdef class Plugin:
         c_account = NULL
 
         if username:
-            c_account = account.purple_accounts_find(username, id)
+            c_account = c_libaccount.purple_accounts_find(username, id)
 
-        c_plugin = plugin.purple_plugins_find_with_id(id)
-        c_prpl_info = plugin.PURPLE_PLUGIN_PROTOCOL_INFO(c_plugin)
+        c_plugin = c_libplugin.purple_plugins_find_with_id(id)
+        c_prpl_info = c_libplugin.PURPLE_PLUGIN_PROTOCOL_INFO(c_plugin)
 
         po = {}
 
@@ -112,39 +111,39 @@ cdef class Plugin:
 
         while iter:
 
-            option = <accountopt.PurpleAccountOption *> iter.data
-            type = accountopt.purple_account_option_get_type(option)
-            label_name = accountopt.purple_account_option_get_text(option)
-            setting = accountopt.purple_account_option_get_setting(option)
+            option = <c_libaccountopt.PurpleAccountOption *> iter.data
+            type = c_libaccountopt.purple_account_option_get_type(option)
+            label_name = c_libaccountopt.purple_account_option_get_text(option)
+            setting = c_libaccountopt.purple_account_option_get_setting(option)
 
             sett = str(<char *> setting)
             label = str(<char *> label_name)
 
-            if type == prefs.PURPLE_PREF_STRING:
-                str_value = accountopt.purple_account_option_get_default_string(option)
+            if type == c_libprefs.PURPLE_PREF_STRING:
+                str_value = c_libaccountopt.purple_account_option_get_default_string(option)
                 if c_account != NULL:
-                    str_value = account.purple_account_get_string(c_account, setting, str_value)
+                    str_value = c_libaccount.purple_account_get_string(c_account, setting, str_value)
 
                 val = str(<char *> str_value)
 
-            elif type == prefs.PURPLE_PREF_INT:
-                int_value = accountopt.purple_account_option_get_default_int(option)
+            elif type == c_libprefs.PURPLE_PREF_INT:
+                int_value = c_libaccountopt.purple_account_option_get_default_int(option)
                 if c_account != NULL:
-                    int_value = account.purple_account_get_int(c_account, setting, int_value)
+                    int_value = c_libaccount.purple_account_get_int(c_account, setting, int_value)
 
                 val = int(int_value)
 
-            elif type == prefs.PURPLE_PREF_BOOLEAN:
-                bool_value = accountopt.purple_account_option_get_default_bool(option)
+            elif type == c_libprefs.PURPLE_PREF_BOOLEAN:
+                bool_value = c_libaccountopt.purple_account_option_get_default_bool(option)
                 if c_account != NULL:
-                    bool_value = account.purple_account_get_bool(c_account, setting, bool_value)
+                    bool_value = c_libaccount.purple_account_get_bool(c_account, setting, bool_value)
 
                 val = bool(bool_value)
 
-            elif type == prefs.PURPLE_PREF_STRING_LIST:
-                str_value = accountopt.purple_account_option_get_default_list_value(option)
+            elif type == c_libprefs.PURPLE_PREF_STRING_LIST:
+                str_value = c_libaccountopt.purple_account_option_get_default_list_value(option)
                 if c_account != NULL:
-                    str_value = account.purple_account_get_string(c_account, setting, str_value)
+                    str_value = c_libaccount.purple_account_get_string(c_account, setting, str_value)
 
                 val = str(<char *> str_value)
 
@@ -161,12 +160,12 @@ cdef class Plugin:
         ''' @param po Dictionary {'setting type': str|int|bool value, ...} '''
         ''' @return True to success or False to failure '''
 
-        cdef plugin.PurplePlugin *c_plugin
-        cdef prpl.PurplePluginProtocolInfo *c_prpl_info
-        cdef account.PurpleAccount *c_account
+        cdef c_libplugin.PurplePlugin *c_plugin
+        cdef c_libprpl.PurplePluginProtocolInfo *c_prpl_info
+        cdef c_libaccount.PurpleAccount *c_account
         cdef glib.GList *iter
-        cdef accountopt.PurpleAccountOption *option
-        cdef prefs.PurplePrefType type
+        cdef c_libaccountopt.PurpleAccountOption *option
+        cdef c_libprefs.PurplePrefType type
         cdef const_char *str_value
         cdef const_char *setting
         cdef int int_value
@@ -174,21 +173,21 @@ cdef class Plugin:
 
         c_account = NULL
 
-        c_account = account.purple_accounts_find(acc[0], acc[1])
+        c_account = c_libaccount.purple_accounts_find(acc[0], acc[1])
         if c_account == NULL:
             # FIXME: Message error or call a error handler
             return False
 
-        c_plugin = plugin.purple_plugins_find_with_id(acc[1])
-        c_prpl_info = plugin.PURPLE_PLUGIN_PROTOCOL_INFO(c_plugin)
+        c_plugin = c_libplugin.purple_plugins_find_with_id(acc[1])
+        c_prpl_info = c_libplugin.PURPLE_PLUGIN_PROTOCOL_INFO(c_plugin)
 
         iter = c_prpl_info.protocol_options
 
         while iter:
 
-            option = <accountopt.PurpleAccountOption *> iter.data
-            type = accountopt.purple_account_option_get_type(option)
-            setting = accountopt.purple_account_option_get_setting(option)
+            option = <c_libaccountopt.PurpleAccountOption *> iter.data
+            type = c_libaccountopt.purple_account_option_get_type(option)
+            setting = c_libaccountopt.purple_account_option_get_setting(option)
 
             sett = str(<char *> setting)
 
@@ -197,25 +196,25 @@ cdef class Plugin:
             if sett not in po or po[sett] == None:
                 continue
 
-            if type == prefs.PURPLE_PREF_STRING:
+            if type == c_libprefs.PURPLE_PREF_STRING:
 
                 str_value = <char *> po[sett]
-                account.purple_account_set_string(c_account, setting, str_value)
+                c_libaccount.purple_account_set_string(c_account, setting, str_value)
 
-            elif type == prefs.PURPLE_PREF_INT:
+            elif type == c_libprefs.PURPLE_PREF_INT:
 
                 int_value = int(po[sett])
-                account.purple_account_set_int(c_account, setting, int_value)
+                c_libaccount.purple_account_set_int(c_account, setting, int_value)
 
-            elif type == prefs.PURPLE_PREF_BOOLEAN:
+            elif type == c_libprefs.PURPLE_PREF_BOOLEAN:
 
                 bool_value = bool(po[sett])
-                account.purple_account_set_bool(c_account, setting, bool_value)
+                c_libaccount.purple_account_set_bool(c_account, setting, bool_value)
 
-            elif type == prefs.PURPLE_PREF_STRING_LIST:
+            elif type == c_libprefs.PURPLE_PREF_STRING_LIST:
 
                 str_value = <char *> po[sett]
-                account.purple_account_set_string(c_account, setting, str_value)
+                c_libaccount.purple_account_set_string(c_account, setting, str_value)
 
         return True
 
@@ -230,32 +229,32 @@ cdef class Plugins:
         self.plugins = None
 
     def plugins_enabled(self):
-        return bool(plugin.purple_plugins_enabled())
+        return bool(c_libplugin.purple_plugins_enabled())
 
     def get_search_paths(self):
         search_paths = []
         cdef glib.GList* iter
-        iter = plugin.purple_plugins_get_search_paths()
+        iter = c_libplugin.purple_plugins_get_search_paths()
         while iter:
             search_paths.append(<char*> iter.data)
             iter = iter.next
         return search_paths
 
     def add_search_path(self, path):
-        plugin.purple_plugins_add_search_path(path)
+        c_libplugin.purple_plugins_add_search_path(path)
 
     def probe(self, ext):
-        plugin.purple_plugins_probe(ext)
+        c_libplugin.purple_plugins_probe(ext)
 
     def get_plugins(self):
         if self.plugins:
             return self.plugins
         cdef glib.GList* iter
-        cdef plugin.PurplePlugin *pp
+        cdef c_libplugin.PurplePlugin *pp
         plugins = []
-        iter = plugin.purple_plugins_get_all()
+        iter = c_libplugin.purple_plugins_get_all()
         while iter:
-            pp = <plugin.PurplePlugin*> iter.data
+            pp = <c_libplugin.PurplePlugin*> iter.data
             if pp.info and pp.info.name:
                 p = Plugin._new(pp)
                 if p:
@@ -271,11 +270,11 @@ cdef class Plugins:
         if self.protocols:
             return self.protocols
         cdef glib.GList *iter
-        cdef plugin.PurplePlugin *pp
+        cdef c_libplugin.PurplePlugin *pp
         protocols = []
-        iter = plugin.purple_plugins_get_protocols()
+        iter = c_libplugin.purple_plugins_get_protocols()
         while iter:
-            pp = <plugin.PurplePlugin*> iter.data
+            pp = <c_libplugin.PurplePlugin*> iter.data
             if pp.info and pp.info.name:
                 p = Plugin._new(pp)
                 if p:

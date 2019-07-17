@@ -1,27 +1,27 @@
 cimport glib
 
-from libpurple cimport connection as c_connection
-from libpurple cimport account as c_account
+from libpurple cimport connection as c_libconnection
+from libpurple cimport account as c_libaccount
 
 from purple cimport signals
 
-cdef void signal_connection_signed_on_cb(c_connection.PurpleConnection *gc,
+cdef void signal_connection_signed_on_cb(c_libconnection.PurpleConnection *gc,
                                          glib.gpointer null):
     """
     Emitted when a connection has signed on.
     @params gc  The connection that has signed on.
     """
-    cdef c_account.PurpleAccount *acc = c_connection.purple_connection_get_account(gc)
+    cdef c_libaccount.PurpleAccount *acc = c_libconnection.purple_connection_get_account(gc)
     cdef char *c_username = NULL
     cdef char *c_protocol_id = NULL
 
-    c_username = <char *> c_account.purple_account_get_username(acc)
+    c_username = <char *> c_libaccount.purple_account_get_username(acc)
     if c_username == NULL:
         username = None
     else:
         username = c_username
 
-    c_protocol_id = <char *> c_account.purple_account_get_protocol_id(acc)
+    c_protocol_id = <char *> c_libaccount.purple_account_get_protocol_id(acc)
     if c_protocol_id == NULL:
         protocol_id = None
     else:
@@ -30,23 +30,23 @@ cdef void signal_connection_signed_on_cb(c_connection.PurpleConnection *gc,
     if "signed-on" in signals.signal_cbs:
         (<object> signals.signal_cbs["signed-on"])(username, protocol_id)
 
-cdef void signal_connection_signed_off_cb(c_connection.PurpleConnection *gc,
+cdef void signal_connection_signed_off_cb(c_libconnection.PurpleConnection *gc,
                                           glib.gpointer null):
     """
     Emitted when a connection has signed off.
     @params gc  The connection that has signed off.
     """
-    cdef c_account.PurpleAccount *acc = c_connection.purple_connection_get_account(gc)
+    cdef c_libaccount.PurpleAccount *acc = c_libconnection.purple_connection_get_account(gc)
     cdef char *c_username = NULL
     cdef char *c_protocol_id = NULL
 
-    c_username = <char *> c_account.purple_account_get_username(acc)
+    c_username = <char *> c_libaccount.purple_account_get_username(acc)
     if c_username == NULL:
         username = None
     else:
         username = c_username
 
-    c_protocol_id = <char *> c_account.purple_account_get_protocol_id(acc)
+    c_protocol_id = <char *> c_libaccount.purple_account_get_protocol_id(acc)
     if c_protocol_id == NULL:
         protocol_id = None
     else:
@@ -55,8 +55,8 @@ cdef void signal_connection_signed_off_cb(c_connection.PurpleConnection *gc,
     if "signed-off" in signals.signal_cbs:
         (<object> signals.signal_cbs["signed-off"])(username, protocol_id)
 
-cdef void signal_connection_connection_error_cb(c_connection.PurpleConnection *gc,
-                                                c_connection.PurpleConnectionError err,
+cdef void signal_connection_connection_error_cb(c_libconnection.PurpleConnection *gc,
+                                                c_libconnection.PurpleConnectionError err,
                                                 glib.const_gchar *c_desc):
     """
     Emitted when a connection error occurs, before signed-off.
@@ -64,17 +64,17 @@ cdef void signal_connection_connection_error_cb(c_connection.PurpleConnection *g
     @params err  The error that occured
     @params desc A description of the error, giving more information
     """
-    cdef c_account.PurpleAccount *acc = c_connection.purple_connection_get_account(gc)
+    cdef c_libaccount.PurpleAccount *acc = c_libconnection.purple_connection_get_account(gc)
     cdef char *c_username = NULL
     cdef char *c_protocol_id = NULL
 
-    c_username = <char *> c_account.purple_account_get_username(acc)
+    c_username = <char *> c_libaccount.purple_account_get_username(acc)
     if c_username:
         username = <char *> c_username
     else:
         username = None
 
-    c_protocol_id = <char *> c_account.purple_account_get_protocol_id(acc)
+    c_protocol_id = <char *> c_libaccount.purple_account_get_protocol_id(acc)
     if c_protocol_id:
         protocol_id = <char *> c_protocol_id
     else:

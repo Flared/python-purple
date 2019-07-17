@@ -19,36 +19,35 @@
 
 cimport glib
 
-from libpurple cimport eventloop as c_eventloop
-from libpurple cimport account as c_account
-from libpurple cimport blist as c_blist
-from libpurple cimport connection as c_connection
-from libpurple cimport signals as c_signals
-from libpurple cimport pounce as c_pounce
-from libpurple cimport core as c_core
-from libpurple cimport util as c_util
-from libpurple cimport status as c_status
-from libpurple cimport notify as c_notify
-from libpurple cimport conversation as c_conversation
-from libpurple cimport request as c_request
-from libpurple cimport debug as c_debug
-from libpurple cimport plugin as c_plugin
-from libpurple cimport prefs as c_prefs
+from libpurple cimport eventloop as c_libeventloop
+from libpurple cimport account as c_libaccount
+from libpurple cimport blist as c_libblist
+from libpurple cimport connection as c_libconnection
+from libpurple cimport signals as c_libsignals
+from libpurple cimport pounce as c_libpounce
+from libpurple cimport core as c_libcore
+from libpurple cimport util as c_libutil
+from libpurple cimport notify as c_libnotify
+from libpurple cimport conversation as c_libconversation
+from libpurple cimport request as c_librequest
+from libpurple cimport debug as c_libdebug
+from libpurple cimport plugin as c_libplugin
+from libpurple cimport prefs as c_libprefs
 
-from purple cimport protocol
-from purple cimport account
+from purple cimport protocol as libprotocol
+from purple cimport account as libaccount
+from purple cimport signals as libsignals
 
-from purple.signals cimport core as signals_core
-from purple.signals cimport blist as signals_blist
-from purple.signals cimport connection as signals_connection
-from purple.signals cimport conversation as signals_conversation
+from purple.signals cimport core as libsignals_core
+from purple.signals cimport blist as libsignals_blist
+from purple.signals cimport connection as libsignals_connection
+from purple.signals cimport conversation as libsignals_conversation
 
-from purple cimport signals
 
 cdef extern from "c_purple.h":
     glib.guint glib_input_add(glib.gint fd,
-                              c_eventloop.PurpleInputCondition condition,
-                              c_eventloop.PurpleInputFunction function,
+                              c_libeventloop.PurpleInputCondition condition,
+                              c_libeventloop.PurpleInputFunction function,
                               glib.gpointer data)
 
 import signal
@@ -64,14 +63,14 @@ cdef char *c_ui_version
 cdef char *c_ui_website
 cdef char *c_ui_dev_website
 
-cdef c_account.PurpleAccountUiOps c_account_ui_ops
-cdef c_blist.PurpleBlistUiOps c_blist_ui_ops
-cdef c_connection.PurpleConnectionUiOps c_conn_ui_ops
-cdef c_conversation.PurpleConversationUiOps c_conv_ui_ops
-cdef c_core.PurpleCoreUiOps c_core_ui_ops
-cdef c_eventloop.PurpleEventLoopUiOps c_eventloop_ui_ops
-cdef c_notify.PurpleNotifyUiOps c_notify_ui_ops
-cdef c_request.PurpleRequestUiOps c_request_ui_ops
+cdef c_libaccount.PurpleAccountUiOps c_account_ui_ops
+cdef c_libblist.PurpleBlistUiOps c_blist_ui_ops
+cdef c_libconnection.PurpleConnectionUiOps c_conn_ui_ops
+cdef c_libconversation.PurpleConversationUiOps c_conv_ui_ops
+cdef c_libcore.PurpleCoreUiOps c_core_ui_ops
+cdef c_libeventloop.PurpleEventLoopUiOps c_eventloop_ui_ops
+cdef c_libnotify.PurpleNotifyUiOps c_notify_ui_ops
+cdef c_librequest.PurpleRequestUiOps c_request_ui_ops
 
 from purple.callbacks cimport account as callbacks_account
 from purple.callbacks cimport blist as callbacks_blist
@@ -114,10 +113,10 @@ cdef class Purple:
         c_ui_dev_website = ui_dev_website
 
         if debug_enabled:
-            c_debug.purple_debug_set_enabled(debug_enabled)
+            c_libdebug.purple_debug_set_enabled(debug_enabled)
 
         if default_path != b"":
-            c_util.purple_util_set_user_dir(default_path)
+            c_libutil.purple_util_set_user_dir(default_path)
 
         # libpurple's built-in DNS resolution forks processes to perform
         # blocking lookups without blocking the main process.  It does not
@@ -126,10 +125,10 @@ cdef class Purple:
         signal.signal(signal.SIGCHLD, signal.SIG_IGN)
 
     def destroy(self):
-        c_core.purple_core_quit()
+        c_libcore.purple_core_quit()
 
     def get_version(self):
-        return c_core.purple_core_get_version()
+        return c_libcore.purple_core_get_version()
 
     def __get_ui_name(self):
         '''Returns the UI name.
@@ -142,34 +141,34 @@ cdef class Purple:
     ui_name = property(__get_ui_name)
 
     cdef void __core_ui_ops_ui_prefs_init(self):
-        c_debug.purple_debug_info("core_ui_ops", "%s", "ui_prefs_init")
-        c_prefs.purple_prefs_load()
+        c_libdebug.purple_debug_info("core_ui_ops", "%s", "ui_prefs_init")
+        c_libprefs.purple_prefs_load()
 
-        c_prefs.purple_prefs_add_none("/carman")
+        c_libprefs.purple_prefs_add_none("/carman")
 
     cdef void __core_ui_ops_debug_init(self):
-        c_debug.purple_debug_info("core_ui_ops", "%s", "debug_ui_init")
+        c_libdebug.purple_debug_info("core_ui_ops", "%s", "debug_ui_init")
         pass
 
     cdef void __core_ui_ops_ui_init(self):
-        c_debug.purple_debug_info("core_ui_ops", "%s", "ui_init")
+        c_libdebug.purple_debug_info("core_ui_ops", "%s", "ui_init")
 
-        c_account.purple_accounts_set_ui_ops(&c_account_ui_ops)
-        c_connection.purple_connections_set_ui_ops(&c_conn_ui_ops)
-        c_blist.purple_blist_set_ui_ops(&c_blist_ui_ops)
-        c_conversation.purple_conversations_set_ui_ops(&c_conv_ui_ops)
-        c_notify.purple_notify_set_ui_ops(&c_notify_ui_ops)
-        c_request.purple_request_set_ui_ops(&c_request_ui_ops)
+        c_libaccount.purple_accounts_set_ui_ops(&c_account_ui_ops)
+        c_libconnection.purple_connections_set_ui_ops(&c_conn_ui_ops)
+        c_libblist.purple_blist_set_ui_ops(&c_blist_ui_ops)
+        c_libconversation.purple_conversations_set_ui_ops(&c_conv_ui_ops)
+        c_libnotify.purple_notify_set_ui_ops(&c_notify_ui_ops)
+        c_librequest.purple_request_set_ui_ops(&c_request_ui_ops)
 
     cdef void __core_ui_ops_quit(self):
-        c_debug.purple_debug_info("core_ui_ops", "%s", "quit")
+        c_libdebug.purple_debug_info("core_ui_ops", "%s", "quit")
 
-        c_account.purple_accounts_set_ui_ops(NULL)
-        c_connection.purple_connections_set_ui_ops(NULL)
-        c_blist.purple_blist_set_ui_ops(NULL)
-        c_conversation.purple_conversations_set_ui_ops(NULL)
-        c_notify.purple_notify_set_ui_ops(NULL)
-        c_request.purple_request_set_ui_ops(NULL)
+        c_libaccount.purple_accounts_set_ui_ops(NULL)
+        c_libconnection.purple_connections_set_ui_ops(NULL)
+        c_libblist.purple_blist_set_ui_ops(NULL)
+        c_libconversation.purple_conversations_set_ui_ops(NULL)
+        c_libnotify.purple_notify_set_ui_ops(NULL)
+        c_librequest.purple_request_set_ui_ops(NULL)
 
         global c_ui_info
         if c_ui_info:
@@ -273,29 +272,29 @@ cdef class Purple:
         c_eventloop_ui_ops.input_get_error = NULL
         c_eventloop_ui_ops.timeout_add_seconds = NULL
 
-        c_core.purple_core_set_ui_ops(&c_core_ui_ops)
-        c_eventloop.purple_eventloop_set_ui_ops(&c_eventloop_ui_ops)
+        c_libcore.purple_core_set_ui_ops(&c_core_ui_ops)
+        c_libeventloop.purple_eventloop_set_ui_ops(&c_eventloop_ui_ops)
 
         # initialize purple core
-        ret = c_core.purple_core_init(c_ui_name)
+        ret = c_libcore.purple_core_init(c_ui_name)
         if ret is False:
-            c_debug.purple_debug_fatal("main", "%s", "libpurple " \
+            c_libdebug.purple_debug_fatal("main", "%s", "libpurple " \
                                        "initialization failed.\n")
             return False
 
         # check if there is another instance of libpurple running
-        if c_core.purple_core_ensure_single_instance() == False:
-            c_debug.purple_debug_fatal("main", "%s", "Another instance of " \
+        if c_libcore.purple_core_ensure_single_instance() == False:
+            c_libdebug.purple_debug_fatal("main", "%s", "Another instance of " \
                                       "libpurple is already running.\n")
-            c_core.purple_core_quit()
+            c_libcore.purple_core_quit()
             return False
 
         # create and load the buddy list
-        c_blist.purple_set_blist(c_blist.purple_blist_new())
-        c_blist.purple_blist_load()
+        c_libblist.purple_set_blist(c_libblist.purple_blist_new())
+        c_libblist.purple_blist_load()
 
         # load pounces
-        c_pounce.purple_pounces_load()
+        c_libpounce.purple_pounces_load()
 
         return ret
 
@@ -327,17 +326,17 @@ cdef class Purple:
 
         cdef int handle
 
-        signals.signal_cbs[name] = cb
+        libsignals.signal_cbs[name] = cb
 
         ##################
         ## Core Signals ##
         ##################
         if name == "quitting":
-            c_signals.purple_signal_connect(
-                c_core.purple_get_core(),
+            c_libsignals.purple_signal_connect(
+                c_libcore.purple_get_core(),
                 "quitting",
                 &handle,
-                <c_signals.PurpleCallback> signals_core.signal_core_quitting_cb,
+                <c_libsignals.PurpleCallback> libsignals_core.signal_core_quitting_cb,
                 NULL,
             )
 
@@ -345,27 +344,27 @@ cdef class Purple:
         ## Connection Sinals ##
         #######################
         elif name == "signed-on":
-            c_signals.purple_signal_connect(
-                c_connection.purple_connections_get_handle(),
+            c_libsignals.purple_signal_connect(
+                c_libconnection.purple_connections_get_handle(),
                 "signed-on",
                 &handle,
-                <c_signals.PurpleCallback> signals_connection.signal_connection_signed_on_cb,
+                <c_libsignals.PurpleCallback> libsignals_connection.signal_connection_signed_on_cb,
                 NULL,
             )
         elif name == "signed-off":
-            c_signals.purple_signal_connect(
-                c_connection.purple_connections_get_handle(),
+            c_libsignals.purple_signal_connect(
+                c_libconnection.purple_connections_get_handle(),
                 "signed-off",
                 &handle,
-                <c_signals.PurpleCallback> signals_connection.signal_connection_signed_off_cb,
+                <c_libsignals.PurpleCallback> libsignals_connection.signal_connection_signed_off_cb,
                 NULL,
             )
         elif name == "connection-error":
-            c_signals.purple_signal_connect(
-                c_connection.purple_connections_get_handle(),
+            c_libsignals.purple_signal_connect(
+                c_libconnection.purple_connections_get_handle(),
                 "connection-error",
                 &handle,
-                <c_signals.PurpleCallback> signals_connection.signal_connection_connection_error_cb,
+                <c_libsignals.PurpleCallback> libsignals_connection.signal_connection_connection_error_cb,
                 NULL,
             )
 
@@ -373,18 +372,18 @@ cdef class Purple:
         ## Buddy List Signals ##
         ########################
         elif name == "buddy-signed-on":
-            c_signals.purple_signal_connect(
-                c_blist.purple_blist_get_handle(),
+            c_libsignals.purple_signal_connect(
+                c_libblist.purple_blist_get_handle(),
                 "buddy-signed-on",
                 &handle,
-                <c_signals.PurpleCallback> signals_blist.signal_blist_buddy_signed_on_cb,
+                <c_libsignals.PurpleCallback> libsignals_blist.signal_blist_buddy_signed_on_cb,
                 NULL,
             )
         elif name == "buddy-signed-off":
-            c_signals.purple_signal_connect(
-                c_blist.purple_blist_get_handle(),
+            c_libsignals.purple_signal_connect(
+                c_libblist.purple_blist_get_handle(),
                 "buddy-signed-off", &handle,
-                <c_signals.PurpleCallback> signals_blist.signal_blist_buddy_signed_off_cb,
+                <c_libsignals.PurpleCallback> libsignals_blist.signal_blist_buddy_signed_off_cb,
                 NULL
             )
 
@@ -392,11 +391,11 @@ cdef class Purple:
         ## Conversation Signals ##
         ##########################
         elif name == "receiving-im-msg":
-            c_signals.purple_signal_connect(
-                c_conversation.purple_conversations_get_handle(),
+            c_libsignals.purple_signal_connect(
+                c_libconversation.purple_conversations_get_handle(),
                 "receiving-im-msg",
                 &handle,
-                <c_signals.PurpleCallback> signals_conversation.signal_conversation_receiving_im_msg_cb,
+                <c_libsignals.PurpleCallback> libsignals_conversation.signal_conversation_receiving_im_msg_cb,
                 NULL,
              )
 
@@ -413,23 +412,23 @@ cdef class Purple:
         '''
 
         cdef glib.GList *iter
-        cdef c_account.PurpleAccount *acc
+        cdef c_libaccount.PurpleAccount *acc
         cdef char *username
         cdef char *protocol_id
 
-        iter = c_account.purple_accounts_get_all()
+        iter = c_libaccount.purple_accounts_get_all()
         account_list = []
 
         while iter:
-            acc = <c_account.PurpleAccount *> iter.data
+            acc = <c_libaccount.PurpleAccount *> iter.data
 
-            if <c_account.PurpleAccount *>acc:
-                username = <char *> c_account.purple_account_get_username(acc)
-                protocol_id = <char *> c_account.purple_account_get_protocol_id(acc)
+            if <c_libaccount.PurpleAccount *>acc:
+                username = <char *> c_libaccount.purple_account_get_username(acc)
+                protocol_id = <char *> c_libaccount.purple_account_get_protocol_id(acc)
 
                 if username != NULL and protocol_id != NULL:
-                    account_list.append(account.Account(username, \
-                            protocol.Protocol(protocol_id), self))
+                    account_list.append(libaccount.Account(username, \
+                            libprotocol.Protocol(protocol_id), self))
             iter = iter.next
 
         return account_list
@@ -441,26 +440,26 @@ cdef class Purple:
         '''
 
         cdef glib.GList *iter
-        cdef c_account.PurpleAccount *acc
+        cdef c_libaccount.PurpleAccount *acc
         cdef char *username
         cdef char *protocol_id
 
         #FIXME: The list is owned by the caller, and must be g_list_free()d
         #       to avoid leaking the nodes.
 
-        iter = c_account.purple_accounts_get_all_active()
+        iter = c_libaccount.purple_accounts_get_all_active()
         account_list = []
 
         while iter:
-            acc = <c_account.PurpleAccount *> iter.data
+            acc = <c_libaccount.PurpleAccount *> iter.data
 
-            if <c_account.PurpleAccount *>acc:
-                username = <char *> c_account.purple_account_get_username(acc)
-                protocol_id = <char *> c_account.purple_account_get_protocol_id(acc)
+            if <c_libaccount.PurpleAccount *>acc:
+                username = <char *> c_libaccount.purple_account_get_username(acc)
+                protocol_id = <char *> c_libaccount.purple_account_get_protocol_id(acc)
 
                 if username != NULL and protocol_id != NULL:
-                    account_list.append(account.Account(username, \
-                            protocol.Protocol(protocol_id), self))
+                    account_list.append(libaccount.Account(username, \
+                            libprotocol.Protocol(protocol_id), self))
             iter = iter.next
 
         return account_list
@@ -476,14 +475,14 @@ cdef class Purple:
         '''
 
         cdef glib.GList *iter
-        cdef c_plugin.PurplePlugin *pp
+        cdef c_libplugin.PurplePlugin *pp
 
-        iter = c_plugin.purple_plugins_get_protocols()
+        iter = c_libplugin.purple_plugins_get_protocols()
         protocol_list = []
         while iter:
-            pp = <c_plugin.PurplePlugin*> iter.data
+            pp = <c_libplugin.PurplePlugin*> iter.data
             if <bint> pp.info and <bint> pp.info.name:
-                protocol_list.append(protocol.Protocol(pp.info.id))
+                protocol_list.append(libprotocol.Protocol(pp.info.id))
             iter = iter.next
         return protocol_list
 

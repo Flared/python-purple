@@ -19,7 +19,7 @@
 
 cimport glib
 
-from libpurple cimport connection
+from libpurple cimport connection as c_libconnection
 
 cdef extern from *:
     ctypedef char const_char "const char"
@@ -62,7 +62,7 @@ cdef extern from "libpurple/notify.h":
     ctypedef struct PurpleNotifySearchColumn:
         char *title
 
-    ctypedef void (*PurpleNotifySearchResultsCallback) (connection.PurpleConnection *c, glib.GList *row, glib.gpointer user_data)
+    ctypedef void (*PurpleNotifySearchResultsCallback) (c_libconnection.PurpleConnection *c, glib.GList *row, glib.gpointer user_data)
 
     ctypedef struct purpleNotifySearchButton:
         PurpleNotifySearchButtonType type
@@ -72,22 +72,22 @@ cdef extern from "libpurple/notify.h":
     ctypedef struct PurpleNotifyUiOps:
         void *(*notify_message) (PurpleNotifyMsgType type, const_char *title, \
                 const_char *primary, const_char *secondary)
-        void *(*notify_email) (connection.PurpleConnection *gc, \
+        void *(*notify_email) (c_libconnection.PurpleConnection *gc, \
                 const_char *subject, const_char *sender, const_char *to, \
                 const_char *url)
-        void *(*notify_emails) (connection.PurpleConnection *gc,
+        void *(*notify_emails) (c_libconnection.PurpleConnection *gc,
                 size_t count, glib.gboolean detailed, const_char **subjects, \
                 const_char **senders, const_char **tos, const_char **urls)
         void *(*notify_formatted) (const_char *title, const_char *primary, \
                 const_char *secondary, const_char *text)
-        void *(*notify_searchresults) (connection.PurpleConnection *gc, \
+        void *(*notify_searchresults) (c_libconnection.PurpleConnection *gc, \
                 const_char *title, const_char *primary, \
                 const_char *secondary, PurpleNotifySearchResults *results, \
                 glib.gpointer user_data)
         void (*notify_searchresults_new_rows) \
-                (connection.PurpleConnection *gc, \
+                (c_libconnection.PurpleConnection *gc, \
                 PurpleNotifySearchResults *results, void *data)
-        void *(*notify_userinfo) (connection.PurpleConnection *gc, \
+        void *(*notify_userinfo) (c_libconnection.PurpleConnection *gc, \
                 const_char *who, PurpleNotifyUserInfo *user_info)
         void *(*notify_uri) (const_char *uri)
         void (*close_notify) (PurpleNotifyType type, void *ui_handle)

@@ -1,4 +1,4 @@
-cimport purple.signals as signals
+cimport purple.signals as c_libsignals
 
 from libpurple cimport debug
  
@@ -12,5 +12,5 @@ cdef void signal_core_quitting_cb():
     debug.purple_debug_info("core", "%s", "quitting\n")
     cdef char *c_name = NULL
 
-    if "quitting" in signals.signal_cbs:
-        (<object> signals.signal_cbs["quitting"])()
+    if "quitting" in c_libsignals.signal_cbs:
+        (<object> c_libsignals.signal_cbs["quitting"])()

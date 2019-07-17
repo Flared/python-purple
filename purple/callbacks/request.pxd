@@ -19,10 +19,9 @@
 
 cimport glib
 
-from libpurple cimport conversation as c_conversation
-from libpurple cimport request as c_request
-from libpurple cimport debug as c_debug
-from libpurple cimport account as c_account
+from libpurple cimport conversation as c_libconversation
+from libpurple cimport request as c_librequest
+from libpurple cimport account as c_libaccount
 
 cdef extern from *:
     ctypedef char const_char "const char"
@@ -45,9 +44,9 @@ cdef void *request_input(const_char *title,
                          glib.GCallback ok_cb,
                          const_char *cancel_text,
                          glib.GCallback cancel_cb,
-                         c_account.PurpleAccount *account,
+                         c_libaccount.PurpleAccount *account,
                          const_char *who,
-                         c_conversation.PurpleConversation *conv,
+                         c_libconversation.PurpleConversation *conv,
                          void *user_data)
 
 cdef void *request_choice(const_char *title,
@@ -58,9 +57,9 @@ cdef void *request_choice(const_char *title,
                           glib.GCallback ok_cb,
                           const_char *cancel_text,
                           glib.GCallback cancel_cb,
-                          c_account.PurpleAccount *account,
+                          c_libaccount.PurpleAccount *account,
                           const_char *who,
-                          c_conversation.PurpleConversation *conv,
+                          c_libconversation.PurpleConversation *conv,
                           void *user_data,
                           va_list choices)
 
@@ -68,23 +67,23 @@ cdef void *request_action(const_char *title,
                           const_char *primary,
                           const_char *secondary,
                           int default_action,
-                          c_account.PurpleAccount *account,
+                          c_libaccount.PurpleAccount *account,
                           const_char *who,
-                          c_conversation.PurpleConversation *conv,
+                          c_libconversation.PurpleConversation *conv,
                           void *user_data,
                           size_t action_count, va_list actions)
 
 cdef void *request_fields(const_char *title,
                           const_char *primary,
                           const_char *secondary,
-                          c_request.PurpleRequestFields *fields,
+                          c_librequest.PurpleRequestFields *fields,
                           const_char *ok_text,
                           glib.GCallback ok_cb,
                           const_char *cancel_text,
                           glib.GCallback cancel_cb,
-                          c_account.PurpleAccount *account,
+                          c_libaccount.PurpleAccount *account,
                           const_char *who,
-                          c_conversation.PurpleConversation *conv,
+                          c_libconversation.PurpleConversation *conv,
                           void *user_data)
 
 cdef void *request_file(const_char *title,
@@ -92,20 +91,20 @@ cdef void *request_file(const_char *title,
                         glib.gboolean savedialog,
                         glib.GCallback ok_cb,
                         glib.GCallback cancel_cb,
-                        c_account.PurpleAccount *account,
+                        c_libaccount.PurpleAccount *account,
                         const_char *who,
-                        c_conversation.PurpleConversation *conv,
+                        c_libconversation.PurpleConversation *conv,
                         void *user_data)
 
-cdef void close_request(c_request.PurpleRequestType type, void *ui_handle)
+cdef void close_request(c_librequest.PurpleRequestType type, void *ui_handle)
 
 cdef void *request_folder(const_char *title,
                           const_char *dirname,
                           glib.GCallback ok_cb,
                           glib.GCallback cancel_cb,
-                          c_account.PurpleAccount *account,
+                          c_libaccount.PurpleAccount *account,
                           const_char *who,
-                          c_conversation.PurpleConversation *conv,
+                          c_libconversation.PurpleConversation *conv,
                           void *user_data)
 
 cdef void __call_action(int i)

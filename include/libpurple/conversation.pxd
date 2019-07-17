@@ -19,9 +19,9 @@
 
 cimport glib
 
-from libpurple cimport account
-from libpurple cimport connection
-from libpurple cimport buddyicon
+from libpurple cimport account as c_libaccount
+from libpurple cimport connection as c_libconnection
+from libpurple cimport buddyicon as c_libbuddyicon
 
 cdef extern from "time.h":
     ctypedef long int time_t
@@ -110,7 +110,7 @@ cdef extern from "libpurple/conversation.h":
         glib.guint typing_timeout
         time_t type_again
         glib.guint send_typed_timeout
-        buddyicon.PurpleBuddyIcon *icon
+        c_libbuddyicon.PurpleBuddyIcon *icon
 
     ctypedef struct PurpleConvChat:
         PurpleConversation *conv
@@ -144,7 +144,7 @@ cdef extern from "libpurple/conversation.h":
 
     ctypedef struct PurpleConversation:
         PurpleConversationType type
-        account.PurpleAccount *account
+        c_libaccount.PurpleAccount *account
         char *name
         char *title
         glib.gboolean logging
@@ -153,12 +153,12 @@ cdef extern from "libpurple/conversation.h":
         PurpleConversationUiOps *ui_ops
         void *ui_data
         glib.GHashTable *data
-        connection.PurpleConnectionFlags features
+        c_libconnection.PurpleConnectionFlags features
         glib.GList *message_history
 
     # Conversation API
     PurpleConversation *purple_conversation_new(int type, \
-            account.PurpleAccount *account, char *name)
+            c_libaccount.PurpleAccount *account, char *name)
     void purple_conversation_destroy(PurpleConversation *conv)
     void purple_conversation_present(PurpleConversation *conv)
     PurpleConversationType purple_conversation_get_type( \
@@ -169,10 +169,10 @@ cdef extern from "libpurple/conversation.h":
     PurpleConversationUiOps *purple_conversation_get_ui_ops( \
             PurpleConversation *conv)
     void purple_conversation_set_account(PurpleConversation *conv, \
-            account.PurpleAccount *account)
-    account.PurpleAccount *purple_conversation_get_account( \
+            c_libaccount.PurpleAccount *account)
+    c_libaccount.PurpleAccount *purple_conversation_get_account( \
             PurpleConversation *conv)
-    connection.PurpleConnection *purple_conversation_get_gc( \
+    c_libconnection.PurpleConnection *purple_conversation_get_gc( \
             PurpleConversation *conv)
     void purple_conversation_set_title(PurpleConversation *conv, char *title)
     char *purple_conversation_get_title(PurpleConversation *conv)
@@ -194,12 +194,12 @@ cdef extern from "libpurple/conversation.h":
     glib.GList *purple_get_chats()
     PurpleConversation *purple_find_conversation_with_account( \
             PurpleConversationType type, char *name, \
-            account.PurpleAccount *account)
+            c_libaccount.PurpleAccount *account)
     void purple_conversation_write(PurpleConversation *conv, char *who, \
     char *message, PurpleMessageFlags flags, time_t mtime)
     void purple_conversation_set_features(PurpleConversation *conv, \
-            connection.PurpleConnectionFlags features)
-    connection.PurpleConnectionFlags purple_conversation_get_features( \
+            c_libconnection.PurpleConnectionFlags features)
+    c_libconnection.PurpleConnectionFlags purple_conversation_get_features( \
             PurpleConversation *conv)
     glib.gboolean purple_conversation_has_focus(PurpleConversation *conv)
     void purple_conversation_update(PurpleConversation *conv, \
@@ -217,8 +217,8 @@ cdef extern from "libpurple/conversation.h":
     #IM Conversation API
     PurpleConversation *purple_conv_im_get_conversation(PurpleConvIm *im)
     void purple_conv_im_set_icon(PurpleConvIm *im, \
-            buddyicon.PurpleBuddyIcon *icon)
-    buddyicon.PurpleBuddyIcon *purple_conv_im_get_icon(PurpleConvIm *im)
+            c_libbuddyicon.PurpleBuddyIcon *icon)
+    c_libbuddyicon.PurpleBuddyIcon *purple_conv_im_get_icon(PurpleConvIm *im)
     void purple_conv_im_set_typing_state(PurpleConvIm *im, \
             PurpleTypingState state)
     PurpleTypingState purple_conv_im_get_typing_state(PurpleConvIm *im)
@@ -234,7 +234,7 @@ cdef extern from "libpurple/conversation.h":
     void purple_conv_im_write(PurpleConvIm *im, char *who, \
             char *message, PurpleMessageFlags flags, time_t mtime)
     glib.gboolean purple_conv_present_error(char *who, \
-            account.PurpleAccount *account, char *what)
+            c_libaccount.PurpleAccount *account, char *what)
     void purple_conv_im_send(PurpleConvIm *im, char *message)
     void purple_conv_send_confirm(PurpleConversation *conv, \
             char *message)
@@ -289,7 +289,7 @@ cdef extern from "libpurple/conversation.h":
     void purple_conv_chat_clear_users(PurpleConvChat *chat)
     void purple_conv_chat_set_nick(PurpleConvChat *chat, char *nick)
     char *purple_conv_chat_get_nick(PurpleConvChat *chat)
-    PurpleConversation *purple_find_chat(connection.PurpleConnection *gc, \
+    PurpleConversation *purple_find_chat(c_libconnection.PurpleConnection *gc, \
             int id)
     void purple_conv_chat_left(PurpleConvChat *chat)
     glib.gboolean purple_conv_chat_has_left(PurpleConvChat *chat)

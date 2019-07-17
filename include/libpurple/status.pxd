@@ -19,10 +19,10 @@
 
 cimport glib
 
-from libpurple cimport account
-from libpurple cimport blist
-from libpurple cimport conversation
-from libpurple cimport value
+from libpurple cimport account as c_libaccount
+from libpurple cimport blist as c_libblist
+from libpurple cimport conversation as c_libconversation
+from libpurple cimport value as c_libvalue
 
 cdef extern from *:
     ctypedef long int time_t
@@ -65,19 +65,19 @@ cdef extern from "libpurple/status.h":
     ctypedef struct PurpleStatusAttr:
         char *id
         char *name
-        value.PurpleValue *value_type
+        c_libvalue.PurpleValue *value_type
 
     ctypedef struct __ChatType:
-        conversation.PurpleConversation *conv
+        c_libconversation.PurpleConversation *conv
         char *user
 
     ctypedef struct __BuddyType:
-        account.PurpleAccount *account
+        c_libaccount.PurpleAccount *account
         char *name
-        blist.PurpleBuddy *buddy
+        c_libblist.PurpleBuddy *buddy
 
     ctypedef union __UnionType:
-        account.PurpleAccount *account
+        c_libaccount.PurpleAccount *account
         __ChatType chat
         __BuddyType buddy
 
@@ -99,7 +99,7 @@ cdef extern from "libpurple/status.h":
         glib.GHashTable *attr_values
 
     ctypedef struct PurpleStatusBuddyKey:
-        account.PurpleAccount *account
+        c_libaccount.PurpleAccount *account
         char *name
 
     # PurpleStatusPrimitive API
@@ -108,128 +108,287 @@ cdef extern from "libpurple/status.h":
     PurpleStatusPrimitive purple_primitive_get_type_from_id(char *id)
 
     # PurpleStatusType API
-    PurpleStatusType *purple_status_type_new_full( \
-            PurpleStatusPrimitive primitive, char *id, char *name, \
-            glib.gboolean saveable, glib.gboolean user_settable, \
-            glib.gboolean independent)
-    PurpleStatusType *purple_status_type_new(PurpleStatusPrimitive primitive, \
-            char *id, char *name, glib.gboolean user_settable)
-    PurpleStatusType *purple_status_type_new_with_attrs( \
+    PurpleStatusType *purple_status_type_new_full(
+        PurpleStatusPrimitive primitive,
+        char *id,
+        char *name,
+        glib.gboolean saveable,
+        glib.gboolean user_settable,
+        glib.gboolean independent
+    )
+
+    PurpleStatusType *purple_status_type_new(
+        PurpleStatusPrimitive primitive,
+        char *id,
+        char *name,
+        glib.gboolean user_settable
+    )
+
+    PurpleStatusType *purple_status_type_new_with_attrs(
             PurpleStatusPrimitive primitive,
-            char *id, char *name, glib.gboolean saveable, \
-            glib.gboolean user_settable, glib.gboolean independent, \
-            char *attr_id, char *attr_name, value.PurpleValue *attr_value, ...)
+            char *id,
+            char *name,
+            glib.gboolean saveable,
+            glib.gboolean user_settable,
+            glib.gboolean independent,
+            char *attr_id,
+            char *attr_name,
+            c_libvalue.PurpleValue *attr_value,
+            ...
+        )
+
     void purple_status_type_destroy(PurpleStatusType *status_type)
-    void purple_status_type_set_primary_attr(PurpleStatusType *status_type, \
-            char *attr_id)
-    void purple_status_type_add_attr(PurpleStatusType *status_type, char *id, \
-            char *name, value.PurpleValue *value_)
-    void purple_status_type_add_attrs(PurpleStatusType *status_type, \
-            char *id, char *name, value.PurpleValue *value_, ...)
-    void purple_status_type_add_attrs_vargs(PurpleStatusType *status_type, \
-            va_list args)
-    PurpleStatusPrimitive purple_status_type_get_primitive( \
-            PurpleStatusType *status_type)
+
+    void purple_status_type_set_primary_attr(
+        PurpleStatusType *status_type,
+        char *attr_id
+    )
+
+    void purple_status_type_add_attr(
+        PurpleStatusType *status_type,
+        char *id,
+        char *name,
+        c_libvalue.PurpleValue *value_
+    )
+
+    void purple_status_type_add_attrs(
+        PurpleStatusType *status_type,
+        char *id,
+        char *name,
+        c_libvalue.PurpleValue *value_,
+        ...
+    )
+
+    void purple_status_type_add_attrs_vargs(
+        PurpleStatusType *status_type,
+        va_list args
+    )
+
+    PurpleStatusPrimitive purple_status_type_get_primitive(
+        PurpleStatusType *status_type
+    )
+
     char *purple_status_type_get_id(PurpleStatusType *status_type)
+
     char *purple_status_type_get_name(PurpleStatusType *status_type)
+
     glib.gboolean purple_status_type_is_saveable(PurpleStatusType *status_type)
-    glib.gboolean purple_status_type_is_user_settable( \
-            PurpleStatusType *status_type)
-    glib.gboolean purple_status_type_is_independent( \
-            PurpleStatusType *status_type)
-    glib.gboolean purple_status_type_is_exclusive( \
-            PurpleStatusType *status_type)
-    glib.gboolean purple_status_type_is_available( \
-            PurpleStatusType *status_type)
+
+    glib.gboolean purple_status_type_is_user_settable(
+        PurpleStatusType *status_type
+    )
+    glib.gboolean purple_status_type_is_independent(
+        PurpleStatusType *status_type
+    )
+
+    glib.gboolean purple_status_type_is_exclusive(
+        PurpleStatusType *status_type
+    )
+
+    glib.gboolean purple_status_type_is_available(
+        PurpleStatusType *status_type
+    )
+
     char *purple_status_type_get_primary_attr(PurpleStatusType *type)
-    PurpleStatusAttr *purple_status_type_get_attr( \
-            PurpleStatusType *status_type, char *id)
+
+    PurpleStatusAttr *purple_status_type_get_attr(
+        PurpleStatusType *status_type,
+        char *id
+    )
+
     glib.GList *purple_status_type_get_attrs(PurpleStatusType *status_type)
-    PurpleStatusType *purple_status_type_find_with_id( \
-            glib.GList *status_types, char *id)
+
+    PurpleStatusType *purple_status_type_find_with_id(
+        glib.GList *status_types,
+        char *id
+    )
 
     # PurpleStatusAttr API
-    PurpleStatusAttr *purple_status_attr_new(char *id, char *name, \
-            value.PurpleValue *value_type)
+    PurpleStatusAttr *purple_status_attr_new(
+        char *id,
+        char *name,
+        c_libvalue.PurpleValue *value_type
+    )
+
     void purple_status_attr_destroy(PurpleStatusAttr *attr)
+
     char *purple_status_attr_get_id(PurpleStatusAttr *attr)
+
     char *purple_status_attr_get_name(PurpleStatusAttr *attr)
-    value.PurpleValue *purple_status_attr_get_value(PurpleStatusAttr *attr)
+
+    c_libvalue.PurpleValue *purple_status_attr_get_value(PurpleStatusAttr *attr)
 
     # PurpleStatus API
-    PurpleStatus *purple_status_new(PurpleStatusType *status_type, \
-            PurplePresence *presence)
+    PurpleStatus *purple_status_new(
+        PurpleStatusType *status_type,
+        PurplePresence *presence
+    )
+
     void purple_status_destroy(PurpleStatus *status)
+
     void purple_status_set_active(PurpleStatus *status, glib.gboolean active)
-    void purple_status_set_active_with_attrs(PurpleStatus *status, \
-            glib.gboolean active, va_list args)
-    void purple_status_set_active_with_attrs_list(PurpleStatus *status, \
-            glib.gboolean active, glib.GList *attrs)
-    void purple_status_set_attr_boolean(PurpleStatus *status, char *id, \
-            glib.gboolean value_)
-    void purple_status_set_attr_int(PurpleStatus *status, char *id, int value_)
-    void purple_status_set_attr_string(PurpleStatus *status, char *id, \
-            char *value_)
+
+    void purple_status_set_active_with_attrs(
+        PurpleStatus *status,
+        glib.gboolean active,
+        va_list args
+    )
+
+    void purple_status_set_active_with_attrs_list(
+        PurpleStatus *status,
+        glib.gboolean active,
+        glib.GList *attrs
+    )
+
+    void purple_status_set_attr_boolean(
+        PurpleStatus *status,
+        char *id,
+        glib.gboolean value_
+    )
+
+    void purple_status_set_attr_int(
+        PurpleStatus *status,
+        char *id,
+        int value_
+    )
+
+    void purple_status_set_attr_string(
+            PurpleStatus *status,
+            char *id,
+            char *value_
+    )
+
     PurpleStatusType *purple_status_get_type(PurpleStatus *status)
+
     PurplePresence *purple_status_get_presence(PurpleStatus *status)
+
     char *purple_status_get_id(PurpleStatus *status)
+
     char *purple_status_get_name(PurpleStatus *status)
+
     glib.gboolean purple_status_is_independent(PurpleStatus *status)
+
     glib.gboolean purple_status_is_exclusive(PurpleStatus *status)
+
     glib.gboolean purple_status_is_available(PurpleStatus *status)
+
     glib.gboolean purple_status_is_active(PurpleStatus *status)
+
     glib.gboolean purple_status_is_online(PurpleStatus *status)
-    value.PurpleValue *purple_status_get_attr_value(PurpleStatus *status, \
-            char *id)
-    glib.gboolean purple_status_get_attr_boolean(PurpleStatus *status, \
-            char *id)
+
+    c_libvalue.PurpleValue *purple_status_get_attr_value(
+        PurpleStatus *status,
+        char *id
+    )
+
+    glib.gboolean purple_status_get_attr_boolean(
+        PurpleStatus *status,
+        char *id
+    )
+
     int purple_status_get_attr_int(PurpleStatus *status, char *id)
+
     char *purple_status_get_attr_string(PurpleStatus *status, char *id)
-    glib.gint purple_status_compare(PurpleStatus *status1, \
-            PurpleStatus *status2)
+
+    glib.gint purple_status_compare(
+        PurpleStatus *status1,
+        PurpleStatus *status2
+    )
 
     # PurplePresence API
     PurplePresence *purple_presence_new(PurplePresenceContext context)
-    PurplePresence *purple_presence_new_for_account( \
-            account.PurpleAccount *account)
-    PurplePresence *purple_presence_new_for_conv( \
-            conversation.PurpleConversation *conv)
-    PurplePresence *purple_presence_new_for_buddy(blist.PurpleBuddy *buddy)
+
+    PurplePresence *purple_presence_new_for_account(
+        c_libaccount.PurpleAccount *account
+    )
+
+    PurplePresence *purple_presence_new_for_conv(
+        c_libconversation.PurpleConversation *conv
+    )
+
+    PurplePresence *purple_presence_new_for_buddy(c_libblist.PurpleBuddy *buddy)
+
     void purple_presence_destroy(PurplePresence *presence)
-    void purple_presence_add_status(PurplePresence *presence, \
-            PurpleStatus *status)
-    void purple_presence_add_list(PurplePresence *presence, \
-            glib.GList *source_list)
-    void purple_presence_set_status_active(PurplePresence *presence, \
-            char *status_id, glib.gboolean active)
-    void purple_presence_switch_status(PurplePresence *presence, \
-            char *status_id)
-    void purple_presence_set_idle(PurplePresence *presence, \
-            glib.gboolean idle, time_t idle_time)
-    void purple_presence_set_login_time(PurplePresence *presence, \
-            time_t login_time)
+
+    void purple_presence_add_status(
+        PurplePresence *presence,
+        PurpleStatus *status
+    )
+
+    void purple_presence_add_list(
+        PurplePresence *presence,
+        glib.GList *source_list
+    )
+
+    void purple_presence_set_status_active(
+        PurplePresence *presence,
+        char *status_id,
+        glib.gboolean active
+    )
+
+    void purple_presence_switch_status(
+        PurplePresence *presence,
+        char *status_id
+    )
+
+    void purple_presence_set_idle(
+        PurplePresence *presence,
+        glib.gboolean idle,
+        time_t idle_time
+    )
+
+    void purple_presence_set_login_time(
+        PurplePresence *presence,
+        time_t login_time
+    )
+
     PurplePresenceContext purple_presence_get_context(PurplePresence *presence)
-    account.PurpleAccount *purple_presence_get_account( \
-            PurplePresence *presence)
-    conversation.PurpleConversation *purple_presence_get_conversation( \
-            PurplePresence *presence)
+
+    c_libaccount.PurpleAccount *purple_presence_get_account(
+        PurplePresence *presence
+    )
+
+    c_libconversation.PurpleConversation *purple_presence_get_conversation(
+        PurplePresence *presence
+    )
+
     char *purple_presence_get_chat_user(PurplePresence *presence)
-    blist.PurpleBuddy *purple_presence_get_buddy(PurplePresence *presence)
+
+    c_libblist.PurpleBuddy *purple_presence_get_buddy(PurplePresence *presence)
+
     glib.GList *purple_presence_get_statuses(PurplePresence *presence)
-    PurpleStatus *purple_presence_get_status(PurplePresence *presence, \
-            char *status_id)
+
+    PurpleStatus *purple_presence_get_status(
+        PurplePresence *presence,
+        char *status_id
+    )
+
     PurpleStatus *purple_presence_get_active_status(PurplePresence *presence)
+
     glib.gboolean purple_presence_is_available(PurplePresence *presence)
+
     glib.gboolean purple_presence_is_online(PurplePresence *presence)
-    glib.gboolean purple_presence_is_status_active(PurplePresence *presence, \
-            char *status_id)
-    glib.gboolean purple_presence_is_status_primitive_active( \
-            PurplePresence *presence, PurpleStatusPrimitive primitive)
+
+    glib.gboolean purple_presence_is_status_active(
+        PurplePresence *presence,
+        char *status_id
+    )
+
+    glib.gboolean purple_presence_is_status_primitive_active(
+            PurplePresence *presence,
+            PurpleStatusPrimitive primitive
+        )
+
     glib.gboolean purple_presence_is_idle(PurplePresence *presence)
+
     time_t purple_presence_get_idle_time(PurplePresence *presence)
+
     time_t purple_presence_get_login_time(PurplePresence *presence)
-    glib.gint purple_presence_compare(PurplePresence *presence1, \
-            PurplePresence *presence2)
+
+    glib.gint purple_presence_compare(
+        PurplePresence *presence1,
+        PurplePresence *presence2
+    )
 
     # Status subsystem
     void *purple_status_get_handle()
