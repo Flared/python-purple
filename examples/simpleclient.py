@@ -35,6 +35,16 @@ class SimpleClient:
         self.username = username
         self.password = password
 
+    def cb_signal_conversation_receiving_im_msg(self, sender, alias, stripped):
+        click.echo(
+            "{prefix}: {message}".format(
+                prefix=click.style(
+                    "[RECEIVING-IM_MSG]:", fg="green", bold=True
+                ),
+                message=stripped.decode(),
+            )
+        )
+
     def protocol_selection(self):
         # If self.protocol_id is set, try to use it
         # before asking anything to the user.
@@ -114,6 +124,12 @@ class SimpleClient:
 
         # Enable account (connects automatically)
         account.set_enabled(True)
+
+        # Register signals
+        self.core.signal_connect(
+            signal_name="receiving-im-msg",
+            callback=self.cb_signal_conversation_receiving_im_msg,
+        )
 
         self.loop()
 
