@@ -315,7 +315,7 @@ cdef class Purple:
             "request": callbacks_request.request_cbs,
         }[type][name] = callback
 
-    def signal_connect(self, str name=None, object cb=None):
+    def signal_connect(self, *, str signal_name=None, object callback=None):
         '''Connects a signal handler to a callback for a particular object.
         Take care not to register a handler function twice. Purple will
         not correct any mistakes for you in this area.
@@ -326,12 +326,12 @@ cdef class Purple:
 
         cdef int handle
 
-        libsignals.signal_cbs[name] = cb
+        libsignals.signal_cbs[signal_name] = callback
 
         ##################
         ## Core Signals ##
         ##################
-        if name == "quitting":
+        if signal_name == "quitting":
             c_libsignals.purple_signal_connect(
                 c_libcore.purple_get_core(),
                 "quitting",
@@ -343,7 +343,7 @@ cdef class Purple:
         #######################
         ## Connection Sinals ##
         #######################
-        elif name == "signed-on":
+        elif signal_name == "signed-on":
             c_libsignals.purple_signal_connect(
                 c_libconnection.purple_connections_get_handle(),
                 "signed-on",
@@ -351,7 +351,7 @@ cdef class Purple:
                 <c_libsignals.PurpleCallback> libsignals_connection.signal_connection_signed_on_cb,
                 NULL,
             )
-        elif name == "signed-off":
+        elif signal_name == "signed-off":
             c_libsignals.purple_signal_connect(
                 c_libconnection.purple_connections_get_handle(),
                 "signed-off",
@@ -359,7 +359,7 @@ cdef class Purple:
                 <c_libsignals.PurpleCallback> libsignals_connection.signal_connection_signed_off_cb,
                 NULL,
             )
-        elif name == "connection-error":
+        elif signal_name == "connection-error":
             c_libsignals.purple_signal_connect(
                 c_libconnection.purple_connections_get_handle(),
                 "connection-error",
@@ -371,7 +371,7 @@ cdef class Purple:
         ########################
         ## Buddy List Signals ##
         ########################
-        elif name == "buddy-signed-on":
+        elif signal_name == "buddy-signed-on":
             c_libsignals.purple_signal_connect(
                 c_libblist.purple_blist_get_handle(),
                 "buddy-signed-on",
@@ -379,7 +379,7 @@ cdef class Purple:
                 <c_libsignals.PurpleCallback> libsignals_blist.signal_blist_buddy_signed_on_cb,
                 NULL,
             )
-        elif name == "buddy-signed-off":
+        elif signal_name == "buddy-signed-off":
             c_libsignals.purple_signal_connect(
                 c_libblist.purple_blist_get_handle(),
                 "buddy-signed-off", &handle,
@@ -390,7 +390,7 @@ cdef class Purple:
         ##########################
         ## Conversation Signals ##
         ##########################
-        elif name == "receiving-im-msg":
+        elif signal_name == "receiving-im-msg":
             c_libsignals.purple_signal_connect(
                 c_libconversation.purple_conversations_get_handle(),
                 "receiving-im-msg",

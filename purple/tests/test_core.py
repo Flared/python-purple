@@ -65,7 +65,7 @@ def test_core_signal_quitting():
         nonlocal called
         called = True
 
-    c.signal_connect("quitting", handler)
+    c.signal_connect(signal_name="quitting", callback=handler)
 
     c.destroy()
 
