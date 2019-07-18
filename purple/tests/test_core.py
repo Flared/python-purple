@@ -39,13 +39,21 @@ def test_create_two_cores():
         debug_enabled=True,
         default_path=tempfile.mkdtemp().encode(),
     )
-    with pytest.raises(Exception, match=r"Initialization failed"):
+    with pytest.raises(Exception, match="Initialization failed"):
         c2.purple_init()
 
 
 def test_core_version(core):
     version = core.get_version()
     assert version.startswith(b"2")
+
+
+def test_bad_signal_name(core):
+    def handler():
+        pass
+
+    with pytest.raises(Exception, match="Unknown signal"):
+        core.signal_connect(signal_name="unknown", callback=handler)
 
 
 def test_core_signal_quitting():
