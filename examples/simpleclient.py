@@ -35,13 +35,18 @@ class SimpleClient:
         self.username = username
         self.password = password
 
-    def cb_signal_conversation_receiving_im_msg(self, sender, alias, stripped):
+    def cb_signal_conversation_received_im_msg(
+        self, *, account, sender, message, conversation, flags
+    ):
         click.echo(
-            "{prefix}: {message}".format(
-                prefix=click.style(
-                    "[RECEIVING-IM_MSG]:", fg="green", bold=True
+            "{prefix} {sender} {message}".format(
+                prefix=click.style("[RECEIVED-IM-MSG]", fg="green", bold=True),
+                sender=click.style(
+                    "[{sender}]".format(sender=sender.decode()),
+                    fg="yellow",
+                    bold=True,
                 ),
-                message=stripped.decode(),
+                message=message.decode(),
             )
         )
 
@@ -127,8 +132,8 @@ class SimpleClient:
 
         # Register signals
         self.core.signal_connect(
-            signal_name="receiving-im-msg",
-            callback=self.cb_signal_conversation_receiving_im_msg,
+            signal_name="received-im-msg",
+            callback=self.cb_signal_conversation_received_im_msg,
         )
 
         self.loop()

@@ -402,12 +402,24 @@ cdef class Purple:
                     <c_libsignals.PurpleCallback> libsignals_conversation.signal_conversation_receiving_im_msg_cb,
                     NULL,
                 )
+            elif signal_name == "received-im-msg":
+                c_libsignals.purple_signal_connect(
+                    c_libconversation.purple_conversations_get_handle(),
+                    "received-im-msg",
+                    &handle,
+                    <c_libsignals.PurpleCallback> libsignals_conversation.signal_conversation_received_im_msg_cb,
+                    NULL,
+                )
 
             ####################
             ## Unknown Signal ##
             ####################
             else:
-                raise Exception("Unknown signal")
+                raise Exception(
+                    "Unknown signal '{signal_name}'".format(
+                        signal_name=signal_name
+                    )
+                )
 
         callbacks.append(callback)
 

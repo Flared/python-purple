@@ -5,11 +5,13 @@ from libpurple cimport util as c_libutil
 
 from purple cimport signals as libsignals
 
-cdef glib.gboolean signal_conversation_receiving_im_msg_cb(c_libaccount.PurpleAccount *account,
-                                                           char **sender,
-                                                           char **message,
-                                                           c_libconversation.PurpleConversation *conv,
-                                                           c_libconversation.PurpleMessageFlags *flags):
+cdef glib.gboolean signal_conversation_receiving_im_msg_cb(
+        c_libaccount.PurpleAccount* account,
+        char** sender,
+        char** message,
+        c_libconversation.PurpleConversation* conv,
+        c_libconversation.PurpleMessageFlags* flags
+    ):
     """
     Emitted when an IM is received. The callback can replace the name of the
     sender, the message, or the flags by modifying the pointer to the strings
@@ -22,19 +24,42 @@ cdef glib.gboolean signal_conversation_receiving_im_msg_cb(c_libaccount.PurpleAc
     @params conv     The IM conversation.
     @params flags    A pointer to the IM message flags.
     """
-    cdef c_libblist.PurpleBuddy *buddy = c_libblist.purple_find_buddy(account, sender[0])
-    cdef char *c_alias = NULL
-
-    c_alias = <char *> c_libblist.purple_buddy_get_alias_only(buddy)
-    if c_alias == NULL:
-        alias = None
-    else:
-        alias = c_alias
-
     stripped = c_libutil.purple_markup_strip_html(message[0])
 
     cdef glib.gboolean ret = False
     for callback in libsignals.signal_cbs.get("receiving-im-msg", tuple()):
-        ret = ret or callback(sender[0], alias, stripped)
+        ret = ret or callback(
+            account=None,
+            sender=sender[0],
+            message=stripped,
+            conversation=None,
+            flags=None,
+        )
 
     return ret
+
+cdef void signal_conversation_received_im_msg_cb(
+        c_libaccount.PurpleAccount* account,
+        char* sender,
+        char* message,
+        c_libconversation.PurpleConversation* conv,
+        c_libconversation.PurpleMessageFlags* flags
+    ):
+    """
+    Emitted when after IM is received.
+    @params account  The account the message was received on.
+    @params sender   A pointer to the username of the sender.
+    @params message  A pointer to the message that was sent.
+    @params conv     The IM conversation.
+    @params flags    A pointer to the IM message flags.
+    """
+    cdef char* stripped = c_libutil.purple_markup_strip_html(message)
+
+    for callback in libsignals.signal_cbs.get("received-im-msg", tuple()):
+        callback(
+            account=None,
+            sender=sender,
+            message=stripped,
+            conversation=None,
+            flags=None,
+        )
