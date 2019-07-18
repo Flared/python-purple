@@ -280,14 +280,14 @@ cdef class Purple:
         if ret is False:
             c_libdebug.purple_debug_fatal("main", "%s", "libpurple " \
                                        "initialization failed.\n")
-            return False
+            raise Exception("Initialization failed")
 
         # check if there is another instance of libpurple running
         if c_libcore.purple_core_ensure_single_instance() == False:
             c_libdebug.purple_debug_fatal("main", "%s", "Another instance of " \
                                       "libpurple is already running.\n")
             c_libcore.purple_core_quit()
-            return False
+            raise Exception("Another instance of libpurple is already running.")
 
         # create and load the buddy list
         c_libblist.purple_set_blist(c_libblist.purple_blist_new())

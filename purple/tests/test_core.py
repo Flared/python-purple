@@ -1,6 +1,9 @@
 import sys
 import os
 import tempfile
+
+import pytest
+
 import purple
 
 
@@ -15,6 +18,29 @@ def test_core_init():
     )
     c.purple_init()
     c.destroy()
+
+
+def test_create_two_cores():
+    c = purple.Purple(
+        b"name",
+        b"version",
+        b"website",
+        b"dev-website",
+        debug_enabled=True,
+        default_path=tempfile.mkdtemp().encode(),
+    )
+    assert c.purple_init() == True
+
+    c2 = purple.Purple(
+        b"name",
+        b"version",
+        b"website",
+        b"dev-website",
+        debug_enabled=True,
+        default_path=tempfile.mkdtemp().encode(),
+    )
+    with pytest.raises(Exception, match=r"Initialization failed"):
+        c2.purple_init()
 
 
 def test_core_version(core):
