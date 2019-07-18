@@ -3,7 +3,7 @@ from libpurple cimport account as c_libaccount
 from libpurple cimport blist as c_libblist
 from libpurple cimport util as c_libutil
 
-from purple cimport signals
+from purple cimport signals as libsignals
 
 cdef glib.gboolean signal_conversation_receiving_im_msg_cb(c_libaccount.PurpleAccount *account,
                                                            char **sender,
@@ -33,5 +33,8 @@ cdef glib.gboolean signal_conversation_receiving_im_msg_cb(c_libaccount.PurpleAc
 
     stripped = c_libutil.purple_markup_strip_html(message[0])
 
-    if "receiving-im-msg" in signals.signal_cbs:
-        return (<object> signals.signal_cbs["receiving-im-msg"])(sender[0], alias, stripped)
+    cdef glib.gboolean ret = False
+    for callback in libsignals.signal_cbs.get("receiving-im-msg", tuple()):
+        ret = ret or callback(sender[0], alias, stripped)
+
+    return ret

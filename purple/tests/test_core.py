@@ -56,6 +56,30 @@ def test_bad_signal_name(core):
         core.signal_connect(signal_name="unknown", callback=handler)
 
 
+def test_two_signals(core):
+
+    signal_1_count = 0
+
+    def signal_1_callback():
+        nonlocal signal_1_count
+        signal_1_count = signal_1_count + 1
+
+    signal_2_count = 0
+
+    def signal_2_callback():
+        nonlocal signal_2_count
+        signal_2_count = signal_2_count + 1
+
+    core.signal_connect(signal_name="quitting", callback=signal_1_callback)
+    core.signal_connect(signal_name="quitting", callback=signal_2_callback)
+    core.signal_connect(signal_name="quitting", callback=signal_2_callback)
+
+    core.destroy()
+
+    assert signal_1_count == 1
+    assert signal_2_count == 2
+
+
 def test_core_signal_quitting():
     c = purple.Purple(
         b"name",

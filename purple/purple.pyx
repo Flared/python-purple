@@ -326,84 +326,92 @@ cdef class Purple:
 
         cdef int handle
 
-        libsignals.signal_cbs[signal_name] = callback
+        cdef list callbacks = libsignals.signal_cbs.get(signal_name, None)
 
-        ##################
-        ## Core Signals ##
-        ##################
-        if signal_name == "quitting":
-            c_libsignals.purple_signal_connect(
-                c_libcore.purple_get_core(),
-                "quitting",
-                &handle,
-                <c_libsignals.PurpleCallback> libsignals_core.signal_core_quitting_cb,
-                NULL,
-            )
+        if callbacks is None:
+            callbacks = []
+            libsignals.signal_cbs[signal_name] = callbacks
 
-        #######################
-        ## Connection Sinals ##
-        #######################
-        elif signal_name == "signed-on":
-            c_libsignals.purple_signal_connect(
-                c_libconnection.purple_connections_get_handle(),
-                "signed-on",
-                &handle,
-                <c_libsignals.PurpleCallback> libsignals_connection.signal_connection_signed_on_cb,
-                NULL,
-            )
-        elif signal_name == "signed-off":
-            c_libsignals.purple_signal_connect(
-                c_libconnection.purple_connections_get_handle(),
-                "signed-off",
-                &handle,
-                <c_libsignals.PurpleCallback> libsignals_connection.signal_connection_signed_off_cb,
-                NULL,
-            )
-        elif signal_name == "connection-error":
-            c_libsignals.purple_signal_connect(
-                c_libconnection.purple_connections_get_handle(),
-                "connection-error",
-                &handle,
-                <c_libsignals.PurpleCallback> libsignals_connection.signal_connection_connection_error_cb,
-                NULL,
-            )
+            ##################
+            ## Core Signals ##
+            ##################
+            if signal_name == "quitting":
+                c_libsignals.purple_signal_connect(
+                    c_libcore.purple_get_core(),
+                    "quitting",
+                    &handle,
+                    <c_libsignals.PurpleCallback> libsignals_core.signal_core_quitting_cb,
+                    NULL,
+                )
 
-        ########################
-        ## Buddy List Signals ##
-        ########################
-        elif signal_name == "buddy-signed-on":
-            c_libsignals.purple_signal_connect(
-                c_libblist.purple_blist_get_handle(),
-                "buddy-signed-on",
-                &handle,
-                <c_libsignals.PurpleCallback> libsignals_blist.signal_blist_buddy_signed_on_cb,
-                NULL,
-            )
-        elif signal_name == "buddy-signed-off":
-            c_libsignals.purple_signal_connect(
-                c_libblist.purple_blist_get_handle(),
-                "buddy-signed-off", &handle,
-                <c_libsignals.PurpleCallback> libsignals_blist.signal_blist_buddy_signed_off_cb,
-                NULL
-            )
+            #######################
+            ## Connection Sinals ##
+            #######################
+            elif signal_name == "signed-on":
+                c_libsignals.purple_signal_connect(
+                    c_libconnection.purple_connections_get_handle(),
+                    "signed-on",
+                    &handle,
+                    <c_libsignals.PurpleCallback> libsignals_connection.signal_connection_signed_on_cb,
+                    NULL,
+                )
+            elif signal_name == "signed-off":
+                c_libsignals.purple_signal_connect(
+                    c_libconnection.purple_connections_get_handle(),
+                    "signed-off",
+                    &handle,
+                    <c_libsignals.PurpleCallback> libsignals_connection.signal_connection_signed_off_cb,
+                    NULL,
+                )
+            elif signal_name == "connection-error":
+                c_libsignals.purple_signal_connect(
+                    c_libconnection.purple_connections_get_handle(),
+                    "connection-error",
+                    &handle,
+                    <c_libsignals.PurpleCallback> libsignals_connection.signal_connection_connection_error_cb,
+                    NULL,
+                )
 
-        ##########################
-        ## Conversation Signals ##
-        ##########################
-        elif signal_name == "receiving-im-msg":
-            c_libsignals.purple_signal_connect(
-                c_libconversation.purple_conversations_get_handle(),
-                "receiving-im-msg",
-                &handle,
-                <c_libsignals.PurpleCallback> libsignals_conversation.signal_conversation_receiving_im_msg_cb,
-                NULL,
-             )
+            ########################
+            ## Buddy List Signals ##
+            ########################
+            elif signal_name == "buddy-signed-on":
+                c_libsignals.purple_signal_connect(
+                    c_libblist.purple_blist_get_handle(),
+                    "buddy-signed-on",
+                    &handle,
+                    <c_libsignals.PurpleCallback> libsignals_blist.signal_blist_buddy_signed_on_cb,
+                    NULL,
+                )
+            elif signal_name == "buddy-signed-off":
+                c_libsignals.purple_signal_connect(
+                    c_libblist.purple_blist_get_handle(),
+                    "buddy-signed-off", &handle,
+                    <c_libsignals.PurpleCallback> libsignals_blist.signal_blist_buddy_signed_off_cb,
+                    NULL
+                )
 
-        ####################
-        ## Unknown Signal ##
-        ####################
-        else:
-            raise Exception("Unknown signal")
+            ##########################
+            ## Conversation Signals ##
+            ##########################
+            elif signal_name == "receiving-im-msg":
+                c_libsignals.purple_signal_connect(
+                    c_libconversation.purple_conversations_get_handle(),
+                    "receiving-im-msg",
+                    &handle,
+                    <c_libsignals.PurpleCallback> libsignals_conversation.signal_conversation_receiving_im_msg_cb,
+                    NULL,
+                )
+
+            ####################
+            ## Unknown Signal ##
+            ####################
+            else:
+                raise Exception("Unknown signal")
+
+        callbacks.append(callback)
+
+        
 
     def accounts_get_all(self):
         '''Returns a list of all accounts.
