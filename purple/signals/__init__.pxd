@@ -1,1 +1,1 @@
-cdef object signal_cbs
+cdef dict signal_cbs
