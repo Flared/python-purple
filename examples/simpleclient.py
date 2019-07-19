@@ -132,7 +132,7 @@ class SimpleClient:
 
         # Register signals
         self.core.signal_connect(
-            signal_name="received-im-msg",
+            signal_name=purple.signals.Signals.SIGNAL_CONVERSATION_RECEIVED_IM_MSG,
             callback=self.cb_signal_conversation_received_im_msg,
         )
 

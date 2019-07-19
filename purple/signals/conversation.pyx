@@ -5,6 +5,7 @@ from libpurple cimport util as c_libutil
 
 from purple cimport signals as libsignals
 
+cdef str SIGNAL_CONVERSATION_RECEIVING_IM_MSG = "receiving-im-msg"
 cdef glib.gboolean signal_conversation_receiving_im_msg_cb(
         c_libaccount.PurpleAccount* account,
         char** sender,
@@ -27,7 +28,7 @@ cdef glib.gboolean signal_conversation_receiving_im_msg_cb(
     stripped = c_libutil.purple_markup_strip_html(message[0])
 
     cdef glib.gboolean ret = False
-    for callback in libsignals.signal_cbs.get("receiving-im-msg", tuple()):
+    for callback in libsignals.signal_cbs.get(SIGNAL_CONVERSATION_RECEIVING_IM_MSG, tuple()):
         ret = ret or callback(
             account=None,
             sender=sender[0],
@@ -38,6 +39,7 @@ cdef glib.gboolean signal_conversation_receiving_im_msg_cb(
 
     return ret
 
+cdef str SIGNAL_CONVERSATION_RECEIVED_IM_MSG = "received-im-msg"
 cdef void signal_conversation_received_im_msg_cb(
         c_libaccount.PurpleAccount* account,
         char* sender,
@@ -55,7 +57,7 @@ cdef void signal_conversation_received_im_msg_cb(
     """
     cdef char* stripped = c_libutil.purple_markup_strip_html(message)
 
-    for callback in libsignals.signal_cbs.get("received-im-msg", tuple()):
+    for callback in libsignals.signal_cbs.get(SIGNAL_CONVERSATION_RECEIVED_IM_MSG, tuple()):
         callback(
             account=None,
             sender=sender,

@@ -5,6 +5,7 @@ from libpurple cimport account as c_libaccount
 
 from purple cimport signals as libsignals
 
+cdef str SIGNAL_CONNECTION_SIGNED_ON = "signed-on"
 cdef void signal_connection_signed_on_cb(c_libconnection.PurpleConnection *gc,
                                          glib.gpointer null):
     """
@@ -27,9 +28,10 @@ cdef void signal_connection_signed_on_cb(c_libconnection.PurpleConnection *gc,
     else:
         protocol_id = c_protocol_id
 
-    for callback in libsignals.signal_cbs.get("signed-on", tuple()):
+    for callback in libsignals.signal_cbs.get(SIGNAL_CONNECTION_SIGNED_ON, tuple()):
         callback(username, protocol_id)
 
+SIGNAL_CONNECTION_SIGNED_OFF = "signed-off"
 cdef void signal_connection_signed_off_cb(c_libconnection.PurpleConnection *gc,
                                           glib.gpointer null):
     """
@@ -52,9 +54,10 @@ cdef void signal_connection_signed_off_cb(c_libconnection.PurpleConnection *gc,
     else:
         protocol_id = c_protocol_id
 
-    for callback in libsignals.signal_cbs.get("signed-off", tuple()):
+    for callback in libsignals.signal_cbs.get(SIGNAL_CONNECTION_SIGNED_OFF, tuple()):
         callback(username, protocol_id)
 
+cdef str SIGNAL_CONNECTION_CONNECTION_ERROR = "connection-error"
 cdef void signal_connection_connection_error_cb(c_libconnection.PurpleConnection *gc,
                                                 c_libconnection.PurpleConnectionError err,
                                                 glib.const_gchar *c_desc):
@@ -104,5 +107,5 @@ cdef void signal_connection_connection_error_cb(c_libconnection.PurpleConnection
     else:
         desc = None
 
-    for callback in libsignals.signal_cbs.get("connection-error", tuple()):
+    for callback in libsignals.signal_cbs.get(SIGNAL_CONNECTION_CONNECTION_ERROR, tuple()):
         callback(username, protocol_id, short_desc, desc)

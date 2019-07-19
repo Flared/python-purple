@@ -2,6 +2,7 @@ from libpurple cimport blist as c_libblist
 
 from purple cimport signals as libsignals
 
+cdef str SIGNAL_BLIST_BUDDY_SIGNED_ON = "buddy-signed-on"
 cdef void signal_blist_buddy_signed_on_cb(c_libblist.PurpleBuddy *buddy):
     """
     Emitted when a buddy on your buddy list signs on.
@@ -22,9 +23,10 @@ cdef void signal_blist_buddy_signed_on_cb(c_libblist.PurpleBuddy *buddy):
     else:
         alias = c_alias
 
-    for callback in libsignals.signal_cbs.get("buddy-signed-on", tuple()):
+    for callback in libsignals.signal_cbs.get(SIGNAL_BLIST_BUDDY_SIGNED_ON, tuple()):
         callback(name, alias)
 
+cdef str SIGNAL_BLIST_BUDDY_SIGNED_OFF = "buddy-signed-off"
 cdef void signal_blist_buddy_signed_off_cb(c_libblist.PurpleBuddy *buddy):
     """
     Emitted when a buddy on your buddy list signs off.
@@ -45,5 +47,5 @@ cdef void signal_blist_buddy_signed_off_cb(c_libblist.PurpleBuddy *buddy):
     else:
         alias = c_alias
 
-    for callback in libsignals.signal_cbs.get("buddy-signed-off", tuple()):
+    for callback in libsignals.signal_cbs.get(SIGNAL_BLIST_BUDDY_SIGNED_OFF, tuple()):
         callback(name, alias)

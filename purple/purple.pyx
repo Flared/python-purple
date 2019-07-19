@@ -335,10 +335,10 @@ cdef class Purple:
             ##################
             ## Core Signals ##
             ##################
-            if signal_name == "quitting":
+            if signal_name == libsignals_core.SIGNAL_CORE_QUITTING:
                 c_libsignals.purple_signal_connect(
                     c_libcore.purple_get_core(),
-                    "quitting",
+                    libsignals_core.SIGNAL_CORE_QUITTING.encode(),
                     &handle,
                     <c_libsignals.PurpleCallback> libsignals_core.signal_core_quitting_cb,
                     NULL,
@@ -347,26 +347,26 @@ cdef class Purple:
             #######################
             ## Connection Sinals ##
             #######################
-            elif signal_name == "signed-on":
+            elif signal_name == libsignals_connection.SIGNAL_CONNECTION_SIGNED_ON:
                 c_libsignals.purple_signal_connect(
                     c_libconnection.purple_connections_get_handle(),
-                    "signed-on",
+                    libsignals_connection.SIGNAL_CONNECTION_SIGNED_ON.encode(),
                     &handle,
                     <c_libsignals.PurpleCallback> libsignals_connection.signal_connection_signed_on_cb,
                     NULL,
                 )
-            elif signal_name == "signed-off":
+            elif signal_name == libsignals_connection.SIGNAL_CONNECTION_SIGNED_OFF:
                 c_libsignals.purple_signal_connect(
                     c_libconnection.purple_connections_get_handle(),
-                    "signed-off",
+                    libsignals_connection.SIGNAL_CONNECTION_SIGNED_OFF.encode(),
                     &handle,
                     <c_libsignals.PurpleCallback> libsignals_connection.signal_connection_signed_off_cb,
                     NULL,
                 )
-            elif signal_name == "connection-error":
+            elif signal_name == libsignals_connection.SIGNAL_CONNECTION_CONNECTION_ERROR:
                 c_libsignals.purple_signal_connect(
                     c_libconnection.purple_connections_get_handle(),
-                    "connection-error",
+                    libsignals_connection.SIGNAL_CONNECTION_CONNECTION_ERROR.encode(),
                     &handle,
                     <c_libsignals.PurpleCallback> libsignals_connection.signal_connection_connection_error_cb,
                     NULL,
@@ -375,18 +375,19 @@ cdef class Purple:
             ########################
             ## Buddy List Signals ##
             ########################
-            elif signal_name == "buddy-signed-on":
+            elif signal_name == libsignals_blist.SIGNAL_BLIST_BUDDY_SIGNED_ON:
                 c_libsignals.purple_signal_connect(
                     c_libblist.purple_blist_get_handle(),
-                    "buddy-signed-on",
+                    libsignals_blist.SIGNAL_BLIST_BUDDY_SIGNED_ON.encode(),
                     &handle,
                     <c_libsignals.PurpleCallback> libsignals_blist.signal_blist_buddy_signed_on_cb,
                     NULL,
                 )
-            elif signal_name == "buddy-signed-off":
+            elif signal_name == libsignals_blist.SIGNAL_BLIST_BUDDY_SIGNED_OFF:
                 c_libsignals.purple_signal_connect(
                     c_libblist.purple_blist_get_handle(),
-                    "buddy-signed-off", &handle,
+                    libsignals_blist.SIGNAL_BLIST_BUDDY_SIGNED_OFF.encode(),
+                    &handle,
                     <c_libsignals.PurpleCallback> libsignals_blist.signal_blist_buddy_signed_off_cb,
                     NULL
                 )
@@ -394,18 +395,18 @@ cdef class Purple:
             ##########################
             ## Conversation Signals ##
             ##########################
-            elif signal_name == "receiving-im-msg":
+            elif signal_name == libsignals_conversation.SIGNAL_CONVERSATION_RECEIVING_IM_MSG:
                 c_libsignals.purple_signal_connect(
                     c_libconversation.purple_conversations_get_handle(),
-                    "receiving-im-msg",
+                    libsignals_conversation.SIGNAL_CONVERSATION_RECEIVING_IM_MSG.encode(),
                     &handle,
                     <c_libsignals.PurpleCallback> libsignals_conversation.signal_conversation_receiving_im_msg_cb,
                     NULL,
                 )
-            elif signal_name == "received-im-msg":
+            elif signal_name == libsignals_conversation.SIGNAL_CONVERSATION_RECEIVED_IM_MSG:
                 c_libsignals.purple_signal_connect(
                     c_libconversation.purple_conversations_get_handle(),
-                    "received-im-msg",
+                    libsignals_conversation.SIGNAL_CONVERSATION_RECEIVED_IM_MSG.encode(),
                     &handle,
                     <c_libsignals.PurpleCallback> libsignals_conversation.signal_conversation_received_im_msg_cb,
                     NULL,
