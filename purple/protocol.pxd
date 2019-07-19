@@ -17,12 +17,12 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from libpurple cimport plugin as c_plugin
+from libpurple cimport plugin as c_libplugin
 
 
 cdef class Protocol:
 
-    cdef c_plugin.PurplePlugin* _c_plugin
+    cdef c_libplugin.PurplePlugin* _c_plugin
 
     @staticmethod
-    cdef Protocol _new(c_plugin.PurplePlugin* c_plugin)
+    cdef Protocol _new(c_libplugin.PurplePlugin* c_plugin)
