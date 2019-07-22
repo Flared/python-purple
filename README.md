@@ -20,6 +20,7 @@ No API stability promises are made at this time.
 See [simpleclient.py](examples/simpleclient.py) for usage examples.
 
 # Roadmap
+- [ ] Use kwargs for all callbacks.
 - [ ] Strings should be used instead of bytes wherever it makes sense.
 
 # Changelog
