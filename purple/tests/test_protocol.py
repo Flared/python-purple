@@ -1,6 +1,10 @@
 import purple
 
 
+def test_prplnull_is_present(core):
+    assert purple.Protocol.find_with_id(b"prpl-null")
+
+
 def test_protocol_find_with_id(core):
     protocol = purple.Protocol.find_with_id(b"prpl-irc")
     assert protocol
