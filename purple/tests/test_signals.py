@@ -2,7 +2,7 @@ import purple
 
 
 def test_signals_enum(core):
-    signals = purple.signals.Signals
+    signals = purple.Signals
 
     assert signals.SIGNAL_BLIST_BUDDY_SIGNED_ON == "buddy-signed-on"
     assert signals.SIGNAL_BLIST_BUDDY_SIGNED_OFF == "buddy-signed-off"
