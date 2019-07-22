@@ -7,11 +7,11 @@ from purple cimport signals as libsignals
 
 cdef str SIGNAL_CONVERSATION_RECEIVING_IM_MSG = "receiving-im-msg"
 cdef glib.gboolean signal_conversation_receiving_im_msg_cb(
-        c_libaccount.PurpleAccount* account,
-        char** sender,
-        char** message,
-        c_libconversation.PurpleConversation* conv,
-        c_libconversation.PurpleMessageFlags* flags
+        c_libaccount.PurpleAccount* c_account,
+        char** c_sender,
+        char** c_message,
+        c_libconversation.PurpleConversation* c_conv,
+        c_libconversation.PurpleMessageFlags* c_flags
     ):
     """
     Emitted when an IM is received. The callback can replace the name of the
@@ -25,14 +25,15 @@ cdef glib.gboolean signal_conversation_receiving_im_msg_cb(
     @params conv     The IM conversation.
     @params flags    A pointer to the IM message flags.
     """
-    stripped = c_libutil.purple_markup_strip_html(message[0])
+    cdef bytes sender = c_sender[0]
+    cdef bytes message = c_message[0]
 
     cdef glib.gboolean ret = False
     for callback in libsignals.signal_cbs.get(SIGNAL_CONVERSATION_RECEIVING_IM_MSG, tuple()):
         ret = ret or callback(
             account=None,
             sender=sender[0],
-            message=stripped,
+            message=message[0],
             conversation=None,
             flags=None,
         )
@@ -41,11 +42,11 @@ cdef glib.gboolean signal_conversation_receiving_im_msg_cb(
 
 cdef str SIGNAL_CONVERSATION_RECEIVED_IM_MSG = "received-im-msg"
 cdef void signal_conversation_received_im_msg_cb(
-        c_libaccount.PurpleAccount* account,
-        char* sender,
-        char* message,
-        c_libconversation.PurpleConversation* conv,
-        c_libconversation.PurpleMessageFlags* flags
+        c_libaccount.PurpleAccount* c_account,
+        char* c_sender,
+        char* c_message,
+        c_libconversation.PurpleConversation* c_conv,
+        c_libconversation.PurpleMessageFlags* c_flags
     ):
     """
     Emitted when after IM is received.
@@ -55,13 +56,14 @@ cdef void signal_conversation_received_im_msg_cb(
     @params conv     The IM conversation.
     @params flags    A pointer to the IM message flags.
     """
-    cdef char* stripped = c_libutil.purple_markup_strip_html(message)
+    cdef bytes sender = c_sender
+    cdef bytes message = c_message
 
     for callback in libsignals.signal_cbs.get(SIGNAL_CONVERSATION_RECEIVED_IM_MSG, tuple()):
         callback(
             account=None,
             sender=sender,
-            message=stripped,
+            message=message,
             conversation=None,
             flags=None,
         )
