@@ -5,85 +5,77 @@ from libpurple cimport account as c_libaccount
 
 from purple cimport signals as libsignals
 
+cdef str SIGNAL_CONNECTION_SIGNING_ON = "signing-on"
+cdef void signal_connection_signing_on_cb(
+    c_libconnection.PurpleConnection* c_connection,
+):
+    """
+    Emitted when a connection is about to sign on.
+    @params gc The connection that is about to sign on.
+    """
+
+    for callback in libsignals.signal_cbs.get(SIGNAL_CONNECTION_SIGNING_ON, tuple()):
+        callback(
+            connection=None,
+        )
+
 cdef str SIGNAL_CONNECTION_SIGNED_ON = "signed-on"
-cdef void signal_connection_signed_on_cb(c_libconnection.PurpleConnection *gc,
-                                         glib.gpointer null):
+cdef void signal_connection_signed_on_cb(
+    c_libconnection.PurpleConnection* c_connection,
+):
     """
     Emitted when a connection has signed on.
     @params gc  The connection that has signed on.
     """
-    cdef c_libaccount.PurpleAccount *acc = c_libconnection.purple_connection_get_account(gc)
-    cdef char *c_username = NULL
-    cdef char *c_protocol_id = NULL
-
-    c_username = <char *> c_libaccount.purple_account_get_username(acc)
-    if c_username == NULL:
-        username = None
-    else:
-        username = c_username
-
-    c_protocol_id = <char *> c_libaccount.purple_account_get_protocol_id(acc)
-    if c_protocol_id == NULL:
-        protocol_id = None
-    else:
-        protocol_id = c_protocol_id
 
     for callback in libsignals.signal_cbs.get(SIGNAL_CONNECTION_SIGNED_ON, tuple()):
-        callback(username, protocol_id)
+        callback(
+            connection=None,
+        )
+
+cdef str SIGNAL_CONNECTION_SIGNING_OFF = "signing-off"
+cdef void signal_connection_signing_off_cb(
+    c_libconnection.PurpleConnection* c_connection,
+):
+    """
+    Emitted when a connection is about to sign off.
+    @params gc The connection that is about to sign off.
+    """
+
+    for callback in libsignals.signal_cbs.get(SIGNAL_CONNECTION_SIGNING_OFF, tuple()):
+        callback(
+            connection=None,
+        )
 
 SIGNAL_CONNECTION_SIGNED_OFF = "signed-off"
-cdef void signal_connection_signed_off_cb(c_libconnection.PurpleConnection *gc,
-                                          glib.gpointer null):
+cdef void signal_connection_signed_off_cb(
+    c_libconnection.PurpleConnection *c_connection,
+):
     """
     Emitted when a connection has signed off.
     @params gc  The connection that has signed off.
     """
-    cdef c_libaccount.PurpleAccount *acc = c_libconnection.purple_connection_get_account(gc)
-    cdef char *c_username = NULL
-    cdef char *c_protocol_id = NULL
-
-    c_username = <char *> c_libaccount.purple_account_get_username(acc)
-    if c_username == NULL:
-        username = None
-    else:
-        username = c_username
-
-    c_protocol_id = <char *> c_libaccount.purple_account_get_protocol_id(acc)
-    if c_protocol_id == NULL:
-        protocol_id = None
-    else:
-        protocol_id = c_protocol_id
 
     for callback in libsignals.signal_cbs.get(SIGNAL_CONNECTION_SIGNED_OFF, tuple()):
-        callback(username, protocol_id)
+        callback(
+            connection=None,
+        )
 
 cdef str SIGNAL_CONNECTION_CONNECTION_ERROR = "connection-error"
-cdef void signal_connection_connection_error_cb(c_libconnection.PurpleConnection *gc,
-                                                c_libconnection.PurpleConnectionError err,
-                                                glib.const_gchar *c_desc):
+cdef void signal_connection_connection_error_cb(
+    c_libconnection.PurpleConnection *c_connection,
+    c_libconnection.PurpleConnectionError c_connection_error,
+    glib.const_gchar *c_description
+):
     """
     Emitted when a connection error occurs, before signed-off.
     @params gc   The connection on which the error has occured
     @params err  The error that occured
     @params desc A description of the error, giving more information
     """
-    cdef c_libaccount.PurpleAccount *acc = c_libconnection.purple_connection_get_account(gc)
-    cdef char *c_username = NULL
-    cdef char *c_protocol_id = NULL
+    cdef bytes description = c_description
 
-    c_username = <char *> c_libaccount.purple_account_get_username(acc)
-    if c_username:
-        username = <char *> c_username
-    else:
-        username = None
-
-    c_protocol_id = <char *> c_libaccount.purple_account_get_protocol_id(acc)
-    if c_protocol_id:
-        protocol_id = <char *> c_protocol_id
-    else:
-        protocol_id = None
-
-    short_desc = {
+    cdef bytes short_description = {
         0: "Network error",
         1: "Invalid username",
         2: "Authentication failed",
@@ -100,12 +92,12 @@ cdef void signal_connection_connection_error_cb(c_libconnection.PurpleConnection
         13: "SSL certificate fingerprint mismatch",
         14: "SSL certificate self signed",
         15: "SSL certificate other error",
-        16: "Other error" }[<int> err]
+        16: "Other error" }[<int> c_connection_error]
 
-    if c_desc:
-        desc = str(<char *> c_desc)
-    else:
-        desc = None
 
     for callback in libsignals.signal_cbs.get(SIGNAL_CONNECTION_CONNECTION_ERROR, tuple()):
-        callback(username, protocol_id, short_desc, desc)
+        callback(
+            connection=None,
+            description=description,
+            short_description=short_description,
+        )

@@ -7,12 +7,12 @@ from purple cimport signals as libsignals
 
 cdef str SIGNAL_CONVERSATION_RECEIVING_IM_MSG = "receiving-im-msg"
 cdef glib.gboolean signal_conversation_receiving_im_msg_cb(
-        c_libaccount.PurpleAccount* c_account,
-        char** c_sender,
-        char** c_message,
-        c_libconversation.PurpleConversation* c_conv,
-        c_libconversation.PurpleMessageFlags* c_flags
-    ):
+    c_libaccount.PurpleAccount* c_account,
+    char** c_sender,
+    char** c_message,
+    c_libconversation.PurpleConversation* c_conv,
+    c_libconversation.PurpleMessageFlags* c_flags
+):
     """
     Emitted when an IM is received. The callback can replace the name of the
     sender, the message, or the flags by modifying the pointer to the strings
@@ -42,12 +42,12 @@ cdef glib.gboolean signal_conversation_receiving_im_msg_cb(
 
 cdef str SIGNAL_CONVERSATION_RECEIVED_IM_MSG = "received-im-msg"
 cdef void signal_conversation_received_im_msg_cb(
-        c_libaccount.PurpleAccount* c_account,
-        char* c_sender,
-        char* c_message,
-        c_libconversation.PurpleConversation* c_conv,
-        c_libconversation.PurpleMessageFlags* c_flags
-    ):
+    c_libaccount.PurpleAccount* c_account,
+    char* c_sender,
+    char* c_message,
+    c_libconversation.PurpleConversation* c_conv,
+    c_libconversation.PurpleMessageFlags* c_flags
+):
     """
     Emitted when after IM is received.
     @params account  The account the message was received on.

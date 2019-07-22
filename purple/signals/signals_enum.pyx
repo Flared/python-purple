@@ -21,12 +21,20 @@ cdef class _Signals:
     ## Connection ##
     ################
     @property
-    def SIGNAL_CONNECTION_SIGNED_OFF(self):
-        return connection_signals.SIGNAL_CONNECTION_SIGNED_OFF
+    def SIGNAL_CONNECTION_SIGNING_ON(self):
+        return connection_signals.SIGNAL_CONNECTION_SIGNING_ON
 
     @property
     def SIGNAL_CONNECTION_SIGNED_ON(self):
         return connection_signals.SIGNAL_CONNECTION_SIGNED_ON
+
+    @property
+    def SIGNAL_CONNECTION_SIGNING_OFF(self):
+        return connection_signals.SIGNAL_CONNECTION_SIGNING_OFF
+
+    @property
+    def SIGNAL_CONNECTION_SIGNED_OFF(self):
+        return connection_signals.SIGNAL_CONNECTION_SIGNED_OFF
 
     @property
     def SIGNAL_CONNECTION_CONNECTION_ERROR(self):

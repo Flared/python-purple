@@ -70,9 +70,18 @@ def test_two_signals(core):
         nonlocal signal_2_count
         signal_2_count = signal_2_count + 1
 
-    core.signal_connect(signal_name="quitting", callback=signal_1_callback)
-    core.signal_connect(signal_name="quitting", callback=signal_2_callback)
-    core.signal_connect(signal_name="quitting", callback=signal_2_callback)
+    core.signal_connect(
+        signal_name=purple.Signals.SIGNAL_CORE_QUITTING,
+        callback=signal_1_callback,
+    )
+    core.signal_connect(
+        signal_name=purple.Signals.SIGNAL_CORE_QUITTING,
+        callback=signal_2_callback,
+    )
+    core.signal_connect(
+        signal_name=purple.Signals.SIGNAL_CORE_QUITTING,
+        callback=signal_2_callback,
+    )
 
     core.destroy()
 
@@ -97,7 +106,9 @@ def test_core_signal_quitting():
         nonlocal called
         called = True
 
-    c.signal_connect(signal_name="quitting", callback=handler)
+    c.signal_connect(
+        signal_name=purple.Signals.SIGNAL_CORE_QUITTING, callback=handler
+    )
 
     c.destroy()
 

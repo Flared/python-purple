@@ -7,7 +7,9 @@ def test_signals_enum(core):
     assert signals.SIGNAL_BLIST_BUDDY_SIGNED_ON == "buddy-signed-on"
     assert signals.SIGNAL_BLIST_BUDDY_SIGNED_OFF == "buddy-signed-off"
 
+    assert signals.SIGNAL_CONNECTION_SIGNING_ON == "signing-on"
     assert signals.SIGNAL_CONNECTION_SIGNED_ON == "signed-on"
+    assert signals.SIGNAL_CONNECTION_SIGNING_OFF == "signing-off"
     assert signals.SIGNAL_CONNECTION_SIGNED_OFF == "signed-off"
     assert signals.SIGNAL_CONNECTION_CONNECTION_ERROR == "connection-error"
 

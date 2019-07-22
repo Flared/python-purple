@@ -347,12 +347,28 @@ cdef class Purple:
             #######################
             ## Connection Sinals ##
             #######################
+            elif signal_name == libsignals_connection.SIGNAL_CONNECTION_SIGNING_ON:
+                c_libsignals.purple_signal_connect(
+                    c_libconnection.purple_connections_get_handle(),
+                    libsignals_connection.SIGNAL_CONNECTION_SIGNING_ON.encode(),
+                    &handle,
+                    <c_libsignals.PurpleCallback> libsignals_connection.signal_connection_signing_on_cb,
+                    NULL,
+                )
             elif signal_name == libsignals_connection.SIGNAL_CONNECTION_SIGNED_ON:
                 c_libsignals.purple_signal_connect(
                     c_libconnection.purple_connections_get_handle(),
                     libsignals_connection.SIGNAL_CONNECTION_SIGNED_ON.encode(),
                     &handle,
                     <c_libsignals.PurpleCallback> libsignals_connection.signal_connection_signed_on_cb,
+                    NULL,
+                )
+            elif signal_name == libsignals_connection.SIGNAL_CONNECTION_SIGNING_OFF:
+                c_libsignals.purple_signal_connect(
+                    c_libconnection.purple_connections_get_handle(),
+                    libsignals_connection.SIGNAL_CONNECTION_SIGNING_OFF.encode(),
+                    &handle,
+                    <c_libsignals.PurpleCallback> libsignals_connection.signal_connection_signing_off_cb,
                     NULL,
                 )
             elif signal_name == libsignals_connection.SIGNAL_CONNECTION_SIGNED_OFF:
