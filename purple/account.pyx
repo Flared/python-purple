@@ -28,6 +28,7 @@ from libpurple cimport prpl as c_libprpl
 from libpurple cimport savedstatuses as c_libsavedstatuses
 from libpurple cimport server as c_libserver
 from libpurple cimport status as c_libstatus
+from libpurple cimport core as c_libcore
 
 from purple cimport buddy as libbuddy
 from purple cimport protocol as libprotocol
@@ -37,14 +38,13 @@ cdef class Account:
     Account class
     @param username
     @param protocol Protocol class instance
-    @param core Purple class instance
     """
 
     def __init__(self):
         raise Exception("Use Account.find() or Account.new() instead.")
 
     @staticmethod
-    def new(object core, libprotocol.Protocol protocol, char* username):
+    def new(libprotocol.Protocol protocol, char* username):
         c_libaccount.purple_accounts_add(
             c_libaccount.purple_account_new(
                 username,
@@ -53,7 +53,6 @@ cdef class Account:
         )
 
         cdef Account account = Account.find(
-            core,
             protocol,
             username
         )
@@ -64,22 +63,22 @@ cdef class Account:
         return account
 
     @staticmethod
-    cdef Account _new(object core,
-                      c_libaccount.PurpleAccount* _c_account):
+    cdef Account _new(
+        c_libaccount.PurpleAccount* c_account
+    ):
         cdef Account account = Account.__new__(Account)
-        account._c_account = _c_account
-        account.__core = core
+        account._c_account = c_account
         return account
 
     @staticmethod
-    def find(object core, libprotocol.Protocol protocol, char* username):
+    def find(libprotocol.Protocol protocol, char* username):
         cdef object account = None
-        cdef c_libaccount.PurpleAccount* _c_account = c_libaccount.purple_accounts_find(
+        cdef c_libaccount.PurpleAccount* c_account = c_libaccount.purple_accounts_find(
             username,
             protocol.get_id()
         )
-        if _c_account != NULL:
-            account = Account._new(core, _c_account)
+        if c_account != NULL:
+            account = Account._new(c_account)
         return account
 
     cdef c_libaccount.PurpleAccount* _get_structure(self):
@@ -106,10 +105,6 @@ cdef class Account:
         else:
             return None
     is_disconnected = property(__is_disconnected)
-
-    def __get_core(self):
-        return self.__core
-    core = property(__get_core)
 
     def __get_exists(self):
         return self.__exists
@@ -241,11 +236,17 @@ cdef class Account:
             return None
     remember_password = property(__get_remember_password)
 
-    def is_enabled(self):
+    def is_enabled(
+        self,
+        bytes ui_name = None,
+    ):
+        if not ui_name:
+            ui_name = c_libcore.purple_core_get_ui()
+
         cdef bint is_enabled = False
         is_enabled = c_libaccount.purple_account_get_enabled(
             self._get_structure(),
-            self.__core.ui_name
+            ui_name
         )
         return is_enabled
 
@@ -443,17 +444,25 @@ cdef class Account:
         else:
             return False
 
-    def set_enabled(self, bint value):
+    def set_enabled(
+        self,
+        bint enabled,
+        *,
+        bytes ui_name = None
+    ):
         """
         Sets wheter or not this account is enabled.
 
         @param value True if it is enabled, or False otherwise
         @return True if successful, False if account doesn't exists
         """
+        if not ui_name:
+            ui_name = c_libcore.purple_core_get_ui()
+
         c_libaccount.purple_account_set_enabled(
             self._get_structure(),
-            self.__core.ui_name,
-            value
+            ui_name,
+            enabled,
         )
 
     def remove(self):

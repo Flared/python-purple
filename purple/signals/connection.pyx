@@ -4,6 +4,7 @@ from libpurple cimport connection as c_libconnection
 from libpurple cimport account as c_libaccount
 
 from purple cimport signals as libsignals
+from purple cimport connection as libconnection
 
 cdef str SIGNAL_CONNECTION_SIGNING_ON = "signing-on"
 cdef void signal_connection_signing_on_cb(
@@ -13,10 +14,11 @@ cdef void signal_connection_signing_on_cb(
     Emitted when a connection is about to sign on.
     @params gc The connection that is about to sign on.
     """
+    cdef libconnection.Connection connection = libconnection.Connection.new(c_connection)
 
     for callback in libsignals.signal_cbs.get(SIGNAL_CONNECTION_SIGNING_ON, tuple()):
         callback(
-            connection=None,
+            connection=connection,
         )
 
 cdef str SIGNAL_CONNECTION_SIGNED_ON = "signed-on"
@@ -27,10 +29,11 @@ cdef void signal_connection_signed_on_cb(
     Emitted when a connection has signed on.
     @params gc  The connection that has signed on.
     """
+    cdef libconnection.Connection connection = libconnection.Connection.new(c_connection)
 
     for callback in libsignals.signal_cbs.get(SIGNAL_CONNECTION_SIGNED_ON, tuple()):
         callback(
-            connection=None,
+            connection=connection,
         )
 
 cdef str SIGNAL_CONNECTION_SIGNING_OFF = "signing-off"
@@ -41,10 +44,11 @@ cdef void signal_connection_signing_off_cb(
     Emitted when a connection is about to sign off.
     @params gc The connection that is about to sign off.
     """
+    cdef libconnection.Connection connection = libconnection.Connection.new(c_connection)
 
     for callback in libsignals.signal_cbs.get(SIGNAL_CONNECTION_SIGNING_OFF, tuple()):
         callback(
-            connection=None,
+            connection=connection,
         )
 
 SIGNAL_CONNECTION_SIGNED_OFF = "signed-off"
@@ -55,10 +59,11 @@ cdef void signal_connection_signed_off_cb(
     Emitted when a connection has signed off.
     @params gc  The connection that has signed off.
     """
+    cdef libconnection.Connection connection = libconnection.Connection.new(c_connection)
 
     for callback in libsignals.signal_cbs.get(SIGNAL_CONNECTION_SIGNED_OFF, tuple()):
         callback(
-            connection=None,
+            connection=connection,
         )
 
 cdef str SIGNAL_CONNECTION_CONNECTION_ERROR = "connection-error"
@@ -73,6 +78,8 @@ cdef void signal_connection_connection_error_cb(
     @params err  The error that occured
     @params desc A description of the error, giving more information
     """
+    cdef libconnection.Connection connection = libconnection.Connection.new(c_connection)
+
     cdef bytes description = c_description
 
     cdef bytes short_description = {
@@ -97,7 +104,7 @@ cdef void signal_connection_connection_error_cb(
 
     for callback in libsignals.signal_cbs.get(SIGNAL_CONNECTION_CONNECTION_ERROR, tuple()):
         callback(
-            connection=None,
+            connection=connection,
             description=description,
             short_description=short_description,
         )

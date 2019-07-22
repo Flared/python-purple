@@ -17,17 +17,15 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from libpurple cimport account as c_libaccount
+from libpurple cimport connection as c_libconnection
 
-cdef class Account:
+from purple cimport account as libaccount
 
-    cdef object __username
-    cdef object __protocol
-    cdef c_libaccount.PurpleAccount* _c_account
+cdef class Connection:
+
+    cdef c_libconnection.PurpleConnection* _c_connection
 
     @staticmethod
-    cdef Account _new(
-        c_libaccount.PurpleAccount* c_account
-    )
+    cdef Connection new(c_libconnection.PurpleConnection* c_connection)
 
-    cdef c_libaccount.PurpleAccount* _get_structure(self)
+    cpdef libaccount.Account get_account(self)

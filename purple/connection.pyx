@@ -17,17 +17,27 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from libpurple cimport account as c_libaccount
+cimport glib
 
-cdef class Account:
+from libpurple cimport connection as c_libconnection
 
-    cdef object __username
-    cdef object __protocol
-    cdef c_libaccount.PurpleAccount* _c_account
+from purple cimport account as libaccount
+
+cdef class Connection:
+    """
+    Protocol class
+    """
+
+    def __init__(self):
+        raise Exception("Use Connnection.new() instead.")
 
     @staticmethod
-    cdef Account _new(
-        c_libaccount.PurpleAccount* c_account
-    )
+    cdef Connection new(c_libconnection.PurpleConnection* c_connection):
+        cdef Connection connection = Connection.__new__(Connection)
+        connection._c_connection = c_connection
+        return connection
 
-    cdef c_libaccount.PurpleAccount* _get_structure(self)
+    cpdef libaccount.Account get_account(self):
+        return libaccount.Account._new(
+            c_libconnection.purple_connection_get_account(self._c_connection)
+        )
