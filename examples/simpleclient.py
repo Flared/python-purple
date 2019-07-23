@@ -50,6 +50,26 @@ class SimpleClient:
             )
         )
 
+    def cb_signal_connection_signing_on(self, connection):
+        click.echo(
+            "{prefix} Account {account_name} is signing on...".format(
+                prefix=click.style("[STATUS]", fg="blue", bold=True),
+                account_name=click.style(
+                    connection.get_account().get_username().decode(), bold=True
+                ),
+            )
+        )
+
+    def cb_signal_connection_signed_on(self, connection):
+        click.echo(
+            "{prefix} Account {account_name} signed on.".format(
+                prefix=click.style("[STATUS]", fg="blue", bold=True),
+                account_name=click.style(
+                    connection.get_account().get_username().decode(), bold=True
+                ),
+            )
+        )
+
     def protocol_selection(self):
         # If self.protocol_id is set, try to use it
         # before asking anything to the user.
@@ -117,7 +137,7 @@ class SimpleClient:
         ).encode()
 
         # Creates new account inside libpurple
-        account = purple.Account.new(self.core, protocol, username)
+        account = purple.Account.new(protocol, username)
         account.set_password(password)
 
         # Set account protocol options
@@ -127,14 +147,22 @@ class SimpleClient:
         # info[b'old_ssl'] = True
         # account.set_protocol_options(info)
 
-        # Enable account (connects automatically)
-        account.set_enabled(True)
-
         # Register signals
         self.core.signal_connect(
             signal_name=purple.Signals.SIGNAL_CONVERSATION_RECEIVED_IM_MSG,
             callback=self.cb_signal_conversation_received_im_msg,
         )
+        self.core.signal_connect(
+            signal_name=purple.Signals.SIGNAL_CONNECTION_SIGNING_ON,
+            callback=self.cb_signal_connection_signing_on,
+        )
+        self.core.signal_connect(
+            signal_name=purple.Signals.SIGNAL_CONNECTION_SIGNED_ON,
+            callback=self.cb_signal_connection_signed_on,
+        )
+
+        # Enable account (connects automatically)
+        account.set_enabled(True)
 
         self.loop()
 

@@ -2,6 +2,7 @@ cimport glib
 
 from libpurple cimport connection as c_libconnection
 from libpurple cimport account as c_libaccount
+from libpurple cimport debug as c_libdebug
 
 from purple cimport signals as libsignals
 from purple cimport connection as libconnection
@@ -14,6 +15,8 @@ cdef void signal_connection_signing_on_cb(
     Emitted when a connection is about to sign on.
     @params gc The connection that is about to sign on.
     """
+    c_libdebug.purple_debug_info("connection", "%s", "signing on\n")
+
     cdef libconnection.Connection connection = libconnection.Connection.new(c_connection)
 
     for callback in libsignals.signal_cbs.get(SIGNAL_CONNECTION_SIGNING_ON, tuple()):
@@ -29,6 +32,8 @@ cdef void signal_connection_signed_on_cb(
     Emitted when a connection has signed on.
     @params gc  The connection that has signed on.
     """
+    c_libdebug.purple_debug_info("connection", "%s", "signed on\n")
+
     cdef libconnection.Connection connection = libconnection.Connection.new(c_connection)
 
     for callback in libsignals.signal_cbs.get(SIGNAL_CONNECTION_SIGNED_ON, tuple()):
@@ -44,6 +49,8 @@ cdef void signal_connection_signing_off_cb(
     Emitted when a connection is about to sign off.
     @params gc The connection that is about to sign off.
     """
+    c_libdebug.purple_debug_info("connection", "%s", "signing off\n")
+
     cdef libconnection.Connection connection = libconnection.Connection.new(c_connection)
 
     for callback in libsignals.signal_cbs.get(SIGNAL_CONNECTION_SIGNING_OFF, tuple()):
@@ -59,6 +66,8 @@ cdef void signal_connection_signed_off_cb(
     Emitted when a connection has signed off.
     @params gc  The connection that has signed off.
     """
+    c_libdebug.purple_debug_info("connection", "%s", "signed off\n")
+
     cdef libconnection.Connection connection = libconnection.Connection.new(c_connection)
 
     for callback in libsignals.signal_cbs.get(SIGNAL_CONNECTION_SIGNED_OFF, tuple()):
@@ -78,6 +87,8 @@ cdef void signal_connection_connection_error_cb(
     @params err  The error that occured
     @params desc A description of the error, giving more information
     """
+    c_libdebug.purple_debug_info("connection", "%s", "error\n")
+
     cdef libconnection.Connection connection = libconnection.Connection.new(c_connection)
 
     cdef bytes description = c_description
