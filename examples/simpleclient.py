@@ -28,7 +28,10 @@ import purple
 
 
 class SimpleClient:
-    def __init__(self, *, protocol_id=None, username=None, password=None):
+    def __init__(
+        self, *, debug, protocol_id=None, username=None, password=None
+    ):
+        self.debug = debug
         self.core = None
 
         self.protocol_id = protocol_id
@@ -116,7 +119,7 @@ class SimpleClient:
             b"0.1",
             b"https://github.com/flared/python-purple",
             b"https://github.com/flared/python-purple",
-            debug_enabled=True,
+            debug_enabled=self.debug,
             default_path=tempfile.mkdtemp().encode(),
         )
         self.core.purple_init()
@@ -181,9 +184,13 @@ class SimpleClient:
 @click.option("--protocol_id", default=None, type=str)
 @click.option("--username", default=None, type=str)
 @click.option("--password", default=None, type=str)
-def main(*, protocol_id, username, password):
+@click.option("--debug", default=False, is_flag=True)
+def main(*, debug, protocol_id, username, password):
     client = SimpleClient(
-        protocol_id=protocol_id, username=username, password=password
+        debug=debug,
+        protocol_id=protocol_id,
+        username=username,
+        password=password,
     )
     client.run()
 
