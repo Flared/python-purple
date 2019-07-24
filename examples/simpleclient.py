@@ -148,8 +148,13 @@ class SimpleClient:
 
         password = (
             self.password
-            or click.prompt(
-                text="Enter the password", type=str, hide_input=True
+            if self.password is not None
+            else click.prompt(
+                text="Enter the password",
+                default="",
+                type=str,
+                hide_input=True,
+                show_default=False,
             )
         ).encode()
 
