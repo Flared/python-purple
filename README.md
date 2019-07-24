@@ -22,7 +22,7 @@ See [simpleclient.py](examples/simpleclient.py) for usage examples.
 # Hacking on python-purple
 
 **Setting up**: pyhton-purple tests use libpurple's null protocol.
-Your distro probably does not install it by default.
+Your distro probably does not ship it by default.
 For guidance on how to build it yourself, take a look at [.travis.yml](.travis.yml).
 
 **Makefile targets**:
