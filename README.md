@@ -33,6 +33,7 @@ For guidance on how to build it yourself, take a look at [.travis.yml](.travis.y
 # Roadmap
 - [ ] Use kwargs for all callbacks.
 - [ ] Strings should be used instead of bytes wherever it makes sense.
+- [ ] Good test coverage.
 
 # Changelog
 
