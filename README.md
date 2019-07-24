@@ -13,7 +13,7 @@ Notable changes since then include:
 - Adding tests
 - (ongoing) Refactoring the API
 
-No API stability promises are made at this time.
+No API stability promises are made at this time. However, whatever is tested (see [purple/tests](purple/tests)) can be considered somewhat stable.
 
 # Examples
 
