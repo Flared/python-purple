@@ -94,23 +94,23 @@ cdef void signal_connection_connection_error_cb(
     cdef bytes description = c_description
 
     cdef bytes short_description = {
-        0: "Network error",
-        1: "Invalid username",
-        2: "Authentication failed",
-        3: "Authentication impossible",
-        4: "No SSL support",
-        5: "Encryption error",
-        6: "Name in use",
-        7: "Invalid settings",
-        8: "SSL certificate not provided",
-        9: "SSL certificate untrusted",
-        10: "SSL certificate expired",
-        11: "SSL certificate not activated",
-        12: "SSL certificate hostname mismatch",
-        13: "SSL certificate fingerprint mismatch",
-        14: "SSL certificate self signed",
-        15: "SSL certificate other error",
-        16: "Other error" }[<int> c_connection_error]
+        0: b"Network error",
+        1: b"Invalid username",
+        2: b"Authentication failed",
+        3: b"Authentication impossible",
+        4: b"No SSL support",
+        5: b"Encryption error",
+        6: b"Name in use",
+        7: b"Invalid settings",
+        8: b"SSL certificate not provided",
+        9: b"SSL certificate untrusted",
+        10: b"SSL certificate expired",
+        11: b"SSL certificate not activated",
+        12: b"SSL certificate hostname mismatch",
+        13: b"SSL certificate fingerprint mismatch",
+        14: b"SSL certificate self signed",
+        15: b"SSL certificate other error",
+        16: b"Other error" }[<int> c_connection_error]
 
 
     for callback in libsignals.signal_cbs.get(SIGNAL_CONNECTION_CONNECTION_ERROR, tuple()):

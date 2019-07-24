@@ -73,6 +73,20 @@ class SimpleClient:
             )
         )
 
+    def cb_signal_connection_error(
+        self, connection, description, short_description
+    ):
+        click.echo(
+            "{prefix} Connection error for {account_name}: {short_description}: {description}".format(
+                prefix=click.style("[ERROR]", fg="red", bold=True),
+                account_name=click.style(
+                    connection.get_account().get_username().decode(), bold=True
+                ),
+                short_description=short_description,
+                description=description,
+            )
+        )
+
     def protocol_selection(self):
         # If self.protocol_id is set, try to use it
         # before asking anything to the user.
@@ -162,6 +176,10 @@ class SimpleClient:
         self.core.signal_connect(
             signal_name=purple.Signals.SIGNAL_CONNECTION_SIGNED_ON,
             callback=self.cb_signal_connection_signed_on,
+        )
+        self.core.signal_connect(
+            signal_name=purple.Signals.SIGNAL_CONNECTION_CONNECTION_ERROR,
+            callback=self.cb_signal_connection_error,
         )
 
         # Enable account (connects automatically)
