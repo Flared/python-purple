@@ -103,20 +103,20 @@ class SimpleClient:
 
         plugins = purple.Plugins.get_protocols()
 
-        click.echo("Please select a protocol:")
+        click.echo(
+            click.style("Please select a protocol:", fg="green", bold=True)
+        )
         for index, plugin in enumerate(plugins):
             click.echo(
-                "[{index}]: {plugin_name} ({plugin_id})".format(
-                    index=index,
+                "{index}: {plugin_name} ({plugin_id})".format(
+                    index=click.style("[" + str(index) + "]", bold=True),
                     plugin_name=plugin.get_name().decode(),
                     plugin_id=plugin.get_id().decode(),
                 )
             )
 
         selected_index = click.prompt(
-            text="Enter the index [{min}-{max}]".format(
-                min=0, max=len(plugins) - 1
-            ),
+            text="Enter the index",
             type=click.IntRange(min=0, max=len(plugins) - 1),
         )
 
@@ -187,15 +187,47 @@ class SimpleClient:
 
         self.loop()
 
+    def menu_item_quit(self):
+        raise KeyboardInterrupt
+
+    def menu(self):
+        click.echo(click.style("\nMenu", fg="green", bold=True))
+
+        menu_items = [("Quit (ctrl+c)", self.menu_item_quit)]
+
+        for (
+            menu_item_index,
+            (menu_item_description, menu_item_callback),
+        ) in enumerate(menu_items):
+
+            click.echo(
+                "{prefix} {menu_item_description}".format(
+                    prefix=click.style(
+                        "[" + str(menu_item_index) + "]", bold=True
+                    ),
+                    menu_item_description=menu_item_description,
+                )
+            )
+
+        selected_index = click.prompt(
+            text="Enter the index",
+            type=click.IntRange(min=0, max=len(menu_items) - 1),
+        )
+
+        menu_items[selected_index][1]()
+
     def loop(self):
         while True:
             try:
                 self.core.iterate_main_loop()
                 time.sleep(0.01)
             except KeyboardInterrupt:
-                click.echo("Quitting...")
-                self.core.destroy()
-                break
+                try:
+                    self.menu()
+                except KeyboardInterrupt:
+                    click.echo("Quitting...")
+                    self.core.destroy()
+                    break
 
 
 @click.command()
