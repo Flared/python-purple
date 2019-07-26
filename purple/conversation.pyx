@@ -28,11 +28,6 @@ cdef class Conversation:
     @param name    Buddy name
     """
 
-    cdef object __account
-    cdef object __name
-    cdef object __type
-    cdef object __exists
-
     def __init__(self, type, account, name):
         self.__type = {
             "UNKNOWN": c_libconversation.PURPLE_CONV_TYPE_UNKNOWN,

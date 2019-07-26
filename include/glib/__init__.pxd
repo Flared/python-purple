@@ -94,3 +94,5 @@ cdef extern from "glib.h":
     gboolean g_source_remove(guint tag)
 
     gchar *g_markup_escape_text (gchar *text, gssize length)
+
+    GCallback G_CALLBACK(void* f)

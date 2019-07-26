@@ -87,6 +87,39 @@ class SimpleClient:
             )
         )
 
+    def cb_request_request_input(
+        self,
+        *,
+        title,
+        primary,
+        secondary,
+        default_value,
+        multiline,
+        masked,
+        hint,
+        ok_text,
+        ok_cb,
+        cancel_text,
+        cancel_cb,
+        account,
+        who,
+        conversation,
+    ):
+        click.echo(
+            "{title} {primary}".format(
+                title=click.style(
+                    "[" + title.decode() + "]", fg="yellow", bold=True
+                ),
+                primary=click.style(primary.decode(), bold=True),
+            )
+        )
+
+        try:
+            _input = click.prompt("Enter response", type=str).encode()
+            ok_cb(_input)
+        except click.Abort:
+            cancel_cb()
+
     def protocol_selection(self):
         # If self.protocol_id is set, try to use it
         # before asking anything to the user.
@@ -185,6 +218,12 @@ class SimpleClient:
         self.core.signal_connect(
             signal_name=purple.Signals.SIGNAL_CONNECTION_CONNECTION_ERROR,
             callback=self.cb_signal_connection_error,
+        )
+
+        # Register callbacks
+        self.core.add_callback(
+            callback_name=purple.Callbacks.CALLBACK_REQUEST_REQUEST_INPUT,
+            callback=self.cb_request_request_input,
         )
 
         # Enable account (connects automatically)

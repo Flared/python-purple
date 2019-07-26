@@ -298,7 +298,7 @@ cdef class Purple:
 
         return ret
 
-    def add_callback(self, str type, str name, object callback):
+    def add_callback(self, *, str callback_name, object callback):
         '''Adds a callback with given name inside callback's type.
 
         @param type     Callback type (e.g. "account")
@@ -306,16 +306,16 @@ cdef class Purple:
         @param callback Callback to be called
         '''
 
-        {
-            "account": callbacks_account.account_cbs,
-            "blist": callbacks_blist.blist_cbs,
-            "connection": callbacks_connection.connection_cbs,
-            "conversation": callbacks_conversation.conversation_cbs,
-            "notify": callbacks_notify.notify_cbs,
-            "request": callbacks_request.request_cbs,
-        }[type][name] = callback
+        if callback_name == callbacks_request.CALLBACK_REQUEST_REQUEST_INPUT:
+            callbacks_request.request_cbs[callback_name] = callback
+        else:
+            raise Exception(
+                "Unknown callback '{callback_name}'".format(
+                    callback_name=callback_name
+                )
+            )
 
-    def signal_connect(self, *, str signal_name=None, object callback=None):
+    def signal_connect(self, *, str signal_name, object callback):
         '''Connects a signal handler to a callback for a particular object.
         Take care not to register a handler function twice. Purple will
         not correct any mistakes for you in this area.

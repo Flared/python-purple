@@ -61,64 +61,124 @@ cdef extern from "libpurple/request.h":
     ctypedef struct PurpleRequestField:
         pass
 
+    ctypedef void (*PurpleRequestInputCb)(void *, const char *)
     ctypedef void (*PurpleRequestActionCb)(void *, int)
     ctypedef void (*PurpleRequestChoiceCb)(void *, int)
     ctypedef void (*PurpleRequestFieldsCb)(void *, PurpleRequestFields *fields)
     ctypedef void (*PurpleRequestFileCb)(void *, char *filename)
 
     ctypedef struct PurpleRequestUiOps:
-        void *(*request_input) (const_char *title, const_char *primary,
-                                const_char *secondary,
-                                const_char *default_value,
-                                glib.gboolean multiline, glib.gboolean masked,
-                                glib.gchar *hint, const_char *ok_text,
-                                glib.GCallback ok_cb, const_char *cancel_text,
-                                glib.GCallback cancel_cb,
-                                c_libaccount.PurpleAccount *account,
-                                const_char *who,
-                                c_libconversation.PurpleConversation *conv,
-                                void *user_data)
-        void *(*request_choice) (const_char *title, const_char *primary,
-                                 const_char *secondary, int default_value,
-                                 const_char *ok_text, glib.GCallback ok_cb,
-                                 const_char *cancel_text,
-                                 glib.GCallback cancel_cb,
-                                 c_libaccount.PurpleAccount *account,
-                                 const_char *who,
-                                 c_libconversation.PurpleConversation *conv,
-                                 void *user_data, va_list choices)
-        void *(*request_action) (const_char *title, const_char *primary,
-                                 const_char *secondary, int default_action,
-                                 c_libaccount.PurpleAccount *account,
-                                 const_char *who,
-                                 c_libconversation.PurpleConversation *conv,
-                                 void *user_data, size_t action_count,
-                                 va_list actions)
-        void *(*request_fields) (const_char *title, const_char *primary,
-                                 const_char *secondary,
-                                 PurpleRequestFields *fields,
-                                 const_char *ok_text, glib.GCallback ok_cb,
-                                 const_char *cancel_text,
-                                 glib.GCallback cancel_cb,
-                                 c_libaccount.PurpleAccount *account,
-                                 const_char *who,
-                                 c_libconversation.PurpleConversation *conv,
-                                 void *user_data)
-        void *(*request_file) (const_char *title, const_char *filename,
-                               glib.gboolean savedialog, glib.GCallback ok_cb,
-                               glib.GCallback cancel_cb,
-                               c_libaccount.PurpleAccount *account,
-                               const_char *who,
-                               c_libconversation.PurpleConversation *conv,
-                               void *user_data)
-        void (*close_request) (PurpleRequestType type, void *ui_handle)
-        void *(*request_folder) (const_char *title, const_char *dirname,
-                                 glib.GCallback ok_cb,
-                                 glib.GCallback cancel_cb,
-                                 c_libaccount.PurpleAccount *account,
-                                 const_char *who,
-                                 c_libconversation.PurpleConversation *conv,
-                                 void *user_data)
+        void *(*request_input) (
+            const_char *title,
+            const_char *primary,
+            const_char *secondary,
+            const_char *default_value,
+            glib.gboolean multiline,
+            glib.gboolean masked,
+            glib.gchar *hint,
+            const_char *ok_text,
+            glib.GCallback ok_cb,
+            const_char *cancel_text,
+            glib.GCallback cancel_cb,
+            c_libaccount.PurpleAccount *account,
+            const_char *who,
+            c_libconversation.PurpleConversation *conv,
+            void *user_data
+        )
 
-    void purple_request_close(PurpleRequestType type, void *uihandle)
-    void purple_request_set_ui_ops(PurpleRequestUiOps *ops)
+        void *(*request_choice) (
+            const_char *title,
+            const_char *primary,
+            const_char *secondary,
+            int default_value,
+            const_char *ok_text,
+            glib.GCallback ok_cb,
+            const_char *cancel_text,
+            glib.GCallback cancel_cb,
+            c_libaccount.PurpleAccount *account,
+            const_char *who,
+            c_libconversation.PurpleConversation *conv,
+            void *user_data,
+            va_list choices
+        )
+
+        void *(*request_action) (
+            const_char *title,
+            const_char *primary,
+            const_char *secondary,
+            int default_action,
+            c_libaccount.PurpleAccount *account,
+            const_char *who,
+            c_libconversation.PurpleConversation *conv,
+            void *user_data,
+            size_t action_count,
+            va_list actions
+        )
+
+        void *(*request_fields) (
+            const_char *title, const_char *primary,
+            const_char *secondary,
+            PurpleRequestFields *fields,
+            const_char *ok_text, glib.GCallback ok_cb,
+            const_char *cancel_text,
+            glib.GCallback cancel_cb,
+            c_libaccount.PurpleAccount *account,
+            const_char *who,
+            c_libconversation.PurpleConversation *conv,
+            void *user_data
+        )
+
+        void *(*request_file) (
+            const_char *title,
+            const_char *filename,
+            glib.gboolean savedialog,
+            glib.GCallback ok_cb,
+            glib.GCallback cancel_cb,
+            c_libaccount.PurpleAccount *account,
+            const_char *who,
+            c_libconversation.PurpleConversation *conv,
+            void *user_data
+        )
+
+        void (*close_request) (
+            PurpleRequestType type,
+            void *ui_handle
+        )
+
+        void *(*request_folder) (
+            const_char *title, const_char *dirname,
+            glib.GCallback ok_cb,
+            glib.GCallback cancel_cb,
+            c_libaccount.PurpleAccount *account,
+            const_char *who,
+            c_libconversation.PurpleConversation *conv,
+            void *user_data
+        )
+
+    void purple_request_close(
+        PurpleRequestType type,
+        void *uihandle
+    )
+
+    purple_request_input(
+        void *handle,
+        const_char* title,
+        const_char* primary,
+        const_char* secondary,
+        const_char* default_value,
+        glib.gboolean multiline,
+        glib.gboolean masked,
+        glib.gchar* hint,
+        const_char* ok_text,
+        glib.GCallback ok_cb,
+        const_char* cancel_text,
+        glib.GCallback cancel_cb,
+        c_libaccount.PurpleAccount* account,
+        const_char* who,
+        c_libconversation.PurpleConversation* conv,
+        void* user_data
+    )
+
+    void purple_request_set_ui_ops(
+        PurpleRequestUiOps *ops
+    )
