@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2019 Flare Systems
+#  Copyright (c) 2019 Flare Systems Inc.
 #
 #  This file is part of python-purple.
 #
