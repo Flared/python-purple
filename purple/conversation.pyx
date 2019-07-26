@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2008 INdT - Instituto Nokia de Tecnologia
+#  Copyright (c) 2019 Flare Systems
 #
 #  This file is part of python-purple.
 #
@@ -17,137 +17,110 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+cimport glib
+
 from libpurple cimport conversation as c_libconversation
-from libpurple cimport account as c_libaccount
+
+from purple cimport account as libaccount
 
 cdef class Conversation:
-    """
-    Conversation class
-    @param type    UNKNOWN, IM, CHAT, MISC, ANY
-    @param account Your account
-    @param name    Buddy name
-    """
 
-    def __init__(self, type, account, name):
-        self.__type = {
-            "UNKNOWN": c_libconversation.PURPLE_CONV_TYPE_UNKNOWN,
-            "IM": c_libconversation.PURPLE_CONV_TYPE_IM,
-            "CHAT": c_libconversation.PURPLE_CONV_TYPE_CHAT,
-            "MISC": c_libconversation.PURPLE_CONV_TYPE_MISC,
-            "ANY": c_libconversation.PURPLE_CONV_TYPE_ANY }[type]
-        self.__account = account
-        self.__name = name
+    @staticmethod
+    cdef Conversation _from_c_conversation(c_libconversation.PurpleConversation* c_conversation):
+        cdef Conversation conversation = Conversation.__new__(Conversation)
+        conversation._c_conversation = c_conversation
+        return conversation
 
-        if self._get_structure() != NULL:
-            self.__exists = True
-        else:
-            self.__exists = False
+    @staticmethod
+    def new(
+        *,
+        ConversationType type,
+        libaccount.Account account,
+        bytes name,
+    ):
 
-    cdef c_libconversation.PurpleConversation *_get_structure(self):
-        return c_libconversation.purple_find_conversation_with_account(
-            self.__type,
-            self.__name,
-            c_libaccount.purple_accounts_find(
-                self.__account.username,
-                self.__account.protocol.id
-            )
+        cdef c_libconversation.PurpleConversation* c_conversation = c_libconversation.purple_conversation_new(
+            type,
+            account._c_account,
+            name,
         )
 
-    def __get_exists(self):
-        return self.__exists
-    exists = property(__get_exists)
+        if c_conversation == NULL:
+            raise Exception("Could not create conversation")
 
-    def __get_account(self):
-        if self.__exists:
-            return self.__account
+        cdef Conversation conversation = None
+
+        if type == ConversationType.CONVERSATION_TYPE_CHAT:
+            conversation = Chat._from_c_conversation(c_conversation)
+        elif type == ConversationType.CONVERSATION_TYPE_IM:
+            conversation = IM._from_c_conversation(c_conversation)
         else:
-            return None
-    account = property(__get_account)
+            conversation = Conversation._from_c_conversation(c_conversation)
 
-    def __get_name(self):
-        if self.__exists:
-            return <char *> c_libconversation.purple_conversation_get_name(
-                self._get_structure()
-            )
-        else:
-            return None
-    name = property(__get_name)
+        return conversation
 
-    def new(self):
-        """
-        Creates a new conversation.
+    cpdef bytes get_name(self):
+        cdef char* c_name = c_libconversation.purple_conversation_get_name(
+            self._c_conversation
+        )
+        cdef bytes name = c_name or None
+        return name
 
-        @return True if successful, False if conversation already exists
-        """
-        if self.__exists:
-            return False
-        else:
-            c_libconversation.purple_conversation_new(
-                self.__type, \
-                c_libaccount.purple_accounts_find(
-                    self.__account.username,
-                    self.__account.protocol.id
-                ),
-                self.__name
-            )
-            self.__exists = True
-            return True
+    cpdef ConversationType get_type(self):
+        cdef ConversationType _type = <ConversationType> c_libconversation.purple_conversation_get_type(
+            self._c_conversation
+        )
+        return _type
 
-    def destroy(self):
-        """
-        Destroys a conversation.
+    @staticmethod
+    def get_conversations():
+        cdef glib.GList* c_iter = c_libconversation.purple_get_conversations()
+        cdef list conversations = list()
 
-        @return True if successful, False if conversation doesn't exists
-        """
-        if self.__exists:
-            c_libconversation.purple_conversation_destroy(self._get_structure())
-            self.__exists = False
-            return True
-        else:
-            return False
+        while c_iter:
+            conversation = Conversation._from_c_conversation(<c_libconversation.PurpleConversation*> c_iter.data)
+            conversations.append(conversation)
+            c_iter = c_iter.next
 
-    def set_ui_ops(self, cbs):
-        """
-        Sets UI operations for a conversation.
+        return conversations
 
-        @return True if sucessful, False otherwise
-        """
-        # FIXME: We may need to create c-functions for each of these?
-        cdef c_libconversation.PurpleConversationUiOps c_conv_ui_ops
 
-        c_conv_ui_ops.create_conversation = NULL
-        c_conv_ui_ops.destroy_conversation = NULL
-        c_conv_ui_ops.write_chat = NULL
-        c_conv_ui_ops.write_im = NULL
-        c_conv_ui_ops.write_conv = NULL
-        c_conv_ui_ops.chat_add_users = NULL
-        c_conv_ui_ops.chat_rename_user = NULL
-        c_conv_ui_ops.chat_remove_users = NULL
-        c_conv_ui_ops.chat_update_user = NULL
-        c_conv_ui_ops.present = NULL
-        c_conv_ui_ops.has_focus = NULL
-        c_conv_ui_ops.custom_smiley_add = NULL
-        c_conv_ui_ops.custom_smiley_write = NULL
-        c_conv_ui_ops.custom_smiley_close = NULL
-        c_conv_ui_ops.send_confirm = NULL
+cdef class IM(Conversation):
 
-        c_libconversation.purple_conversation_set_ui_ops(self._get_structure(), \
-                &c_conv_ui_ops)
-        return True
+    @staticmethod
+    cdef IM _from_c_conversation(c_libconversation.PurpleConversation* c_conversation):
+        cdef Conversation conversation = IM.__new__(IM)
+        conversation._c_conversation = c_conversation
+        return conversation
 
-    def im_send(self, message):
-        """
-        Sends a message to this IM conversation.
+    @staticmethod
+    def get_ims():
+        cdef glib.GList* c_iter = c_libconversation.purple_get_ims()
+        cdef list ims = list()
 
-        @return True if successful, False if conversation is not IM or conversation doesn't exists
-        """
-        if self.__exists and self.__type == c_libconversation.PURPLE_CONV_TYPE_IM:
-            c_libconversation.purple_conv_im_send(
-                c_libconversation.purple_conversation_get_im_data(
-                    self._get_structure()
-                ),
-                message
-            )
-            return True
-        else:
-            return False
+        while c_iter:
+            im = IM._from_c_conversation(<c_libconversation.PurpleConversation*> c_iter.data)
+            ims.append(im)
+            c_iter = c_iter.next
+
+        return ims
+
+cdef class Chat(Conversation):
+
+    @staticmethod
+    cdef Chat _from_c_conversation(c_libconversation.PurpleConversation* c_conversation):
+        cdef Conversation conversation = Chat.__new__(Chat)
+        conversation._c_conversation = c_conversation
+        return conversation
+
+    @staticmethod
+    def get_chats():
+        cdef glib.GList* c_iter = c_libconversation.purple_get_chats()
+        cdef list chats = list()
+
+        while c_iter:
+            chat = Chat._from_c_conversation(<c_libconversation.PurpleConversation*> c_iter.data)
+            chats.append(chat)
+            c_iter = c_iter.next
+
+        return chats
