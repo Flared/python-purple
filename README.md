@@ -21,16 +21,27 @@ See [simpleclient.py](examples/simpleclient.py) for usage examples.
 
 # Hacking on python-purple
 
-**Setting up**: pyhton-purple tests use libpurple's null protocol.
+## Setting up
+
+pyhton-purple tests use libpurple's null protocol.
 Your distro probably does not ship it by default.
 For guidance on how to build it yourself, take a look at [.travis.yml](.travis.yml).
 
-**Makefile targets**:
+## Makefile targets
+
  - ``test``: Run all tests.
  - ``format``: Format the source code with black.
  - ``run-simpleclient``: Run simpleclient from the virtualenv.
 
+## Tips
+
+Here are some notes that may help you while working on python-purple. I found that some of these things are not entirely obvious so it may
+help to read them before getting started.
+
+ - Cast `char*` to `bytes` safely using `cdef bytes py_variable = c_variable or None`
+
 # Roadmap
+
 - [ ] Use kwargs for all callbacks.
 - [ ] Strings should be used instead of bytes wherever it makes sense.
 - [ ] Good test coverage.
