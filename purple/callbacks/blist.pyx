@@ -33,10 +33,7 @@ cdef void __group_node_cb(c_libblist.PurpleBlistNode *node, object callback):
     cdef char *c_name = NULL
 
     c_name = <char *> c_libblist.purple_group_get_name(group)
-    if c_name == NULL:
-        name = None
-    else:
-        name = c_name
+    cdef bytes name = c_name or None
 
     currentsize = c_libblist.purple_blist_get_group_size(group, False)
     totalsize = c_libblist.purple_blist_get_group_size(group, True)
@@ -49,10 +46,7 @@ cdef void __contact_node_cb(c_libblist.PurpleBlistNode *node, object callback):
     cdef char *c_alias = NULL
 
     c_alias = <char *> c_libblist.purple_contact_get_alias(contact)
-    if c_alias == NULL:
-        alias = None
-    else:
-        alias = c_alias
+    cdef bytes alias = c_alias or None
 
     callback(node.type, alias, contact.totalsize, contact.currentsize, \
              contact.online)
@@ -63,16 +57,10 @@ cdef void __buddy_node_cb(c_libblist.PurpleBlistNode *node, object callback):
     cdef char *c_alias = NULL
 
     c_name = <char *> c_libblist.purple_buddy_get_name(buddy)
-    if c_name == NULL:
-        name = None
-    else:
-        name = c_name
+    cdef bytes name = c_name or None
 
     c_alias = <char *> c_libblist.purple_buddy_get_alias_only(buddy)
-    if c_alias == NULL:
-        alias = None
-    else:
-        alias = c_alias
+    cdef bytes alias = c_alias or None
 
     callback(node.type, name, alias)
 
@@ -81,10 +69,7 @@ cdef void __chat_node_cb(c_libblist.PurpleBlistNode *node, object callback):
     cdef char *c_name = NULL
 
     c_name = <char *> c_libblist.purple_chat_get_name(chat)
-    if c_name == NULL:
-        name = None
-    else:
-        name = c_name
+    cdef bytes name = c_name or None
 
     callback(node.type, name)
 
@@ -187,20 +172,9 @@ cdef void request_add_buddy(c_libaccount.PurpleAccount *account,
     username = c_libaccount.purple_account_get_username(account)
     protocol_id = c_libaccount.purple_account_get_protocol_id(account)
 
-    if c_buddy_username:
-        buddy_username = <char *> c_buddy_username
-    else:
-        buddy_username = None
-
-    if c_buddy_group:
-        buddy_group = <char *> c_buddy_group
-    else:
-        buddy_group = None
-
-    if c_buddy_alias:
-        buddy_alias = <char *> c_buddy_alias
-    else:
-        buddy_alias = None
+    cdef bytes buddy_username = c_buddy_username or None
+    cdef bytes buddy_group = c_buddy_group or None
+    cdef bytes buddy_alias = c_buddy_alias or None
 
     if "request-add-buddy" in blist_cbs:
         (<object> blist_cbs["request-add-buddy"])( \

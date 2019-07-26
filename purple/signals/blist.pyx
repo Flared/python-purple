@@ -12,16 +12,10 @@ cdef void signal_blist_buddy_signed_on_cb(c_libblist.PurpleBuddy *buddy):
     cdef char *c_alias = NULL
 
     c_name = <char *> c_libblist.purple_buddy_get_name(buddy)
-    if c_name == NULL:
-        name = None
-    else:
-        name = c_name
+    cdef bytes name = c_name or None
 
     c_alias = <char *> c_libblist.purple_buddy_get_alias_only(buddy)
-    if c_alias == NULL:
-        alias = None
-    else:
-        alias = c_alias
+    cdef bytes alias = c_alias or None
 
     for callback in libsignals.signal_cbs.get(SIGNAL_BLIST_BUDDY_SIGNED_ON, tuple()):
         callback(name, alias)
@@ -36,16 +30,10 @@ cdef void signal_blist_buddy_signed_off_cb(c_libblist.PurpleBuddy *buddy):
     cdef char *c_alias = NULL
 
     c_name = <char *> c_libblist.purple_buddy_get_name(buddy)
-    if c_name == NULL:
-        name = None
-    else:
-        name = c_name
+    cdef bytes name = c_name or None
 
     c_alias = <char *> c_libblist.purple_buddy_get_alias_only(buddy)
-    if c_alias == NULL:
-        alias = None
-    else:
-        alias = c_alias
+    cdef bytes alias = c_alias or None
 
     for callback in libsignals.signal_cbs.get(SIGNAL_BLIST_BUDDY_SIGNED_OFF, tuple()):
         callback(name, alias)

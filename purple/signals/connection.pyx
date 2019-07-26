@@ -91,7 +91,7 @@ cdef void signal_connection_connection_error_cb(
 
     cdef libconnection.Connection connection = libconnection.Connection.new(c_connection)
 
-    cdef bytes description = c_description
+    cdef bytes description = c_description or None
 
     cdef bytes short_description = {
         0: b"Network error",

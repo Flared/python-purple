@@ -57,23 +57,21 @@ def call_deny_cb():
     c_request_authorize_user_data = NULL
 
 cdef void notify_added(c_libaccount.PurpleAccount *account,
-                       const_char *remote_user,
-                       const_char *id,
-                       const_char *alias,
+                       const_char *c_remote_user,
+                       const_char *c_id,
+                       const_char *c_alias,
                        const_char *c_message):
     """
     A buddy who is already on this account's buddy list added this account to
     their buddy list.
     """
-    cdef c_libconnection.PurpleConnection *gc = \
-        c_libaccount.purple_account_get_connection(account)
+    cdef c_libconnection.PurpleConnection *gc = c_libaccount.purple_account_get_connection(account)
 
     c_libdebug.purple_debug_info("account", "%s", "notify-added\n")
 
-    if alias:
-        remote_alias = <char *> alias
-    else:
-        remote_alias = None
+    cdef bytes remote_user = c_remote_user or None
+    cdef bytes alias = c_alias or None
+    cdef bytes message = c_message or None
 
     if id:
         username = <char *> id
@@ -84,15 +82,12 @@ cdef void notify_added(c_libaccount.PurpleAccount *account,
 
     protocol_id = c_libaccount.purple_account_get_protocol_id(account)
 
-    if c_message:
-        message = <char *> c_message
-    else:
-        message = None
-
     if "notify-added" in account_cbs:
-        (<object> account_cbs["notify-added"])( \
-            (<char *> remote_user, remote_alias), \
-            (username, protocol_id), message)
+        (<object> account_cbs["notify-added"])(
+            (remote_user, alias),
+            (username, protocol_id),
+            message
+        )
 
 cdef void status_changed(c_libaccount.PurpleAccount *account,
                          c_libstatus.PurpleStatus *status):

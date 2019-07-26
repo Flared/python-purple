@@ -25,8 +25,8 @@ cdef glib.gboolean signal_conversation_receiving_im_msg_cb(
     @params conv     The IM conversation.
     @params flags    A pointer to the IM message flags.
     """
-    cdef bytes sender = c_sender[0]
-    cdef bytes message = c_message[0]
+    cdef bytes sender = c_sender[0] or None
+    cdef bytes message = c_message[0] or None
 
     cdef glib.gboolean ret = False
     for callback in libsignals.signal_cbs.get(SIGNAL_CONVERSATION_RECEIVING_IM_MSG, tuple()):
@@ -56,8 +56,8 @@ cdef void signal_conversation_received_im_msg_cb(
     @params conv     The IM conversation.
     @params flags    A pointer to the IM message flags.
     """
-    cdef bytes sender = c_sender
-    cdef bytes message = c_message
+    cdef bytes sender = c_sender or None
+    cdef bytes message = c_message or None
 
     for callback in libsignals.signal_cbs.get(SIGNAL_CONVERSATION_RECEIVED_IM_MSG, tuple()):
         callback(

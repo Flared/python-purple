@@ -38,10 +38,7 @@ cdef void create_conversation(c_libconversation.PurpleConversation *conv):
     cdef char *c_name = NULL
 
     c_name = <char *> c_libconversation.purple_conversation_get_name(conv)
-    if c_name == NULL:
-        name = None
-    else:
-        name = c_name
+    cdef name = c_name or None
 
     type = c_libconversation.purple_conversation_get_type(conv)
 
@@ -89,10 +86,7 @@ cdef void write_im(c_libconversation.PurpleConversation *conv,
     cdef char *c_sender_alias = NULL
 
     c_username = <char *> c_libaccount.purple_account_get_username(acc)
-    if c_username:
-        username = c_username
-    else:
-        username = None
+    cdef username = c_username or None
 
     if who == NULL:
         who = c_libconversation.purple_conversation_get_name(conv)
@@ -107,10 +101,7 @@ cdef void write_im(c_libconversation.PurpleConversation *conv,
     else:
         sender_alias = None
 
-    if c_message:
-        message = <char *> c_message
-    else:
-        message = None
+    cdef message = c_message or None
 
     # FIXME: Maybe we need add more purple flags in the future
     if (<int>flags & c_libconversation.PURPLE_MESSAGE_SEND):
@@ -119,8 +110,13 @@ cdef void write_im(c_libconversation.PurpleConversation *conv,
         flag = "RECV"
 
     if "write-im" in conversation_cbs:
-        (<object> conversation_cbs["write-im"])(username, sender, \
-            sender_alias, message, flag)
+        (<object> conversation_cbs["write-im"])(
+            username,
+            sender,
+            sender_alias,
+            message,
+            flag
+        )
 
 cdef void write_conv(c_libconversation.PurpleConversation *conv,
                      const_char *name,

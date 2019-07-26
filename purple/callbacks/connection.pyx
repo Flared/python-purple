@@ -137,10 +137,7 @@ cdef void report_disconnect_reason(c_libconnection.PurpleConnection *gc,
         15: 'Certificate error (other)',
         16: 'Other error' }[reason]
 
-    if c_text:
-        text = <char *> c_text
-    else:
-        text = None
+    cdef text = c_text or None
 
     if "report-disconnect-reason" in connection_cbs:
         (<object> connection_cbs["report-disconnect-reason"]) \
