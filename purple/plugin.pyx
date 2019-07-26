@@ -219,9 +219,6 @@ cdef class Plugin:
         return True
 
 
-cdef class Plugins:
-
-
     @staticmethod
     def plugins_enabled():
         return bool(c_libplugin.purple_plugins_enabled())

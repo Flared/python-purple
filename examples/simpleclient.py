@@ -134,7 +134,7 @@ class SimpleClient:
                     )
                 )
 
-        plugins = purple.Plugins.get_protocols()
+        plugins = purple.Plugin.get_protocols()
 
         click.echo(
             click.style("Please select a protocol:", fg="green", bold=True)
