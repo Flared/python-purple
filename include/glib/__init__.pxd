@@ -74,6 +74,7 @@ cdef extern from "glib.h":
         GList *next
         GList *prev
 
+    void g_free (gpointer mem)
     void g_list_free (GList*)
 
     gboolean g_str_equal (gconstpointer, gconstpointer)
