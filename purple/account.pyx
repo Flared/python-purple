@@ -63,7 +63,7 @@ cdef class Account:
         return account
 
     @staticmethod
-    cdef Account _new(
+    cdef Account from_c_account(
         c_libaccount.PurpleAccount* c_account
     ):
         cdef Account account = Account.__new__(Account)
@@ -78,7 +78,7 @@ cdef class Account:
             protocol.get_id()
         )
         if c_account != NULL:
-            account = Account._new(c_account)
+            account = Account.from_c_account(c_account)
         return account
 
     cdef c_libaccount.PurpleAccount* _get_structure(self):

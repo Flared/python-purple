@@ -26,7 +26,7 @@ cdef class Account:
     cdef c_libaccount.PurpleAccount* _c_account
 
     @staticmethod
-    cdef Account _new(
+    cdef Account from_c_account(
         c_libaccount.PurpleAccount* c_account
     )
 

@@ -38,6 +38,6 @@ cdef class Connection:
         return connection
 
     cpdef libaccount.Account get_account(self):
-        return libaccount.Account._new(
+        return libaccount.Account.from_c_account(
             c_libconnection.purple_connection_get_account(self._c_connection)
         )
