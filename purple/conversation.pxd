@@ -47,3 +47,20 @@ cdef class Chat(Conversation):
     cdef c_libconversation.PurpleConvChat* get_c_chat(self)
 
     cpdef list get_users(self)
+
+    cpdef int get_id(self)
+
+    cpdef bytes get_nick(self)
+
+    cpdef bytes get_topic(self)
+
+    cpdef void invite_user(self, bytes user, bytes message, bint confirm)
+
+cdef class ChatBuddy:
+
+    cdef c_libconversation.PurpleConvChatBuddy* _c_conv_chat_buddy
+
+    @staticmethod
+    cdef ChatBuddy from_c_conv_chat_buddy(c_libconversation.PurpleConvChatBuddy* c_chat_buddy)
+
+    cpdef bytes get_name(self)

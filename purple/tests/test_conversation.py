@@ -29,7 +29,7 @@ def test_conversation_get_all_empty():
 
 
 def test_conversation_new_chat(core):
-    account = utils.get_test_account(username=b"user1")
+    account = utils.get_test_account(username=b"chatuser")
     account.set_enabled(True)
 
     chat = purple.Conversation.new(
@@ -42,6 +42,12 @@ def test_conversation_new_chat(core):
     assert isinstance(chat, purple.Chat)
     assert chat.get_name() == b"chatname"
     assert chat.get_type() == purple.ConversationType.CONVERSATION_TYPE_CHAT
+    assert chat.get_id() == 0
+    assert chat.get_nick() == b"chatuser"
+    assert chat.get_topic() == None
+
+    users = chat.get_users()
+    assert len(users) == 0
 
     conversations = purple.Conversation.get_conversations()
     assert len(conversations) == 1

@@ -20,6 +20,7 @@
 cimport glib
 
 from libpurple cimport conversation as c_libconversation
+from libpurple cimport blist as c_libblist
 
 from purple cimport account as libaccount
 
@@ -114,13 +115,52 @@ cdef class Chat(Conversation):
         return conversation
 
     cdef c_libconversation.PurpleConvChat* get_c_chat(self):
-        return <c_libconversation.PurpleConvChat*> self._c_conversation
+        cdef c_libconversation.PurpleConvChat* c_chat = c_libconversation.purple_conversation_get_chat_data(
+            self._c_conversation
+        )
+        return c_chat
+
+    cpdef int get_id(self):
+        cdef int _id = c_libconversation.purple_conv_chat_get_id(
+            self.get_c_chat()
+        )
+        return _id
+
+    cpdef bytes get_nick(self):
+        cdef char* c_nick = c_libconversation.purple_conv_chat_get_nick(
+            self.get_c_chat()
+        )
+        cdef bytes nick = c_nick or None
+        return nick
+
+    cpdef bytes get_topic(self):
+        cdef char* c_topic = c_libconversation.purple_conv_chat_get_topic(
+            self.get_c_chat()
+        )
+        cdef bytes topic = c_topic or None
+        return topic
+
+    cpdef void invite_user(self, bytes user, bytes message, bint confirm):
+        c_libconversation.purple_conv_chat_invite_user(
+            self.get_c_chat(),
+            user,
+            message,
+            confirm,
+        )
 
     cpdef list get_users(self):
         cdef glib.GList* c_iter = c_libconversation.purple_conv_chat_get_users(
             self.get_c_chat()
         )
         cdef list users = list()
+
+        cdef c_libconversation.PurpleConvChatBuddy* c_conv_chat_buddy
+        cdef ChatBuddy chat_buddy
+        while c_iter:
+            c_conv_chat_buddy = <c_libconversation.PurpleConvChatBuddy*> c_iter.data
+            chat_buddy = ChatBuddy.from_c_conv_chat_buddy(c_conv_chat_buddy)
+            users.append(chat_buddy)
+            c_iter = c_iter.next
 
         return users
 
@@ -135,3 +175,19 @@ cdef class Chat(Conversation):
             c_iter = c_iter.next
 
         return chats
+
+
+cdef class ChatBuddy:
+
+    @staticmethod
+    cdef ChatBuddy from_c_conv_chat_buddy(c_libconversation.PurpleConvChatBuddy* c_conv_chat_buddy):
+        cdef ChatBuddy chat_buddy = ChatBuddy.__new__(ChatBuddy)
+        chat_buddy._c_conv_chat_buddy = c_conv_chat_buddy
+        return chat_buddy
+
+    cpdef bytes get_name(self):
+        cdef char* c_name = c_libconversation.purple_conv_chat_cb_get_name(
+            self._c_conv_chat_buddy
+        )
+        cdef bytes name = c_name or None
+        return name
