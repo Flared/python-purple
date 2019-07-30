@@ -26,7 +26,7 @@ from purple cimport account as libaccount
 cdef class Conversation:
 
     @staticmethod
-    cdef Conversation _from_c_conversation(c_libconversation.PurpleConversation* c_conversation):
+    cdef Conversation from_c_conversation(c_libconversation.PurpleConversation* c_conversation):
         cdef Conversation conversation = Conversation.__new__(Conversation)
         conversation._c_conversation = c_conversation
         return conversation
@@ -51,11 +51,11 @@ cdef class Conversation:
         cdef Conversation conversation = None
 
         if type == ConversationType.CONVERSATION_TYPE_CHAT:
-            conversation = Chat._from_c_conversation(c_conversation)
+            conversation = Chat.from_c_conversation(c_conversation)
         elif type == ConversationType.CONVERSATION_TYPE_IM:
-            conversation = IM._from_c_conversation(c_conversation)
+            conversation = IM.from_c_conversation(c_conversation)
         else:
-            conversation = Conversation._from_c_conversation(c_conversation)
+            conversation = Conversation.from_c_conversation(c_conversation)
 
         return conversation
 
@@ -78,7 +78,7 @@ cdef class Conversation:
         cdef list conversations = list()
 
         while c_iter:
-            conversation = Conversation._from_c_conversation(<c_libconversation.PurpleConversation*> c_iter.data)
+            conversation = Conversation.from_c_conversation(<c_libconversation.PurpleConversation*> c_iter.data)
             conversations.append(conversation)
             c_iter = c_iter.next
 
@@ -88,7 +88,7 @@ cdef class Conversation:
 cdef class IM(Conversation):
 
     @staticmethod
-    cdef IM _from_c_conversation(c_libconversation.PurpleConversation* c_conversation):
+    cdef IM from_c_conversation(c_libconversation.PurpleConversation* c_conversation):
         cdef Conversation conversation = IM.__new__(IM)
         conversation._c_conversation = c_conversation
         return conversation
@@ -99,7 +99,7 @@ cdef class IM(Conversation):
         cdef list ims = list()
 
         while c_iter:
-            im = IM._from_c_conversation(<c_libconversation.PurpleConversation*> c_iter.data)
+            im = IM.from_c_conversation(<c_libconversation.PurpleConversation*> c_iter.data)
             ims.append(im)
             c_iter = c_iter.next
 
@@ -108,7 +108,7 @@ cdef class IM(Conversation):
 cdef class Chat(Conversation):
 
     @staticmethod
-    cdef Chat _from_c_conversation(c_libconversation.PurpleConversation* c_conversation):
+    cdef Chat from_c_conversation(c_libconversation.PurpleConversation* c_conversation):
         cdef Conversation conversation = Chat.__new__(Chat)
         conversation._c_conversation = c_conversation
         return conversation
@@ -119,7 +119,7 @@ cdef class Chat(Conversation):
         cdef list chats = list()
 
         while c_iter:
-            chat = Chat._from_c_conversation(<c_libconversation.PurpleConversation*> c_iter.data)
+            chat = Chat.from_c_conversation(<c_libconversation.PurpleConversation*> c_iter.data)
             chats.append(chat)
             c_iter = c_iter.next
 

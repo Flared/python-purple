@@ -33,7 +33,7 @@ cdef class Conversation:
     cdef c_libconversation.PurpleConversation* _c_conversation
 
     @staticmethod
-    cdef Conversation _from_c_conversation(c_libconversation.PurpleConversation* c_conversation)
+    cdef Conversation from_c_conversation(c_libconversation.PurpleConversation* c_conversation)
 
     cpdef bytes get_name(self)
 
