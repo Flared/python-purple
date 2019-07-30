@@ -113,6 +113,17 @@ cdef class Chat(Conversation):
         conversation._c_conversation = c_conversation
         return conversation
 
+    cdef c_libconversation.PurpleConvChat* get_c_chat(self):
+        return <c_libconversation.PurpleConvChat*> self._c_conversation
+
+    cpdef list get_users(self):
+        cdef glib.GList* c_iter = c_libconversation.purple_conv_chat_get_users(
+            self.get_c_chat()
+        )
+        cdef list users = list()
+
+        return users
+
     @staticmethod
     def get_chats():
         cdef glib.GList* c_iter = c_libconversation.purple_get_chats()

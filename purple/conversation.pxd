@@ -43,4 +43,7 @@ cdef class IM(Conversation):
     pass
 
 cdef class Chat(Conversation):
-    pass
+
+    cdef c_libconversation.PurpleConvChat* get_c_chat(self)
+
+    cpdef list get_users(self)
