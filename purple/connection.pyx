@@ -32,7 +32,7 @@ cdef class Connection:
         raise Exception("Use Connnection.new() instead.")
 
     @staticmethod
-    cdef Connection new(c_libconnection.PurpleConnection* c_connection):
+    cdef Connection from_c_connection(c_libconnection.PurpleConnection* c_connection):
         cdef Connection connection = Connection.__new__(Connection)
         connection._c_connection = c_connection
         return connection

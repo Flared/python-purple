@@ -17,7 +17,7 @@ cdef void signal_connection_signing_on_cb(
     """
     c_libdebug.purple_debug_info("connection", "%s", "signing on\n")
 
-    cdef libconnection.Connection connection = libconnection.Connection.new(c_connection)
+    cdef libconnection.Connection connection = libconnection.Connection.from_c_connection(c_connection)
 
     for callback in libsignals.signal_cbs.get(SIGNAL_CONNECTION_SIGNING_ON, tuple()):
         callback(
@@ -34,7 +34,7 @@ cdef void signal_connection_signed_on_cb(
     """
     c_libdebug.purple_debug_info("connection", "%s", "signed on\n")
 
-    cdef libconnection.Connection connection = libconnection.Connection.new(c_connection)
+    cdef libconnection.Connection connection = libconnection.Connection.from_c_connection(c_connection)
 
     for callback in libsignals.signal_cbs.get(SIGNAL_CONNECTION_SIGNED_ON, tuple()):
         callback(
@@ -51,7 +51,7 @@ cdef void signal_connection_signing_off_cb(
     """
     c_libdebug.purple_debug_info("connection", "%s", "signing off\n")
 
-    cdef libconnection.Connection connection = libconnection.Connection.new(c_connection)
+    cdef libconnection.Connection connection = libconnection.Connection.from_c_connection(c_connection)
 
     for callback in libsignals.signal_cbs.get(SIGNAL_CONNECTION_SIGNING_OFF, tuple()):
         callback(
@@ -68,7 +68,7 @@ cdef void signal_connection_signed_off_cb(
     """
     c_libdebug.purple_debug_info("connection", "%s", "signed off\n")
 
-    cdef libconnection.Connection connection = libconnection.Connection.new(c_connection)
+    cdef libconnection.Connection connection = libconnection.Connection.from_c_connection(c_connection)
 
     for callback in libsignals.signal_cbs.get(SIGNAL_CONNECTION_SIGNED_OFF, tuple()):
         callback(
@@ -89,7 +89,7 @@ cdef void signal_connection_connection_error_cb(
     """
     c_libdebug.purple_debug_info("connection", "%s", "error\n")
 
-    cdef libconnection.Connection connection = libconnection.Connection.new(c_connection)
+    cdef libconnection.Connection connection = libconnection.Connection.from_c_connection(c_connection)
 
     cdef bytes description = c_description or None
 

@@ -26,6 +26,6 @@ cdef class Connection:
     cdef c_libconnection.PurpleConnection* _c_connection
 
     @staticmethod
-    cdef Connection new(c_libconnection.PurpleConnection* c_connection)
+    cdef Connection from_c_connection(c_libconnection.PurpleConnection* c_connection)
 
     cpdef libaccount.Account get_account(self)
