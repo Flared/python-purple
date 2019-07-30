@@ -33,4 +33,5 @@ clean:
 	rm -rf build
 	rm -rf *.egg-info
 	rm -rf dist
+	rm -rf .pytest_cache
 	find purple -type f -name "*.so" -exec rm {} \;
