@@ -37,7 +37,7 @@ cdef class Plugin:
         raise Exception("Use Plugin.find_with_id() instead.")
 
     @staticmethod
-    cdef Plugin _new(c_libplugin.PurplePlugin* c_plugin):
+    cdef Plugin from_c_plugin(c_libplugin.PurplePlugin* c_plugin):
         cdef Plugin _plugin = Plugin.__new__(Plugin)
         _plugin._c_plugin = c_plugin
         _plugin._c_protocol_info = c_libplugin.PURPLE_PLUGIN_PROTOCOL_INFO(_plugin._c_plugin)
@@ -48,7 +48,7 @@ cdef class Plugin:
         cdef object _plugin = None
         cdef c_libplugin.PurplePlugin* c_plugin = c_libplugin.purple_plugins_find_with_id(id)
         if c_plugin != NULL:
-            _plugin = Plugin._new(c_plugin)
+            _plugin = Plugin.from_c_plugin(c_plugin)
         return _plugin
 
     def get_name(self):
@@ -250,7 +250,7 @@ cdef class Plugin:
         while iter:
             pp = <c_libplugin.PurplePlugin*> iter.data
             if pp.info and pp.info.name:
-                p = Plugin._new(pp)
+                p = Plugin.from_c_plugin(pp)
                 if p:
                     plugins += [p]
             else:
@@ -268,7 +268,7 @@ cdef class Plugin:
         while iter:
             pp = <c_libplugin.PurplePlugin*> iter.data
             if pp.info and pp.info.name:
-                p = Plugin._new(pp)
+                p = Plugin.from_c_plugin(pp)
                 if p:
                     protocols += [p]
             iter = iter.next
