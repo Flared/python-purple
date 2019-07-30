@@ -25,4 +25,4 @@ cdef class Protocol:
     cdef c_libplugin.PurplePlugin* _c_plugin
 
     @staticmethod
-    cdef Protocol _new(c_libplugin.PurplePlugin* c_plugin)
+    cdef Protocol from_c_plugin(c_libplugin.PurplePlugin* c_plugin)

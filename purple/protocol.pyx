@@ -36,7 +36,7 @@ cdef class Protocol:
         raise Exception("Use Protocol.find_with_id() instead.")
 
     @staticmethod
-    cdef Protocol _new(c_libplugin.PurplePlugin* c_plugin):
+    cdef Protocol from_c_plugin(c_libplugin.PurplePlugin* c_plugin):
         cdef Protocol protocol = Protocol.__new__(Protocol)
         protocol._c_plugin = c_plugin
         return protocol
@@ -46,7 +46,7 @@ cdef class Protocol:
         cdef object protocol = None
         cdef c_libplugin.PurplePlugin* c_plugin = c_libplugin.purple_plugins_find_with_id(id)
         if c_plugin != NULL:
-            protocol = Protocol._new(c_libplugin.purple_plugins_find_with_id(id))
+            protocol = Protocol.from_c_plugin(c_libplugin.purple_plugins_find_with_id(id))
         return protocol
 
     def get_name(self):
