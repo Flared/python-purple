@@ -248,10 +248,9 @@ cdef extern from "libpurple/conversation.h":
 
     # Chat Conversation API
     PurpleConversation *purple_conv_chat_get_conversation(PurpleConvChat *chat)
-    glib.GList *purple_conv_chat_set_users(PurpleConvChat *chat, \
-            glib.GList *users)
     glib.GList *purple_conv_chat_get_users(PurpleConvChat *chat)
     void purple_conv_chat_ignore(PurpleConvChat *chat, char *name)
+    void purple_conv_chat_invite_user(PurpleConvChat* chat, char* user, char* message, glib.gboolean confirm) 
     void purple_conv_chat_unignore(PurpleConvChat *chat, char *name)
     glib.GList *purple_conv_chat_set_ignored(PurpleConvChat *chat, \
             glib.GList *ignored)
