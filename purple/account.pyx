@@ -30,7 +30,6 @@ from libpurple cimport server as c_libserver
 from libpurple cimport status as c_libstatus
 from libpurple cimport core as c_libcore
 
-from purple cimport buddy as libbuddy
 from purple cimport protocol as libprotocol
 
 cdef class Account:
@@ -588,7 +587,7 @@ cdef class Account:
                                 c_libblist.purple_buddy_get_presence(c_buddy)):
                     name = <char *> c_libblist.purple_buddy_get_name(c_buddy)
 
-                    new_buddy = libbuddy.Buddy(name, self)
+                    new_buddy = None
 
                     c_alias = <char *> c_libblist.purple_buddy_get_alias_only(c_buddy)
                     if c_alias:
@@ -616,7 +615,7 @@ cdef class Account:
                 c_buddy = <c_libblist.PurpleBuddy *> iter.data
 
                 name = <char *> c_libblist.purple_buddy_get_name(c_buddy)
-                new_buddy = libbuddy.Buddy(name, self)
+                new_buddy = None
 
                 c_alias = <char *> c_libblist.purple_buddy_get_alias_only(c_buddy)
                 if c_alias:
