@@ -235,10 +235,37 @@ class SimpleClient:
     def menu_item_quit(self):
         raise KeyboardInterrupt
 
+    def menu_list_ims(self):
+        ims = purple.IM.get_ims()
+        if ims:
+            click.echo(click.style("IMs:", bold=True))
+            for im_index, im in enumerate(ims):
+                click.echo("{im_index}. {im}".format(im_index=im_index, im=im))
+        else:
+            click.echo(click.style("There are no IMS to show.", bold=True))
+
+    def menu_list_chats(self):
+        chats = purple.Chat.get_chats()
+        if chats:
+            click.echo(click.style("Chats:", bold=True))
+            for chat_index, chat in enumerate(chats):
+                click.echo(
+                    "{chat_index}. {chat}".format(
+                        chat_index=chat_index, chat=chat
+                    )
+                )
+        else:
+            click.echo(click.style("There are no Chats to show.", bold=True))
+
     def menu(self):
         click.echo(click.style("\nMenu", fg="green", bold=True))
 
-        menu_items = [("Quit (ctrl+c)", self.menu_item_quit)]
+        menu_items = [
+            ("Quit (ctrl+c)", self.menu_item_quit),
+            ("List IMs", self.menu_list_ims),
+            ("List Chats", self.menu_list_chats),
+            ("Exit menu", lambda *args: None),
+        ]
 
         for (
             menu_item_index,
