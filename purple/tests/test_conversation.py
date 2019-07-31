@@ -62,6 +62,34 @@ def test_conversation_new_chat(core):
     assert len(ims) == 0
 
 
+def test_conversation_new_im(core):
+    account = utils.get_test_account(username=b"chatuser")
+    account.set_enabled(True)
+
+    im = purple.Conversation.new(
+        type=purple.ConversationType.CONVERSATION_TYPE_IM,
+        account=account,
+        name=b"imname",
+    )
+
+    assert isinstance(im, purple.Conversation)
+    assert isinstance(im, purple.IM)
+    assert im.get_name() == b"imname"
+    assert im.get_type() == purple.ConversationType.CONVERSATION_TYPE_IM
+    assert im.get_title() == b"imname"
+
+    conversations = purple.Conversation.get_conversations()
+    assert len(conversations) == 1
+    assert conversations[0].get_name() == b"imname"
+
+    chats = purple.Chat.get_chats()
+    assert len(chats) == 0
+
+    ims = purple.IM.get_ims()
+    assert len(ims) == 1
+    assert ims[0].get_name() == b"imname"
+
+
 def test_conversation_type():
     conv_types = purple.ConversationType
 
