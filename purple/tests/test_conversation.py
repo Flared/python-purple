@@ -45,6 +45,7 @@ def test_conversation_new_chat(core):
     assert chat.get_id() == 0
     assert chat.get_nick() == b"chatuser"
     assert chat.get_topic() == None
+    assert chat.get_title() == b"chatname"
 
     users = chat.get_users()
     assert len(users) == 0

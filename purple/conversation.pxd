@@ -39,6 +39,8 @@ cdef class Conversation:
 
     cpdef ConversationType get_type(self)
 
+    cpdef bytes get_title(self)
+
 cdef class IM(Conversation):
     pass
 

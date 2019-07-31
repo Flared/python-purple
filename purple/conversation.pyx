@@ -67,6 +67,13 @@ cdef class Conversation:
         cdef bytes name = c_name or None
         return name
 
+    cpdef bytes get_title(self):
+        cdef char* c_name = c_libconversation.purple_conversation_get_title(
+            self._c_conversation
+        )
+        cdef bytes title = c_name or None
+        return title
+
     cpdef ConversationType get_type(self):
         cdef ConversationType _type = <ConversationType> c_libconversation.purple_conversation_get_type(
             self._c_conversation
