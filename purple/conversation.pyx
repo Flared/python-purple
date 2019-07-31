@@ -113,6 +113,12 @@ cdef class IM(Conversation):
 
         return ims
 
+    def __repr__(self):
+        return "<{class_name}: {im_name}>".format(
+            class_name=self.__class__.__name__,
+            im_name=self.get_name(),
+        )
+
 cdef class Chat(Conversation):
 
     @staticmethod
@@ -182,6 +188,12 @@ cdef class Chat(Conversation):
             c_iter = c_iter.next
 
         return chats
+
+    def __repr__(self):
+        return "<{class_name}: {chat_name}>".format(
+            class_name=self.__class__.__name__,
+            chat_name=self.get_name(),
+        )
 
 
 cdef class ChatBuddy:

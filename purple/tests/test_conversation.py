@@ -46,6 +46,7 @@ def test_conversation_new_chat(core):
     assert chat.get_nick() == b"chatuser"
     assert chat.get_topic() == None
     assert chat.get_title() == b"chatname"
+    assert repr(chat) == "<Chat: b'chatname'>"
 
     users = chat.get_users()
     assert len(users) == 0
@@ -77,6 +78,7 @@ def test_conversation_new_im(core):
     assert im.get_name() == b"imname"
     assert im.get_type() == purple.ConversationType.CONVERSATION_TYPE_IM
     assert im.get_title() == b"imname"
+    assert repr(im) == "<IM: b'imname'>"
 
     conversations = purple.Conversation.get_conversations()
     assert len(conversations) == 1
