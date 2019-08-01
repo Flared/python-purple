@@ -21,8 +21,11 @@ from libpurple cimport conversation as c_libconversation
 from libpurple cimport account as c_libaccount
 from libpurple cimport blist as c_libblist
 from libpurple cimport util as c_libutil
+from libpurple cimport debug as c_libdebug
 
 from purple cimport signals as libsignals
+from purple cimport conversation as libconversation
+from purple cimport connection as libconnection
 
 cdef str SIGNAL_CONVERSATION_RECEIVING_IM_MSG = "receiving-im-msg"
 cdef glib.gboolean signal_conversation_receiving_im_msg_cb(
@@ -44,6 +47,8 @@ cdef glib.gboolean signal_conversation_receiving_im_msg_cb(
     @params conv     The IM conversation.
     @params flags    A pointer to the IM message flags.
     """
+    c_libdebug.purple_debug_info("conversation", "%s", "receiving-im-msg\n")
+
     cdef bytes sender = c_sender[0] or None
     cdef bytes message = c_message[0] or None
 
@@ -64,7 +69,7 @@ cdef void signal_conversation_received_im_msg_cb(
     c_libaccount.PurpleAccount* c_account,
     char* c_sender,
     char* c_message,
-    c_libconversation.PurpleConversation* c_conv,
+    c_libconversation.PurpleConversation* c_conversation,
     c_libconversation.PurpleMessageFlags* c_flags
 ):
     """
@@ -75,14 +80,88 @@ cdef void signal_conversation_received_im_msg_cb(
     @params conv     The IM conversation.
     @params flags    A pointer to the IM message flags.
     """
+    c_libdebug.purple_debug_info("conversation", "%s", "received-im-msg\n")
+
     cdef bytes sender = c_sender or None
     cdef bytes message = c_message or None
+    cdef libconversation.Conversation conversation = libconversation.Conversation.from_c_conversation(c_conversation)
 
     for callback in libsignals.signal_cbs.get(SIGNAL_CONVERSATION_RECEIVED_IM_MSG, tuple()):
         callback(
             account=None,
             sender=sender,
             message=message,
-            conversation=None,
+            conversation=conversation,
             flags=None,
+        )
+
+
+cdef str SIGNAL_CONVERSATION_RECEIVED_CHAT_MSG = "received-chat-msg"
+cdef void signal_conversation_received_chat_msg_cb(
+    c_libaccount.PurpleAccount* c_account,
+    char* c_sender,
+    char* c_message,
+    c_libconversation.PurpleConversation* c_conversation,
+    c_libconversation.PurpleMessageFlags* c_flags
+):
+    c_libdebug.purple_debug_info("conversation", "%s", "received-chat-msg\n")
+
+    cdef bytes sender = c_sender or None
+    cdef bytes message = c_message or None
+    cdef libconversation.Conversation conversation = libconversation.Conversation.from_c_conversation(c_conversation)
+
+    for callback in libsignals.signal_cbs.get(SIGNAL_CONVERSATION_RECEIVED_CHAT_MSG, tuple()):
+        callback(
+            account=None,
+            sender=sender,
+            message=message,
+            conversation=conversation,
+            flags=None,
+        )
+
+cdef str SIGNAL_CONVERSATION_CHAT_JOINED = "chat-joined"
+cdef glib.gboolean signal_conversation_chat_joined_cb(
+    c_libconversation.PurpleConversation* c_conversation,
+):
+    c_libdebug.purple_debug_info("conversation", "%s", "chat-joined\n")
+
+    cdef libconversation.Conversation conversation = libconversation.Conversation.from_c_conversation(
+        c_conversation
+    )
+
+    for callback in libsignals.signal_cbs.get(SIGNAL_CONVERSATION_CHAT_JOINED, tuple()):
+        callback(
+            conversation=conversation
+        )
+
+
+cdef str SIGNAL_CONVERSATION_CHAT_LEFT = "chat-left"
+cdef glib.gboolean signal_conversation_chat_left_cb(
+    c_libconversation.PurpleConversation* c_conversation,
+):
+    c_libdebug.purple_debug_info("conversation", "%s", "chat-left\n")
+
+    cdef libconversation.Conversation conversation = libconversation.Conversation.from_c_conversation(
+        c_conversation
+    )
+
+    for callback in libsignals.signal_cbs.get(SIGNAL_CONVERSATION_CHAT_LEFT, tuple()):
+        callback(
+            conversation=conversation
+        )
+
+
+cdef str SIGNAL_CONVERSATION_CHAT_JOIN_FAILED = "chat-join-failed"
+cdef glib.gboolean signal_conversation_chat_join_failed_cb(
+    c_libconnection.PurpleConnection* c_connection,
+    glib.GHashTable* c_components,
+):
+    c_libdebug.purple_debug_info("conversation", "%s", "chat-join-failed\n")
+
+    cdef libconnection.Connection connection = libconnection.Connection.from_c_connection(c_connection)
+
+    for callback in libsignals.signal_cbs.get(SIGNAL_CONVERSATION_CHAT_JOIN_FAILED, tuple()):
+        callback(
+            connection=connection,
+            components=None,
         )

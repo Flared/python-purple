@@ -70,6 +70,22 @@ cdef class _Signals:
     def SIGNAL_CONVERSATION_RECEIVED_IM_MSG(self):
         return conversation_signals.SIGNAL_CONVERSATION_RECEIVED_IM_MSG
 
+    @property
+    def SIGNAL_CONVERSATION_RECEIVED_CHAT_MSG(self):
+        return conversation_signals.SIGNAL_CONVERSATION_RECEIVED_CHAT_MSG
+
+    @property
+    def SIGNAL_CONVERSATION_CHAT_JOINED(self):
+        return conversation_signals.SIGNAL_CONVERSATION_CHAT_JOINED
+
+    @property
+    def SIGNAL_CONVERSATION_CHAT_LEFT(self):
+        return conversation_signals.SIGNAL_CONVERSATION_CHAT_LEFT
+
+    @property
+    def SIGNAL_CONVERSATION_CHAT_JOIN_FAILED(self):
+        return conversation_signals.SIGNAL_CONVERSATION_CHAT_JOIN_FAILED
+
     ##################
     ## Core Signals ##
     ##################

@@ -49,14 +49,7 @@ cdef class Conversation:
         if c_conversation == NULL:
             raise Exception("Could not create conversation")
 
-        cdef Conversation conversation = None
-
-        if type == ConversationType.CONVERSATION_TYPE_CHAT:
-            conversation = Chat.from_c_conversation(c_conversation)
-        elif type == ConversationType.CONVERSATION_TYPE_IM:
-            conversation = IM.from_c_conversation(c_conversation)
-        else:
-            conversation = Conversation.from_c_conversation(c_conversation)
+        cdef Conversation conversation = Conversation.from_c_conversation(c_conversation)
 
         return conversation
 
@@ -80,26 +73,56 @@ cdef class Conversation:
         )
         return _type
 
+    cpdef list get_message_history(self):
+        cdef glib.GList* c_iter = c_libconversation.purple_conversation_get_message_history(
+            self._c_conversation
+        )
+        cdef list messages = list()
+
+        while c_iter:
+            conv_message = ConversationMessage.from_c_conv_message(
+                <c_libconversation.PurpleConvMessage*> iter.data
+            )
+            messages.append(conv_message)
+            c_iter = c_iter.next
+
+        return messages
+
+    cpdef Chat get_chat_data(self):
+        cdef c_libconversation.PurpleConvChat* c_conv_chat = c_libconversation.purple_conversation_get_chat_data(
+            self._c_conversation,
+        )
+        cdef Chat chat = None
+
+        if c_conv_chat != NULL:
+            chat = Chat.from_c_conv_chat(c_conv_chat)
+
+        return chat
+
+    cpdef IM get_im_data(self):
+        cdef c_libconversation.PurpleConvIm* c_conv_im = c_libconversation.purple_conversation_get_im_data(
+            self._c_conversation,
+        )
+        cdef IM im = None
+
+        if c_conv_im != NULL:
+            im = IM.from_c_conv_im(c_conv_im)
+
+        return im
+
     @staticmethod
     def get_conversations():
         cdef glib.GList* c_iter = c_libconversation.purple_get_conversations()
         cdef list conversations = list()
 
         while c_iter:
-            conversation = Conversation.from_c_conversation(<c_libconversation.PurpleConversation*> c_iter.data)
+            conversation = Conversation.from_c_conversation(
+                <c_libconversation.PurpleConversation*> c_iter.data
+            )
             conversations.append(conversation)
             c_iter = c_iter.next
 
         return conversations
-
-
-cdef class IM(Conversation):
-
-    @staticmethod
-    cdef IM from_c_conversation(c_libconversation.PurpleConversation* c_conversation):
-        cdef Conversation conversation = IM.__new__(IM)
-        conversation._c_conversation = c_conversation
-        return conversation
 
     @staticmethod
     def get_ims():
@@ -107,66 +130,119 @@ cdef class IM(Conversation):
         cdef list ims = list()
 
         while c_iter:
-            im = IM.from_c_conversation(<c_libconversation.PurpleConversation*> c_iter.data)
-            ims.append(im)
+            conversation = Conversation.from_c_conversation(
+                <c_libconversation.PurpleConversation*> c_iter.data
+            )
+            ims.append(conversation)
             c_iter = c_iter.next
 
         return ims
 
+    @staticmethod
+    def get_chats():
+        cdef glib.GList* c_iter = c_libconversation.purple_get_chats()
+        cdef list chats = list()
+
+        while c_iter:
+            conversation = Conversation.from_c_conversation(
+                <c_libconversation.PurpleConversation*> c_iter.data
+            )
+            chats.append(conversation)
+            c_iter = c_iter.next
+
+        return chats
+
+    def __repr__(self):
+        return "<{class_name}: {conversation_name}>".format(
+            class_name=self.__class__.__name__,
+            conversation_name=self.get_name(),
+        )
+
+
+cdef class IM:
+
+    @staticmethod
+    cdef IM from_c_conv_im(c_libconversation.PurpleConvIm* c_conv_im):
+        cdef IM im = IM.__new__(IM)
+        im._c_conv_im = c_conv_im
+        return im
+
+    cpdef void send(self, bytes message):
+        c_libconversation.purple_conv_im_send(
+            self._c_conv_im,
+            message,
+        )
+
+    cpdef Conversation get_conversation(self):
+        cdef Conversation conversation = Conversation.from_c_conversation(
+            c_libconversation.purple_conv_im_get_conversation(
+            self._c_conv_im,
+            )
+        )
+        return conversation
+
     def __repr__(self):
         return "<{class_name}: {im_name}>".format(
             class_name=self.__class__.__name__,
-            im_name=self.get_name(),
+            im_name=self.get_conversation().get_name(),
         )
 
-cdef class Chat(Conversation):
+cdef class Chat:
 
     @staticmethod
-    cdef Chat from_c_conversation(c_libconversation.PurpleConversation* c_conversation):
-        cdef Conversation conversation = Chat.__new__(Chat)
-        conversation._c_conversation = c_conversation
+    cdef Chat from_c_conv_chat(c_libconversation.PurpleConvChat* c_conv_chat):
+        cdef Chat chat = Chat.__new__(Chat)
+        chat._c_conv_chat = c_conv_chat
+        return chat
+
+    cpdef Conversation get_conversation(self):
+        cdef Conversation conversation = Conversation.from_c_conversation(
+            c_libconversation.purple_conv_chat_get_conversation(
+                self._c_conv_chat,
+            )
+        )
         return conversation
 
-    cdef c_libconversation.PurpleConvChat* get_c_chat(self):
-        cdef c_libconversation.PurpleConvChat* c_chat = c_libconversation.purple_conversation_get_chat_data(
-            self._c_conversation
+    cpdef void send(self, bytes message):
+        c_libconversation.purple_conv_chat_send(
+            self._c_conv_chat,
+            message,
         )
-        return c_chat
 
     cpdef int get_id(self):
         cdef int _id = c_libconversation.purple_conv_chat_get_id(
-            self.get_c_chat()
+            self._c_conv_chat,
         )
         return _id
 
     cpdef bytes get_nick(self):
         cdef char* c_nick = c_libconversation.purple_conv_chat_get_nick(
-            self.get_c_chat()
+            self._c_conv_chat,
         )
         cdef bytes nick = c_nick or None
         return nick
 
     cpdef bytes get_topic(self):
         cdef char* c_topic = c_libconversation.purple_conv_chat_get_topic(
-            self.get_c_chat()
+            self._c_conv_chat,
         )
         cdef bytes topic = c_topic or None
         return topic
 
     cpdef bint has_left(self):
         cdef bint _has_left = c_libconversation.purple_conv_chat_has_left(
-            self.get_c_chat()
+            self._c_conv_chat,
         )
         return _has_left
 
     cpdef void left(self):
        c_libconversation.purple_conv_chat_left(
-           self.get_c_chat()
+           self._c_conv_chat,
        )
 
     cpdef void invite_user(self, bytes user, bytes message, bint confirm):
         c_libconversation.purple_conv_chat_invite_user(
-            self.get_c_chat(),
+            self._c_conv_chat,
             user,
             message,
             confirm,
@@ -174,7 +250,7 @@ cdef class Chat(Conversation):
 
     cpdef list get_users(self):
         cdef glib.GList* c_iter = c_libconversation.purple_conv_chat_get_users(
-            self.get_c_chat()
+            self._c_conv_chat,
         )
         cdef list users = list()
 
@@ -188,22 +264,10 @@ cdef class Chat(Conversation):
 
         return users
 
-    @staticmethod
-    def get_chats():
-        cdef glib.GList* c_iter = c_libconversation.purple_get_chats()
-        cdef list chats = list()
-
-        while c_iter:
-            chat = Chat.from_c_conversation(<c_libconversation.PurpleConversation*> c_iter.data)
-            chats.append(chat)
-            c_iter = c_iter.next
-
-        return chats
-
     def __repr__(self):
         return "<{class_name}: {chat_name}>".format(
             class_name=self.__class__.__name__,
-            chat_name=self.get_name(),
+            chat_name=self.get_conversation().get_name(),
         )
 
 
@@ -221,3 +285,19 @@ cdef class ChatBuddy:
         )
         cdef bytes name = c_name or None
         return name
+
+
+cdef class ConversationMessage:
+
+    @staticmethod
+    cdef ConversationMessage from_c_conv_message(c_libconversation.PurpleConvMessage* c_conv_message):
+        cdef ConversationMessage conversation_message = ConversationMessage.__new__(ConversationMessage)
+        conversation_message._c_conv_message = c_conv_message
+        return conversation_message
+
+    cpdef bytes get_message(self):
+        cdef char* c_message = c_libconversation.purple_conversation_message_get_message(
+            self._c_conv_message
+        )
+        cdef bytes message = c_message or None
+        return message

@@ -21,12 +21,14 @@ from libpurple cimport conversation as c_libconversation
 
 from purple cimport account as libaccount
 
+
 cpdef enum ConversationType:
     CONVERSATION_TYPE_UNKNOWN = c_libconversation.PurpleConversationType.PURPLE_CONV_TYPE_UNKNOWN
     CONVERSATION_TYPE_IM = c_libconversation.PurpleConversationType.PURPLE_CONV_TYPE_IM
     CONVERSATION_TYPE_CHAT = c_libconversation.PurpleConversationType.PURPLE_CONV_TYPE_CHAT
     CONVERSATION_TYPE_MISC = c_libconversation.PurpleConversationType.PURPLE_CONV_TYPE_MISC
     CONVERSATION_TYPE_ANY = c_libconversation.PurpleConversationType.PURPLE_CONV_TYPE_ANY
+
 
 cdef class Conversation:
 
@@ -41,12 +43,35 @@ cdef class Conversation:
 
     cpdef bytes get_title(self)
 
-cdef class IM(Conversation):
-    pass
+    cpdef list get_message_history(self)
 
-cdef class Chat(Conversation):
+    cpdef Chat get_chat_data(self)
 
-    cdef c_libconversation.PurpleConvChat* get_c_chat(self)
+    cpdef IM get_im_data(self)
+
+
+cdef class IM:
+
+    cdef c_libconversation.PurpleConvIm* _c_conv_im
+
+    @staticmethod
+    cdef IM from_c_conv_im(c_libconversation.PurpleConvIm* c_conv_im)
+
+    cpdef Conversation get_conversation(self)
+
+    cpdef void send(self, bytes message)
+
+
+cdef class Chat:
+
+    cdef c_libconversation.PurpleConvChat* _c_conv_chat
+
+    @staticmethod
+    cdef Chat from_c_conv_chat(c_libconversation.PurpleConvChat* c_conv_chat)
+
+    cpdef Conversation get_conversation(self)
+
+    cpdef void send(self, bytes message)
 
     cpdef list get_users(self)
 
@@ -62,6 +87,7 @@ cdef class Chat(Conversation):
 
     cpdef void invite_user(self, bytes user, bytes message, bint confirm)
 
+
 cdef class ChatBuddy:
 
     cdef c_libconversation.PurpleConvChatBuddy* _c_conv_chat_buddy
@@ -70,3 +96,13 @@ cdef class ChatBuddy:
     cdef ChatBuddy from_c_conv_chat_buddy(c_libconversation.PurpleConvChatBuddy* c_chat_buddy)
 
     cpdef bytes get_name(self)
+
+
+cdef class ConversationMessage:
+
+    cdef c_libconversation.PurpleConvMessage* _c_conv_message
+
+    @staticmethod
+    cdef ConversationMessage from_c_conv_message(c_libconversation.PurpleConvMessage* c_conv_message)
+
+    cpdef bytes get_message(self)

@@ -32,20 +32,25 @@ def test_conversation_new_chat(core):
     account = utils.get_test_account(username=b"chatuser")
     account.set_enabled(True)
 
-    chat = purple.Conversation.new(
+    conversation = purple.Conversation.new(
         type=purple.ConversationType.CONVERSATION_TYPE_CHAT,
         account=account,
         name=b"chatname",
     )
+    assert isinstance(conversation, purple.Conversation)
+    assert (
+        conversation.get_type()
+        == purple.ConversationType.CONVERSATION_TYPE_CHAT
+    )
+    assert conversation.get_name() == b"chatname"
+    assert conversation.get_title() == b"chatname"
+    assert not conversation.get_im_data()
 
-    assert isinstance(chat, purple.Conversation)
+    chat = conversation.get_chat_data()
     assert isinstance(chat, purple.Chat)
-    assert chat.get_name() == b"chatname"
-    assert chat.get_type() == purple.ConversationType.CONVERSATION_TYPE_CHAT
     assert chat.get_id() == 0
     assert chat.get_nick() == b"chatuser"
     assert chat.get_topic() == None
-    assert chat.get_title() == b"chatname"
     assert chat.has_left() == False
     assert repr(chat) == "<Chat: b'chatname'>"
 
@@ -56,11 +61,12 @@ def test_conversation_new_chat(core):
     assert len(conversations) == 1
     assert conversations[0].get_name() == b"chatname"
 
-    chats = purple.Chat.get_chats()
+    chats = purple.Conversation.get_chats()
     assert len(chats) == 1
     assert chats[0].get_name() == b"chatname"
+    assert isinstance(chats[0], purple.Conversation)
 
-    ims = purple.IM.get_ims()
+    ims = purple.Conversation.get_ims()
     assert len(ims) == 0
 
 
@@ -68,28 +74,33 @@ def test_conversation_new_im(core):
     account = utils.get_test_account(username=b"chatuser")
     account.set_enabled(True)
 
-    im = purple.Conversation.new(
+    conversation = purple.Conversation.new(
         type=purple.ConversationType.CONVERSATION_TYPE_IM,
         account=account,
         name=b"imname",
     )
+    assert isinstance(conversation, purple.Conversation)
+    assert (
+        conversation.get_type() == purple.ConversationType.CONVERSATION_TYPE_IM
+    )
+    assert conversation.get_name() == b"imname"
+    assert conversation.get_title() == b"imname"
+    assert not conversation.get_chat_data()
 
-    assert isinstance(im, purple.Conversation)
+    im = conversation.get_im_data()
     assert isinstance(im, purple.IM)
-    assert im.get_name() == b"imname"
-    assert im.get_type() == purple.ConversationType.CONVERSATION_TYPE_IM
-    assert im.get_title() == b"imname"
     assert repr(im) == "<IM: b'imname'>"
 
     conversations = purple.Conversation.get_conversations()
     assert len(conversations) == 1
     assert conversations[0].get_name() == b"imname"
 
-    chats = purple.Chat.get_chats()
+    chats = purple.Conversation.get_chats()
     assert len(chats) == 0
 
-    ims = purple.IM.get_ims()
+    ims = purple.Conversation.get_ims()
     assert len(ims) == 1
+    assert isinstance(ims[0], purple.Conversation)
     assert ims[0].get_name() == b"imname"
 
 
@@ -103,8 +114,37 @@ def test_conversation_type():
     assert conv_types.CONVERSATION_TYPE_ANY == 4
 
 
-def test_leave_chat(core):
+def test_chat_has_left(core):
     chat = utils.get_test_chat()
     assert chat.has_left() == False
     chat.left()
     assert chat.has_left() == True
+
+
+def test_received_im_message_signal(core):
+
+    received_im_message_handler_called = False
+    _message = None
+
+    def received_im_message_handler(
+        *, account, sender, message, conversation, flags
+    ):
+        nonlocal received_im_message_handler_called
+        nonlocal _message
+        received_im_message_handler_called = True
+        _message = message
+
+    core.signal_connect(
+        signal_name=purple.Signals.SIGNAL_CONVERSATION_RECEIVED_IM_MSG,
+        callback=received_im_message_handler,
+    )
+
+    im = utils.get_test_im()
+
+    assert not received_im_message_handler_called
+    assert not _message
+
+    im.send(b"Hello!")
+
+    assert received_im_message_handler_called
+    assert _message == b"Hello!"

@@ -31,10 +31,31 @@ def get_test_chat(*, account=None, chat_name=b"chatname"):
         account = get_test_account()
         account.set_enabled(True)
 
-    chat = purple.Conversation.new(
+    conversation = purple.Conversation.new(
         type=purple.ConversationType.CONVERSATION_TYPE_CHAT,
         account=account,
         name=chat_name,
     )
 
+    chat = conversation.get_chat_data()
+
     return chat
+
+
+def get_test_im(*, account=None, im_name=None):
+    if account is None:
+        account = get_test_account()
+        account.set_enabled(True)
+
+    if im_name is None:
+        im_name = account.get_username()
+
+    conversation = purple.Conversation.new(
+        type=purple.ConversationType.CONVERSATION_TYPE_IM,
+        account=account,
+        name=im_name,
+    )
+
+    im = conversation.get_im_data()
+
+    return im

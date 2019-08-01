@@ -21,6 +21,7 @@ cimport glib
 
 from libpurple cimport conversation as c_libconversation
 from libpurple cimport account as c_libaccount
+from libpurple cimport connection as c_libconnection
 
 cdef str SIGNAL_CONVERSATION_RECEIVING_IM_MSG
 cdef glib.gboolean signal_conversation_receiving_im_msg_cb(
@@ -38,4 +39,29 @@ cdef void signal_conversation_received_im_msg_cb(
     char* message,
     c_libconversation.PurpleConversation* conv,
     c_libconversation.PurpleMessageFlags* flags
+)
+
+cdef str SIGNAL_CONVERSATION_RECEIVED_CHAT_MSG
+cdef void signal_conversation_received_chat_msg_cb(
+    c_libaccount.PurpleAccount* account,
+    char* sender,
+    char* message,
+    c_libconversation.PurpleConversation* conv,
+    c_libconversation.PurpleMessageFlags* flags
+)
+
+cdef str SIGNAL_CONVERSATION_CHAT_JOINED
+cdef glib.gboolean signal_conversation_chat_joined_cb(
+    c_libconversation.PurpleConversation* conversation,
+)
+
+cdef str SIGNAL_CONVERSATION_CHAT_LEFT
+cdef glib.gboolean signal_conversation_chat_left_cb(
+    c_libconversation.PurpleConversation* conversation,
+)
+
+cdef str SIGNAL_CONVERSATION_CHAT_JOIN_FAILED
+cdef glib.gboolean signal_conversation_chat_join_failed_cb(
+    c_libconnection.PurpleConnection* connection,
+    glib.GHashTable* components,
 )

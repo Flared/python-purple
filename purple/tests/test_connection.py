@@ -30,7 +30,7 @@ def test_signing_on_signal(core):
     called = False
     _connection = None
 
-    def handler(connection):
+    def handler(*, connection):
         nonlocal called
         called = True
 
@@ -58,7 +58,7 @@ def test_signed_on_signal(core):
     called = False
     _connection = None
 
-    def handler(connection):
+    def handler(*, connection):
         nonlocal called
         called = True
 
@@ -85,7 +85,7 @@ def test_signing_off_signal(core):
     called = False
     _connection = None
 
-    def handler(connection):
+    def handler(*, connection):
         nonlocal called
         called = True
 
@@ -115,7 +115,7 @@ def test_signed_off_signal(core):
     called = False
     _connection = None
 
-    def handler(connection):
+    def handler(*, connection):
         nonlocal called
         called = True
 

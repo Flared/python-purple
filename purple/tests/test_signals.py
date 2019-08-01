@@ -34,5 +34,9 @@ def test_signals_enum(core):
 
     assert signals.SIGNAL_CONVERSATION_RECEIVED_IM_MSG == "received-im-msg"
     assert signals.SIGNAL_CONVERSATION_RECEIVING_IM_MSG == "receiving-im-msg"
+    assert signals.SIGNAL_CONVERSATION_RECEIVED_CHAT_MSG == "received-chat-msg"
+    assert signals.SIGNAL_CONVERSATION_CHAT_JOINED == "chat-joined"
+    assert signals.SIGNAL_CONVERSATION_CHAT_LEFT == "chat-left"
+    assert signals.SIGNAL_CONVERSATION_CHAT_JOIN_FAILED == "chat-join-failed"
 
     assert signals.SIGNAL_CORE_QUITTING == "quitting"

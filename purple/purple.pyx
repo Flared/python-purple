@@ -427,6 +427,38 @@ cdef class Purple:
                     <c_libsignals.PurpleCallback> libsignals_conversation.signal_conversation_received_im_msg_cb,
                     NULL,
                 )
+            elif signal_name == libsignals_conversation.SIGNAL_CONVERSATION_RECEIVED_CHAT_MSG:
+                c_libsignals.purple_signal_connect(
+                    c_libconversation.purple_conversations_get_handle(),
+                    libsignals_conversation.SIGNAL_CONVERSATION_RECEIVED_CHAT_MSG.encode(),
+                    &handle,
+                    <c_libsignals.PurpleCallback> libsignals_conversation.signal_conversation_received_chat_msg_cb,
+                    NULL,
+                )
+            elif signal_name == libsignals_conversation.SIGNAL_CONVERSATION_CHAT_JOINED:
+                c_libsignals.purple_signal_connect(
+                    c_libconversation.purple_conversations_get_handle(),
+                    libsignals_conversation.SIGNAL_CONVERSATION_CHAT_JOINED.encode(),
+                    &handle,
+                    <c_libsignals.PurpleCallback> libsignals_conversation.signal_conversation_chat_joined_cb,
+                    NULL,
+                )
+            elif signal_name == libsignals_conversation.SIGNAL_CONVERSATION_CHAT_JOIN_FAILED:
+                c_libsignals.purple_signal_connect(
+                    c_libconversation.purple_conversations_get_handle(),
+                    libsignals_conversation.SIGNAL_CONVERSATION_CHAT_JOIN_FAILED.encode(),
+                    &handle,
+                    <c_libsignals.PurpleCallback> libsignals_conversation.signal_conversation_chat_join_failed_cb,
+                    NULL,
+                )
+            elif signal_name == libsignals_conversation.SIGNAL_CONVERSATION_CHAT_LEFT:
+                c_libsignals.purple_signal_connect(
+                    c_libconversation.purple_conversations_get_handle(),
+                    libsignals_conversation.SIGNAL_CONVERSATION_CHAT_LEFT.encode(),
+                    &handle,
+                    <c_libsignals.PurpleCallback> libsignals_conversation.signal_conversation_chat_left_cb,
+                    NULL,
+                )
 
             ####################
             ## Unknown Signal ##

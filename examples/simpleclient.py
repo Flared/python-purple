@@ -33,7 +33,9 @@ class SimpleClient:
         self, *, debug, protocol_id=None, username=None, password=None
     ):
         self.debug = debug
+
         self.core = None
+        self.account = None
 
         self.protocol_id = protocol_id
         self.username = username
@@ -54,7 +56,47 @@ class SimpleClient:
             )
         )
 
-    def cb_signal_connection_signing_on(self, connection):
+    def cb_signal_conversation_received_chat_msg(
+        self, *, account, sender, message, conversation, flags
+    ):
+        click.echo(
+            "{prefix} {sender} {message}".format(
+                prefix=click.style(
+                    "[RECEIVED-CHAT-MSG]", fg="green", bold=True
+                ),
+                sender=click.style(
+                    "[{sender}]".format(sender=sender.decode()),
+                    fg="yellow",
+                    bold=True,
+                ),
+                message=message.decode(),
+            )
+        )
+
+    def cb_signal_conversation_chat_joined(self, *, conversation):
+        click.echo(
+            "{prefix} Joined chat {chat_name}".format(
+                prefix=click.style("[STATUS]", fg="blue", bold=True),
+                chat_name=click.style(conversation.get_name(), bold=True),
+            )
+        )
+
+    def cb_signal_conversation_chat_left(self, *, conversation):
+        click.echo(
+            "{prefix} Left chat {chat_name}".format(
+                prefix=click.style("[STATUS]", fg="blue", bold=True),
+                chat_name=click.style(conversation.get_name(), bold=True),
+            )
+        )
+
+    def cb_signal_conversation_chat_join_failed(self):
+        click.echo(
+            "{prefix} Failed to join chat".format(
+                prefix=click.style("[STATUS]", fg="blue", bold=True)
+            )
+        )
+
+    def cb_signal_connection_signing_on(self, *, connection):
         click.echo(
             "{prefix} Account {account_name} is signing on...".format(
                 prefix=click.style("[STATUS]", fg="blue", bold=True),
@@ -64,7 +106,7 @@ class SimpleClient:
             )
         )
 
-    def cb_signal_connection_signed_on(self, connection):
+    def cb_signal_connection_signed_on(self, *, connection):
         click.echo(
             "{prefix} Account {account_name} signed on.".format(
                 prefix=click.style("[STATUS]", fg="blue", bold=True),
@@ -75,7 +117,7 @@ class SimpleClient:
         )
 
     def cb_signal_connection_error(
-        self, connection, description, short_description
+        self, *, connection, description, short_description
     ):
         click.echo(
             "{prefix} Connection error for {account_name}: {short_description}: {description}".format(
@@ -193,21 +235,36 @@ class SimpleClient:
         ).encode()
 
         # Creates new account inside libpurple
-        account = purple.Account.new(protocol, username)
-        account.set_password(password)
+        self.account = purple.Account.new(protocol, username)
+        self.account.set_password(password)
 
-        # Set account protocol options
-        # info = {}
-        # info[b'connect_server'] = b'talk.google.com'
-        # info[b'port'] = b'443'
-        # info[b'old_ssl'] = True
-        # account.set_protocol_options(info)
+        ######################
+        ## Register signals ##
+        ######################
 
-        # Register signals
+        ## Conversation
         self.core.signal_connect(
             signal_name=purple.Signals.SIGNAL_CONVERSATION_RECEIVED_IM_MSG,
             callback=self.cb_signal_conversation_received_im_msg,
         )
+        self.core.signal_connect(
+            signal_name=purple.Signals.SIGNAL_CONVERSATION_RECEIVED_CHAT_MSG,
+            callback=self.cb_signal_conversation_received_chat_msg,
+        )
+        self.core.signal_connect(
+            signal_name=purple.Signals.SIGNAL_CONVERSATION_CHAT_JOINED,
+            callback=self.cb_signal_conversation_chat_joined,
+        )
+        self.core.signal_connect(
+            signal_name=purple.Signals.SIGNAL_CONVERSATION_CHAT_LEFT,
+            callback=self.cb_signal_conversation_chat_left,
+        )
+        self.core.signal_connect(
+            signal_name=purple.Signals.SIGNAL_CONVERSATION_CHAT_JOIN_FAILED,
+            callback=self.cb_signal_conversation_chat_join_failed,
+        )
+
+        ## Connection
         self.core.signal_connect(
             signal_name=purple.Signals.SIGNAL_CONNECTION_SIGNING_ON,
             callback=self.cb_signal_connection_signing_on,
@@ -221,14 +278,16 @@ class SimpleClient:
             callback=self.cb_signal_connection_error,
         )
 
-        # Register callbacks
+        ########################
+        ## Register callbacks ##
+        ########################
         self.core.add_callback(
             callback_name=purple.Callbacks.CALLBACK_REQUEST_REQUEST_INPUT,
             callback=self.cb_request_request_input,
         )
 
         # Enable account (connects automatically)
-        account.set_enabled(True)
+        self.account.set_enabled(True)
 
         self.loop()
 
@@ -236,7 +295,7 @@ class SimpleClient:
         raise KeyboardInterrupt
 
     def menu_list_ims(self):
-        ims = purple.IM.get_ims()
+        ims = purple.Conversation.get_ims()
         if ims:
             click.echo(click.style("IMs:", bold=True))
             for im_index, im in enumerate(ims):
@@ -244,8 +303,27 @@ class SimpleClient:
         else:
             click.echo(click.style("There are no IMS to show.", bold=True))
 
+    def menu_join_im(self):
+        im_name = click.prompt("Enter im name", type=str).encode()
+        conversation = purple.Conversation.new(
+            type=purple.ConversationType.CONVERSATION_TYPE_IM,
+            account=self.account,
+            name=im_name,
+        )
+
+    def menu_send_im(self):
+        im_name = click.prompt("Enter im name", type=str).encode()
+        conversation = purple.Conversation.new(
+            type=purple.ConversationType.CONVERSATION_TYPE_IM,
+            account=self.account,
+            name=im_name,
+        )
+        im = conversation.get_im_data()
+        message = click.prompt("Message", type=str).encode()
+        im.send(message)
+
     def menu_list_chats(self):
-        chats = purple.Chat.get_chats()
+        chats = purple.Conversation.get_chats()
         if chats:
             click.echo(click.style("Chats:", bold=True))
             for chat_index, chat in enumerate(chats):
@@ -262,9 +340,11 @@ class SimpleClient:
 
         menu_items = [
             ("Quit (ctrl+c)", self.menu_item_quit),
+            ("Continue (Exit the menu)", lambda *args: None),
             ("List IMs", self.menu_list_ims),
             ("List Chats", self.menu_list_chats),
-            ("Exit menu", lambda *args: None),
+            ("Join IM", self.menu_join_im),
+            ("Send IM", self.menu_send_im),
         ]
 
         for (
