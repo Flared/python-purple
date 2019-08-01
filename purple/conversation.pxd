@@ -56,6 +56,10 @@ cdef class Chat(Conversation):
 
     cpdef bytes get_topic(self)
 
+    cpdef bint has_left(self)
+
+    cpdef void left(self)
+
     cpdef void invite_user(self, bytes user, bytes message, bint confirm)
 
 cdef class ChatBuddy:

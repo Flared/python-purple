@@ -153,6 +153,17 @@ cdef class Chat(Conversation):
         cdef bytes topic = c_topic or None
         return topic
 
+    cpdef bint has_left(self):
+        cdef bint _has_left = c_libconversation.purple_conv_chat_has_left(
+            self.get_c_chat()
+        )
+        return _has_left
+
+    cpdef void left(self):
+       c_libconversation.purple_conv_chat_left(
+           self.get_c_chat()
+       )
+
     cpdef void invite_user(self, bytes user, bytes message, bint confirm):
         c_libconversation.purple_conv_chat_invite_user(
             self.get_c_chat(),

@@ -46,6 +46,7 @@ def test_conversation_new_chat(core):
     assert chat.get_nick() == b"chatuser"
     assert chat.get_topic() == None
     assert chat.get_title() == b"chatname"
+    assert chat.has_left() == False
     assert repr(chat) == "<Chat: b'chatname'>"
 
     users = chat.get_users()
@@ -100,3 +101,10 @@ def test_conversation_type():
     assert conv_types.CONVERSATION_TYPE_CHAT == 2
     assert conv_types.CONVERSATION_TYPE_MISC == 3
     assert conv_types.CONVERSATION_TYPE_ANY == 4
+
+
+def test_leave_chat(core):
+    chat = utils.get_test_chat()
+    assert chat.has_left() == False
+    chat.left()
+    assert chat.has_left() == True
