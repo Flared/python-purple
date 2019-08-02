@@ -1,5 +1,6 @@
 #
 #  Copyright (c) 2008 INdT - Instituto Nokia de Tecnologia
+#  Copyright (c) 2019 Flare Systems Inc.
 #
 #  This file is part of python-purple.
 #
@@ -20,8 +21,10 @@
 cimport glib
 
 from libpurple cimport connection as c_libconnection
+from libpurple cimport plugin as c_libplugin
 
 from purple cimport account as libaccount
+from purple cimport plugin as libplugin
 
 cdef class Connection:
     """
@@ -41,3 +44,16 @@ cdef class Connection:
         return libaccount.Account.from_c_account(
             c_libconnection.purple_connection_get_account(self._c_connection)
         )
+
+    cpdef libplugin.Plugin get_prpl(self):
+        cdef c_libplugin.PurplePlugin* c_plugin = c_libconnection.purple_connection_get_prpl(
+            self._c_connection
+        )
+        cdef libplugin.Plugin plugin = None
+
+        if c_plugin != NULL:
+            plugin = libplugin.Plugin.from_c_plugin(
+                c_plugin
+            )
+
+        return plugin

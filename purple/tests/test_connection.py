@@ -23,6 +23,13 @@ import pytest
 import purple
 
 from .utils import get_test_account
+from .utils import get_test_connection
+
+
+def test_connection_get_prpl(core):
+    connection = get_test_connection()
+    prpl = connection.get_prpl()
+    assert isinstance(prpl, purple.Plugin)
 
 
 def test_signing_on_signal(core):

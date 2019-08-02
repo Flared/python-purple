@@ -26,6 +26,13 @@ def get_test_account(*, username=b"user1"):
     return account
 
 
+def get_test_connection():
+    account = get_test_account()
+    account.set_enabled(True)
+    connection = account.get_connection()
+    return connection
+
+
 def get_test_chat(*, account=None, chat_name=b"chatname"):
     if account is None:
         account = get_test_account()

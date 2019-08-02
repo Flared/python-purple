@@ -1,5 +1,6 @@
 #
 #  Copyright (c) 2008 INdT - Instituto Nokia de Tecnologia
+#  Copyright (c) 2019 Flare Systems Inc.
 #
 #  This file is part of python-purple.
 #
@@ -29,9 +30,6 @@ cdef extern from *:
     ctypedef char const_char "const char"
 
 cdef class Plugin:
-    cdef c_libplugin.PurplePlugin* _c_plugin
-    cdef c_libprpl.PurplePluginProtocolInfo* _c_protocol_info
-    cdef c_libplugin.PurplePluginInfo* _c_plugin_info
 
     def __init__(self):
         raise Exception("Use Plugin.find_with_id() instead.")

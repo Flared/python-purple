@@ -18,18 +18,18 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from libpurple cimport connection as c_libconnection
+cimport glib
 
-from purple cimport account as libaccount
-from purple cimport plugin as libplugin
+from libpurple cimport plugin as c_libplugin
+from libpurple cimport accountopt as c_libaccountopt
+from libpurple cimport prefs as c_libprefs
+from libpurple cimport prpl as c_libprpl
+from libpurple cimport account as c_libaccount
 
-cdef class Connection:
-
-    cdef c_libconnection.PurpleConnection* _c_connection
+cdef class Plugin:
+    cdef c_libplugin.PurplePlugin* _c_plugin
+    cdef c_libprpl.PurplePluginProtocolInfo* _c_protocol_info
+    cdef c_libplugin.PurplePluginInfo* _c_plugin_info
 
     @staticmethod
-    cdef Connection from_c_connection(c_libconnection.PurpleConnection* c_connection)
-
-    cpdef libaccount.Account get_account(self)
-
-    cpdef libplugin.Plugin get_prpl(self)
+    cdef Plugin from_c_plugin(c_libplugin.PurplePlugin* c_plugin)

@@ -93,27 +93,68 @@ cdef extern from "libpurple/connection.h":
         glib.guint disconnect_timeout
         time_t last_received
 
-    # Connection API FIXME
-    void purple_connection_set_state(PurpleConnection *gc, \
-            PurpleConnectionState state)
-    void purple_connection_set_account(PurpleConnection *gc, \
-            c_libaccount.PurpleAccount *account)
-    void purple_connection_set_display_name(PurpleConnection *gc, char *name)
-    PurpleConnectionState purple_connection_get_state(PurpleConnection *gc)
-    c_libaccount.PurpleAccount *purple_connection_get_account(PurpleConnection *gc)
-    c_libplugin.PurplePlugin * purple_connection_get_prpl(PurpleConnection *gc)
-    char *purple_connection_get_password(PurpleConnection *gc)
-    char *purple_connection_get_display_name(PurpleConnection *gc)
-    void purple_connection_update_progress(PurpleConnection *gc, char *text, \
-            size_t step, size_t count)
-    void purple_connection_notice(PurpleConnection *gc, char *text)
-    void purple_connection_error(PurpleConnection *gc, char *reason)
-    void purple_connection_error_reason (PurpleConnection *gc, \
-            PurpleConnectionError reason, char *description)
-    #void purple_connection_ssl_error (PurpleConnection *gc, \
-            #PurpleSslErrorType ssl_error)
-    glib.gboolean purple_connection_error_is_fatal ( \
-            PurpleConnectionError reason)
+    # Connection API
+    void purple_connection_set_state(
+        PurpleConnection *gc,
+        PurpleConnectionState state,
+    )
+
+    void purple_connection_set_account(
+        PurpleConnection *gc,
+        c_libaccount.PurpleAccount *account
+    )
+
+    void purple_connection_set_display_name(
+        PurpleConnection *gc,
+        char *name,
+    )
+
+    PurpleConnectionState purple_connection_get_state(
+        PurpleConnection *gc
+    )
+
+    c_libaccount.PurpleAccount *purple_connection_get_account(
+        PurpleConnection *gc
+    )
+
+    c_libplugin.PurplePlugin* purple_connection_get_prpl(
+        PurpleConnection *gc
+    )
+
+    char *purple_connection_get_password(
+        PurpleConnection *gc
+    )
+
+    char *purple_connection_get_display_name(
+        PurpleConnection *gc
+    )
+
+    void purple_connection_update_progress(
+        PurpleConnection *gc,
+        char *text,
+        size_t step,
+        size_t count,
+    )
+
+    void purple_connection_notice(
+        PurpleConnection *gc,
+        char *text,
+    )
+
+    void purple_connection_error(
+        PurpleConnection *gc,
+        char *reason,
+     )
+
+    void purple_connection_error_reason (
+        PurpleConnection *gc,
+        PurpleConnectionError reason,
+        char *description,
+    )
+
+    glib.gboolean purple_connection_error_is_fatal(
+        PurpleConnectionError reason
+    )
 
     # Connections API
     void purple_connections_disconnect_all()
