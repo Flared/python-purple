@@ -26,6 +26,8 @@ from libpurple cimport prefs as c_libprefs
 from libpurple cimport prpl as c_libprpl
 from libpurple cimport account as c_libaccount
 
+from purple cimport prpl as libprpl
+
 cdef extern from *:
     ctypedef char const_char "const char"
 
@@ -38,7 +40,6 @@ cdef class Plugin:
     cdef Plugin from_c_plugin(c_libplugin.PurplePlugin* c_plugin):
         cdef Plugin _plugin = Plugin.__new__(Plugin)
         _plugin._c_plugin = c_plugin
-        _plugin._c_protocol_info = c_libplugin.PURPLE_PLUGIN_PROTOCOL_INFO(_plugin._c_plugin)
         return _plugin
 
     @staticmethod
@@ -60,6 +61,19 @@ cdef class Plugin:
             class_name=self.__class__.__name__,
             protocol_id=self.get_id(),
         )
+
+    cpdef libprpl.PluginProtocolInfo get_protocol_info(self):
+        cdef c_libprpl.PurplePluginProtocolInfo* c_plugin_protocol_info = c_libprpl.PURPLE_PLUGIN_PROTOCOL_INFO(
+            self._c_plugin
+        )
+        cdef libprpl.PluginProtocolInfo plugin_protocol_info = None
+
+        if c_plugin_protocol_info != NULL:
+            plugin_protocol_info = libprpl.PluginProtocolInfo.from_c_plugin_protocol_info(
+                c_plugin_protocol_info
+            )
+
+        return plugin_protocol_info
 
     @staticmethod
     def plugins_enabled():

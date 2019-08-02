@@ -31,3 +31,5 @@ cdef extern from "libpurple/prpl.h":
 
     # Protocol Plugin Subsystem API
     PurplePlugin *purple_find_prpl(char *id)
+
+    PurplePluginProtocolInfo* PURPLE_PLUGIN_PROTOCOL_INFO(PurplePlugin*)

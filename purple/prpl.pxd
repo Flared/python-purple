@@ -17,23 +17,11 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import sys
-import os
+from libpurple cimport plugin as c_libplugin
+from libpurple cimport prpl as c_libprpl
 
-dlopenflags = sys.getdlopenflags()
-if not dlopenflags & os.RTLD_GLOBAL:
-    sys.setdlopenflags(dlopenflags | os.RTLD_GLOBAL)
+cdef class PluginProtocolInfo:
+    cdef c_libprpl.PurplePluginProtocolInfo* _c_plugin_protocol_info
 
-from .purple import Purple
-from .plugin import Plugin
-from .prpl import PluginProtocolInfo
-from .account import Account
-from .signals import Signals
-from .callbacks import Callbacks
-from .request import Request
-from .connection import Connection
-
-from .conversation import Conversation
-from .conversation import IM
-from .conversation import Chat
-from .conversation import ConversationType
+    @staticmethod
+    cdef PluginProtocolInfo from_c_plugin_protocol_info(c_libprpl.PurplePluginProtocolInfo* c_protocol_info)

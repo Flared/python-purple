@@ -26,6 +26,11 @@ def get_test_account(*, username=b"user1"):
     return account
 
 
+def get_test_plugin():
+    plugin = purple.Plugin.find_with_id(b"prpl-null")
+    return plugin
+
+
 def get_test_connection():
     account = get_test_account()
     account.set_enabled(True)

@@ -20,12 +20,21 @@
 import purple
 
 
+from . import utils
+
+
 def test_plugin_find_with_id(core):
     plugin = purple.Plugin.find_with_id(b"prpl-irc")
     assert plugin
     assert plugin.get_name() == b"IRC"
     assert plugin.get_id() == b"prpl-irc"
     assert repr(plugin) == "<Plugin: b'prpl-irc'>"
+
+
+def test_plugin_get_plugin_protocol_info(core):
+    plugin = utils.get_test_plugin()
+    plugin_protocol_info = plugin.get_protocol_info()
+    assert isinstance(plugin_protocol_info, purple.PluginProtocolInfo)
 
 
 def test_plugin_find_with_id_unknown(core):

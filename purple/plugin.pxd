@@ -21,15 +21,13 @@
 cimport glib
 
 from libpurple cimport plugin as c_libplugin
-from libpurple cimport accountopt as c_libaccountopt
-from libpurple cimport prefs as c_libprefs
-from libpurple cimport prpl as c_libprpl
-from libpurple cimport account as c_libaccount
+
+from purple cimport prpl as libprpl
 
 cdef class Plugin:
     cdef c_libplugin.PurplePlugin* _c_plugin
-    cdef c_libprpl.PurplePluginProtocolInfo* _c_protocol_info
-    cdef c_libplugin.PurplePluginInfo* _c_plugin_info
 
     @staticmethod
     cdef Plugin from_c_plugin(c_libplugin.PurplePlugin* c_plugin)
+
+    cpdef libprpl.PluginProtocolInfo get_protocol_info(self)
