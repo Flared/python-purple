@@ -24,6 +24,7 @@ from libpurple cimport accountopt as c_libaccountopt
 from libpurple cimport prefs as c_libprefs
 
 from purple cimport accountopt as libaccountopt
+from purple cimport connection as libconnection
 
 cdef class PluginProtocolInfo:
 
@@ -47,3 +48,53 @@ cdef class PluginProtocolInfo:
             c_iter = c_iter.next
 
         return options
+
+
+    cpdef list get_chat_info(self, libconnection.Connection connection):
+        cdef glib.GList* c_iter = self._c_plugin_protocol_info.chat_info(
+            connection._c_connection
+        )
+        cdef c_libprpl.proto_chat_entry* c_proto_chat_entry
+
+        cdef list options = list()
+
+        while c_iter:
+            c_proto_chat_entry = <c_libprpl.proto_chat_entry*> c_iter.data
+            proto_chat_entry = ProtoChatEntry.from_c_proto_chat_entry(c_proto_chat_entry)
+            options.append(proto_chat_entry)
+            c_iter = c_iter.next
+
+        return options
+
+
+cdef class ProtoChatEntry:
+
+    @staticmethod
+    cdef ProtoChatEntry from_c_proto_chat_entry(c_libprpl.proto_chat_entry* c_proto_chat_entry):
+        cdef ProtoChatEntry proto_chat_entry = ProtoChatEntry.__new__(ProtoChatEntry)
+        proto_chat_entry._c_proto_chat_entry = c_proto_chat_entry
+        return proto_chat_entry
+
+    cpdef bytes get_label(self):
+        cdef bytes label = self._c_proto_chat_entry.label or None
+        return label
+
+
+    cpdef bytes get_identifier(self):
+        cdef bytes identifier = self._c_proto_chat_entry.identifier or None
+        return identifier
+
+    cpdef bint get_required(self):
+        return self._c_proto_chat_entry.required
+
+    cpdef bint get_is_int(self):
+        return self._c_proto_chat_entry.is_int
+
+    cpdef int get_min(self):
+        return self._c_proto_chat_entry.min
+
+    cpdef int get_max(self):
+        return self._c_proto_chat_entry.max
+
+    cpdef bint get_secret(self):
+        return self._c_proto_chat_entry.secret

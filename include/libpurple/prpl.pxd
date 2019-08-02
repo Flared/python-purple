@@ -19,6 +19,11 @@
 
 cimport glib
 
+from libpurple cimport connection as c_libconnection
+
+cdef extern from *:
+    ctypedef char const_char "const char"
+
 cdef extern from "libpurple/plugin.h":
     ctypedef struct PurplePlugin:
         pass
@@ -26,6 +31,17 @@ cdef extern from "libpurple/plugin.h":
 cdef extern from "libpurple/prpl.h":
     ctypedef struct PurplePluginProtocolInfo:
         glib.GList *protocol_options
+
+        glib.GList* (*chat_info)(c_libconnection.PurpleConnection*)
+
+    cdef struct proto_chat_entry:
+        const_char* label
+        const_char* identifier
+        glib.gboolean required
+        glib.gboolean is_int
+        int min
+        int max
+        glib.gboolean secret
 
     ctypedef struct PurpleAttentionType
 

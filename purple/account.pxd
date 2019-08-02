@@ -1,5 +1,6 @@
 #
 #  Copyright (c) 2008 INdT - Instituto Nokia de Tecnologia
+#  Copyright (c) 2019 Flare Systems Inc.
 #
 #  This file is part of python-purple.
 #

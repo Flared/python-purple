@@ -27,6 +27,7 @@ if not dlopenflags & os.RTLD_GLOBAL:
 from .purple import Purple
 from .plugin import Plugin
 from .prpl import PluginProtocolInfo
+from .prpl import ProtoChatEntry
 from .account import Account
 from .accountopt import AccountOption
 from .signals import Signals

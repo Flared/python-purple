@@ -37,3 +37,25 @@ def test_plugin_protocol_info_get_options(core):
     assert option.get_default_string() == b"default"
     assert option.get_masked() == False
     assert not option.get_list()
+
+
+def test_plugin_protocol_info_get_chat_info(core):
+    account = utils.get_test_account()
+    connection = account.get_connection()
+
+    plugin = purple.Plugin.find_with_id(b"prpl-null")
+    protocol_info = plugin.get_protocol_info()
+
+    chat_entries = protocol_info.get_chat_info(connection)
+    assert isinstance(chat_entries, list)
+    assert len(chat_entries) == 1
+
+    chat_entry = chat_entries[0]
+    assert isinstance(chat_entry, purple.ProtoChatEntry)
+    assert chat_entry.get_label() == b"Chat _room"
+    assert chat_entry.get_identifier() == b"room"
+    assert chat_entry.get_required() == True
+    assert chat_entry.get_is_int() == False
+    assert chat_entry.get_min() == 0
+    assert chat_entry.get_max() == 0
+    assert chat_entry.get_secret() == False
