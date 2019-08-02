@@ -54,14 +54,24 @@ def test_enable_account(core):
     assert account.is_enabled() is True
 
 
-def test_is_connected(core):
+def test_account_is_connected(core):
     account = get_test_account()
     assert account.is_connected() is False
 
 
-def test_set_password(core):
+def test_account_set_password(core):
     account = get_test_account()
     assert account.get_password() is None
 
     account.set_password(b"pass123")
     assert account.get_password() == b"pass123"
+
+
+def test_account_get_connection(core):
+    account = get_test_account()
+
+    assert not account.get_connection()
+    account.set_enabled(True)
+
+    connection = account.get_connection()
+    assert isinstance(connection, purple.Connection)

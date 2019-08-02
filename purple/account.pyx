@@ -29,8 +29,10 @@ from libpurple cimport savedstatuses as c_libsavedstatuses
 from libpurple cimport server as c_libserver
 from libpurple cimport status as c_libstatus
 from libpurple cimport core as c_libcore
+from libpurple cimport connection as c_libconnection
 
 from purple cimport protocol as libprotocol
+from purple cimport connection as libconnection
 
 cdef class Account:
     """
@@ -80,13 +82,10 @@ cdef class Account:
             account = Account.from_c_account(c_account)
         return account
 
-    cdef c_libaccount.PurpleAccount* _get_structure(self):
-        return self._c_account
-
     def is_connected(self):
         cdef bint _is_connected = False
         _is_connected = c_libaccount.purple_account_is_connected(
-            self._get_structure()
+            self._c_account,
         )
         return _is_connected
 
@@ -100,7 +99,7 @@ cdef class Account:
     def get_password(self):
         cdef char* password = NULL
         password = <char *> c_libaccount.purple_account_get_password(
-            self._get_structure()
+            self._c_account,
         )
         return password or None
 
@@ -113,7 +112,7 @@ cdef class Account:
 
         cdef bint is_enabled = False
         is_enabled = c_libaccount.purple_account_get_enabled(
-            self._get_structure(),
+            self._c_account,
             ui_name
         )
         return is_enabled
@@ -126,7 +125,7 @@ cdef class Account:
         @return True if successful, False if account doesn't exists
         """
         c_libaccount.purple_account_set_password(
-            self._get_structure(),
+            self._c_account,
             password
         )
 
@@ -146,7 +145,20 @@ cdef class Account:
             ui_name = c_libcore.purple_core_get_ui()
 
         c_libaccount.purple_account_set_enabled(
-            self._get_structure(),
+            self._c_account,
             ui_name,
             enabled,
         )
+
+    cpdef libconnection.Connection get_connection(self):
+        cdef c_libconnection.PurpleConnection* c_connection =  c_libaccount.purple_account_get_connection(
+            self._c_account,
+        )
+        cdef libconnection.Connection connection = None
+
+        if c_connection != NULL:
+            connection = libconnection.Connection.from_c_connection(
+                c_connection
+            )
+
+        return connection

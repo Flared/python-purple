@@ -19,6 +19,8 @@
 
 from libpurple cimport account as c_libaccount
 
+from purple cimport connection as libconnection
+
 cdef class Account:
 
     cdef object __username
@@ -30,4 +32,4 @@ cdef class Account:
         c_libaccount.PurpleAccount* c_account
     )
 
-    cdef c_libaccount.PurpleAccount* _get_structure(self)
+    cpdef libconnection.Connection get_connection(self)
