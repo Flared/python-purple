@@ -17,7 +17,13 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+cimport glib
+
 from libpurple cimport prpl as c_libprpl
+from libpurple cimport accountopt as c_libaccountopt
+from libpurple cimport prefs as c_libprefs
+
+from purple cimport accountopt as libaccountopt
 
 cdef class PluginProtocolInfo:
 
@@ -26,3 +32,18 @@ cdef class PluginProtocolInfo:
         cdef PluginProtocolInfo plugin_protocol_info = PluginProtocolInfo.__new__(PluginProtocolInfo)
         plugin_protocol_info._c_plugin_protocol_info = c_plugin_protocol_info
         return plugin_protocol_info
+
+
+    cpdef list get_options(self):
+        cdef glib.GList* c_iter = self._c_plugin_protocol_info.protocol_options
+        cdef c_libaccountopt.PurpleAccountOption* c_account_option
+
+        cdef list options = list()
+
+        while c_iter:
+            c_account_option = <c_libaccountopt.PurpleAccountOption*> c_iter.data
+            account_option = libaccountopt.AccountOption.from_c_account_option(c_account_option)
+            options.append(account_option)
+            c_iter = c_iter.next
+
+        return options

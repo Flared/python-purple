@@ -25,3 +25,5 @@ cdef class PluginProtocolInfo:
 
     @staticmethod
     cdef PluginProtocolInfo from_c_plugin_protocol_info(c_libprpl.PurplePluginProtocolInfo* c_protocol_info)
+
+    cpdef list get_options(self)

@@ -17,24 +17,26 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import sys
-import os
+from libpurple cimport accountopt as c_libaccountopt
 
-dlopenflags = sys.getdlopenflags()
-if not dlopenflags & os.RTLD_GLOBAL:
-    sys.setdlopenflags(dlopenflags | os.RTLD_GLOBAL)
+cdef class AccountOption:
+    cdef c_libaccountopt.PurpleAccountOption* _c_account_option
 
-from .purple import Purple
-from .plugin import Plugin
-from .prpl import PluginProtocolInfo
-from .account import Account
-from .accountopt import AccountOption
-from .signals import Signals
-from .callbacks import Callbacks
-from .request import Request
-from .connection import Connection
+    @staticmethod
+    cdef AccountOption from_c_account_option(c_libaccountopt.PurpleAccountOption* c_account_option)
 
-from .conversation import Conversation
-from .conversation import IM
-from .conversation import Chat
-from .conversation import ConversationType
+    cpdef bytes get_text(self)
+
+    cpdef bytes get_setting(self)
+
+    cpdef bint get_default_bool(self)
+
+    cpdef int get_default_int(self)
+
+    cpdef bytes get_default_string(self)
+
+    cpdef bytes get_default_list_value(self)
+
+    cpdef bint get_masked(self)
+
+    cpdef list get_list(self)
