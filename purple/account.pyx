@@ -31,7 +31,7 @@ from libpurple cimport status as c_libstatus
 from libpurple cimport core as c_libcore
 from libpurple cimport connection as c_libconnection
 
-from purple cimport protocol as libprotocol
+from purple cimport plugin as libplugin
 from purple cimport connection as libconnection
 
 cdef class Account:
@@ -45,7 +45,7 @@ cdef class Account:
         raise Exception("Use Account.find() or Account.new() instead.")
 
     @staticmethod
-    def new(libprotocol.Protocol protocol, char* username):
+    def new(libplugin.Plugin protocol, char* username):
         c_libaccount.purple_accounts_add(
             c_libaccount.purple_account_new(
                 username,
@@ -72,7 +72,7 @@ cdef class Account:
         return account
 
     @staticmethod
-    def find(libprotocol.Protocol protocol, char* username):
+    def find(libplugin.Plugin protocol, char* username):
         cdef object account = None
         cdef c_libaccount.PurpleAccount* c_account = c_libaccount.purple_accounts_find(
             username,

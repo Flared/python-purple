@@ -167,7 +167,7 @@ class SimpleClient:
         # If self.protocol_id is set, try to use it
         # before asking anything to the user.
         if self.protocol_id:
-            protocol = purple.Protocol.find_with_id(self.protocol_id.encode())
+            protocol = purple.Plugin.find_with_id(self.protocol_id.encode())
             if protocol is not None:
                 return protocol
             else:
@@ -198,7 +198,7 @@ class SimpleClient:
 
         selected_plugin = plugins[selected_index]
 
-        protocol = purple.Protocol.find_with_id(selected_plugin.get_id())
+        protocol = purple.Plugin.find_with_id(selected_plugin.get_id())
 
         return protocol
 

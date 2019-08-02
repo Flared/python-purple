@@ -31,7 +31,7 @@ def test_account_init_raises():
 
 def test_find_account(core):
     # Prepare
-    protocol = purple.Protocol.find_with_id(b"prpl-irc")
+    protocol = purple.Plugin.find_with_id(b"prpl-irc")
 
     # Not found
     found_account = purple.Account.find(protocol, b"user1")

@@ -34,7 +34,6 @@ from libpurple cimport debug as c_libdebug
 from libpurple cimport plugin as c_libplugin
 from libpurple cimport prefs as c_libprefs
 
-from purple cimport protocol as libprotocol
 from purple cimport account as libaccount
 from purple cimport signals as libsignals
 
@@ -472,88 +471,11 @@ cdef class Purple:
 
         callbacks.append(callback)
 
-        
-
-    def accounts_get_all(self):
-        '''Returns a list of all accounts.
-
-        @return A list of all accounts.
-        '''
-
-        cdef glib.GList *iter
-        cdef c_libaccount.PurpleAccount *acc
-        cdef char *username
-        cdef char *protocol_id
-
-        iter = c_libaccount.purple_accounts_get_all()
-        account_list = []
-
-        while iter:
-            acc = <c_libaccount.PurpleAccount *> iter.data
-
-            if <c_libaccount.PurpleAccount *>acc:
-                username = <char *> c_libaccount.purple_account_get_username(acc)
-                protocol_id = <char *> c_libaccount.purple_account_get_protocol_id(acc)
-
-                if username != NULL and protocol_id != NULL:
-                    account_list.append(libaccount.Account(username, \
-                            libprotocol.Protocol(protocol_id), self))
-            iter = iter.next
-
-        return account_list
-
-    def accounts_get_all_active(self):
-        '''Returns a list of all enabled accounts.
-
-        @return A list of all enabled accounts.
-        '''
-
-        cdef glib.GList *iter
-        cdef c_libaccount.PurpleAccount *acc
-        cdef char *username
-        cdef char *protocol_id
-
-        #FIXME: The list is owned by the caller, and must be g_list_free()d
-        #       to avoid leaking the nodes.
-
-        iter = c_libaccount.purple_accounts_get_all_active()
-        account_list = []
-
-        while iter:
-            acc = <c_libaccount.PurpleAccount *> iter.data
-
-            if <c_libaccount.PurpleAccount *>acc:
-                username = <char *> c_libaccount.purple_account_get_username(acc)
-                protocol_id = <char *> c_libaccount.purple_account_get_protocol_id(acc)
-
-                if username != NULL and protocol_id != NULL:
-                    account_list.append(libaccount.Account(username, \
-                            libprotocol.Protocol(protocol_id), self))
-            iter = iter.next
-
-        return account_list
 
     def iterate_main_loop(self):
         glib.g_main_context_iteration(NULL, False)
         return True
 
-    def protocols_get_all(self):
-        '''Returns a list of all protocols.
-
-        @return A list of all protocols.
-        '''
-
-        cdef glib.GList *iter
-        cdef c_libplugin.PurplePlugin *pp
-
-        iter = c_libplugin.purple_plugins_get_protocols()
-        protocol_list = []
-        while iter:
-            pp = <c_libplugin.PurplePlugin*> iter.data
-            if <bint> pp.info and <bint> pp.info.name:
-                protocol_list.append(libprotocol.Protocol(pp.info.id))
-            iter = iter.next
-        return protocol_list
 
     def call_action(self, i):
         callbacks_request.__call_action(i)

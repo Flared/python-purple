@@ -25,7 +25,6 @@ if not dlopenflags & os.RTLD_GLOBAL:
     sys.setdlopenflags(dlopenflags | os.RTLD_GLOBAL)
 
 from .purple import Purple
-from .protocol import Protocol
 from .plugin import Plugin
 from .account import Account
 from .signals import Signals
