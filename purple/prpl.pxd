@@ -33,6 +33,8 @@ cdef class PluginProtocolInfo:
 
     cpdef list get_chat_info(self, libconnection.Connection connection)
 
+    cpdef bytes get_chat_name(self, dict data)
+
 
 cdef class ProtoChatEntry:
     cdef c_libprpl.proto_chat_entry* _c_proto_chat_entry

@@ -39,6 +39,16 @@ def test_plugin_protocol_info_get_options(core):
     assert not option.get_list()
 
 
+def test_plugin_protocol_info_get_chat_name(core):
+    account = utils.get_test_account()
+    connection = account.get_connection()
+
+    plugin = purple.Plugin.find_with_id(b"prpl-null")
+    protocol_info = plugin.get_protocol_info()
+
+    assert protocol_info.get_chat_name({b"room": b"roomname"}) == b"roomname"
+
+
 def test_plugin_protocol_info_get_chat_info(core):
     account = utils.get_test_account()
     connection = account.get_connection()

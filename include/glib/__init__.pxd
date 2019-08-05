@@ -79,13 +79,21 @@ cdef extern from "glib.h":
 
     gboolean g_str_equal (gconstpointer, gconstpointer)
     guint g_str_hash (gconstpointer)
+    gchar* g_strdup(const_gchar* str)
 
-    GHashTable *g_hash_table_new (GHashFunc, GEqualFunc)
+    GHashTable* g_hash_table_new (GHashFunc, GEqualFunc)
+    GHashTable* g_hash_table_new_full(
+        GHashFunc hash_func,
+        GEqualFunc key_equal_func,
+        GDestroyNotify key_destroy_func,
+        GDestroyNotify value_destroy_func
+    )
     void g_hash_table_destroy (GHashTable*)
     GList *g_hash_table_get_keys (GHashTable*)
     GList *g_hash_table_get_values (GHashTable*)
-    void g_hash_table_insert (GHashTable*, gpointer, gpointer)
+    gboolean g_hash_table_insert (GHashTable*, gpointer, gpointer)
     gpointer g_hash_table_lookup (GHashTable*, gconstpointer)
+    gboolean g_hash_table_replace(GHashTable*, gpointer, gpointer)
 
     guint g_timeout_add(guint interval, GSourceFunc function, gpointer data)
     guint g_timeout_add_seconds(guint interval, GSourceFunc function, gpointer data)

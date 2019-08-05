@@ -16,3 +16,13 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+
+from libpurple cimport util as c_libutil
+
+cimport glib
+
+def markup_strip_html(message):
+    if message is None:
+        return None
+    else:
+        return c_libutil.purple_markup_strip_html(message)

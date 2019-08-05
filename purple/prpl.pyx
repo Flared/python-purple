@@ -25,6 +25,7 @@ from libpurple cimport prefs as c_libprefs
 
 from purple cimport accountopt as libaccountopt
 from purple cimport connection as libconnection
+from purple cimport util as libutil
 
 cdef class PluginProtocolInfo:
 
@@ -65,6 +66,38 @@ cdef class PluginProtocolInfo:
             c_iter = c_iter.next
 
         return options
+
+    cpdef bytes get_chat_name(self, dict data):
+        if self._c_plugin_protocol_info.get_chat_name == NULL:
+            return None
+
+        cdef glib.GHashTable* components = glib.g_hash_table_new_full(
+            glib.g_str_hash,
+            glib.g_str_equal,
+            glib.g_free,
+            glib.g_free
+        )
+
+        cdef char* c_key
+        cdef char* c_value
+
+        for key, value in data.items():
+            if not isinstance(key, bytes) or not isinstance(value, bytes):
+                raise Exception("data must be a Dict[bytes, bytes]")
+
+            c_key = key
+            c_value = value
+
+            glib.g_hash_table_insert(
+                components,
+                c_key,
+                c_value,
+            )
+
+        cdef char* c_name = self._c_plugin_protocol_info.get_chat_name(components)
+        cdef bytes name = c_name or None
+
+        return name
 
 
 cdef class ProtoChatEntry:

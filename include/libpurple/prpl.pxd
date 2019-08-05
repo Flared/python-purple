@@ -34,6 +34,8 @@ cdef extern from "libpurple/prpl.h":
 
         glib.GList* (*chat_info)(c_libconnection.PurpleConnection*)
 
+        char* (*get_chat_name)(glib.GHashTable*)
+
     cdef struct proto_chat_entry:
         const_char* label
         const_char* identifier
