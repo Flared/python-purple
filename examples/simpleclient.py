@@ -339,7 +339,7 @@ class SimpleClient:
         else:
             click.echo(click.style("There are no Chats to show.", bold=True))
 
-    def get_chat_data(self):
+    def get_chat_data(self, *, prompt_required_only=False):
         connection = self.account.get_connection()
         plugin = purple.Plugin.find_with_id(self.account.get_protocol_id())
         protocol_info = plugin.get_protocol_info()
@@ -350,13 +350,17 @@ class SimpleClient:
         for chat_entry in chat_entries:
             identifier = chat_entry.get_identifier()
             is_required = chat_entry.get_required()
+
+            if not is_required and prompt_required_only:
+                continue
+
             _input = click.prompt(
                 "Enter {identifier} ({required})".format(
                     identifier=identifier.decode(),
                     required="required" if is_required else "not required",
                 ),
                 type=str,
-                default="" if is_required else None,
+                default=None if is_required else "",
                 show_default=False,
             ).encode()
 
@@ -370,6 +374,22 @@ class SimpleClient:
 
         purple.Server.join_chat(self.account.get_connection(), chat_data)
 
+    def menu_send_chat(self):
+        chat_name = click.prompt("Enter chat name", type=str).encode()
+
+        for chat_conv in purple.Conversation.get_chats():
+            if chat_conv.get_name() == chat_name:
+                chat = chat_conv.get_chat_data()
+                message = click.prompt("Message", type=str).encode()
+                chat.send(message)
+                break
+        else:
+            click.echo(
+                "Could not find chat named {chat_name}".format(
+                    chat_name=chat_name
+                )
+            )
+
     def menu(self):
         click.echo(click.style("\nMenu", fg="green", bold=True))
 
@@ -381,6 +401,7 @@ class SimpleClient:
             ("Join IM", self.menu_join_im),
             ("Join Chat", self.menu_join_chat),
             ("Send IM", self.menu_send_im),
+            ("Send Chat", self.menu_send_chat),
         ]
 
         for (
