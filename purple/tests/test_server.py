@@ -1,5 +1,4 @@
 #
-#  Copyright (c) 2008 INdT - Instituto Nokia de Tecnologia
 #  Copyright (c) 2019 Flare Systems Inc.
 #
 #  This file is part of python-purple.
@@ -18,21 +17,13 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from libpurple cimport account as c_libaccount
+import pytest
 
-from purple cimport connection as libconnection
+import purple
 
-cdef class Account:
+from . import utils
 
-    cdef object __username
-    cdef object __protocol
-    cdef c_libaccount.PurpleAccount* _c_account
 
-    @staticmethod
-    cdef Account from_c_account(
-        c_libaccount.PurpleAccount* c_account
-    )
-
-    cpdef libconnection.Connection get_connection(self)
-
-    cpdef bytes get_protocol_id(self)
+def test_join_chat_error(core):
+    with pytest.raises(Exception, match="Data must be a Dict.*"):
+        purple.Server.join_chat(None, {"key": "value"})

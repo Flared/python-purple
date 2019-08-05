@@ -59,6 +59,11 @@ def test_account_is_connected(core):
     assert account.is_connected() is False
 
 
+def test_account_get_protocol_id(core):
+    account = get_test_account()
+    assert account.get_protocol_id() == b"prpl-null"
+
+
 def test_account_set_password(core):
     account = get_test_account()
     assert account.get_password() is None

@@ -148,3 +148,38 @@ def test_received_im_message_signal(core):
 
     assert received_im_message_handler_called
     assert _message == b"Hello!"
+
+
+def test_joined_chat_signal(core):
+
+    # Prepare handler
+    joined_chat_handler_called = False
+
+    def joined_chat_handler(*, conversation):
+        nonlocal joined_chat_handler_called
+        joined_chat_handler_called = True
+
+    # Connect signal
+    core.signal_connect(
+        signal_name=purple.Signals.SIGNAL_CONVERSATION_CHAT_JOINED,
+        callback=joined_chat_handler,
+    )
+
+    # Prepare
+    account = utils.get_test_account()
+    account.set_enabled(True)
+    assert account
+
+    connection = account.get_connection()
+    assert connection
+
+    assert not purple.Conversation.get_chats()
+    assert not joined_chat_handler_called
+
+    # Join the chat
+    purple.Server.join_chat(connection, {b"room": b"test"})
+
+    assert joined_chat_handler_called
+
+    chat_conversations = purple.Conversation.get_chats()
+    assert len(chat_conversations) == 1

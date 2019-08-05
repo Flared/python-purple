@@ -78,20 +78,14 @@ cdef class PluginProtocolInfo:
             glib.g_free
         )
 
-        cdef char* c_key
-        cdef char* c_value
-
         for key, value in data.items():
             if not isinstance(key, bytes) or not isinstance(value, bytes):
                 raise Exception("data must be a Dict[bytes, bytes]")
 
-            c_key = key
-            c_value = value
-
             glib.g_hash_table_insert(
                 components,
-                c_key,
-                c_value,
+                glib.g_strdup(key),
+                glib.g_strdup(value),
             )
 
         cdef char* c_name = self._c_plugin_protocol_info.get_chat_name(components)

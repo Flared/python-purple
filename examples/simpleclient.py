@@ -77,7 +77,9 @@ class SimpleClient:
         click.echo(
             "{prefix} Joined chat {chat_name}".format(
                 prefix=click.style("[STATUS]", fg="blue", bold=True),
-                chat_name=click.style(conversation.get_name(), bold=True),
+                chat_name=click.style(
+                    conversation.get_name().decode(), bold=True
+                ),
             )
         )
 
@@ -85,7 +87,9 @@ class SimpleClient:
         click.echo(
             "{prefix} Left chat {chat_name}".format(
                 prefix=click.style("[STATUS]", fg="blue", bold=True),
-                chat_name=click.style(conversation.get_name(), bold=True),
+                chat_name=click.style(
+                    conversation.get_name().decode(), bold=True
+                ),
             )
         )
 
@@ -335,6 +339,37 @@ class SimpleClient:
         else:
             click.echo(click.style("There are no Chats to show.", bold=True))
 
+    def get_chat_data(self):
+        connection = self.account.get_connection()
+        plugin = purple.Plugin.find_with_id(self.account.get_protocol_id())
+        protocol_info = plugin.get_protocol_info()
+        chat_entries = protocol_info.get_chat_info(connection)
+
+        chat_data = dict()
+
+        for chat_entry in chat_entries:
+            identifier = chat_entry.get_identifier()
+            is_required = chat_entry.get_required()
+            _input = click.prompt(
+                "Enter {identifier} ({required})".format(
+                    identifier=identifier.decode(),
+                    required="required" if is_required else "not required",
+                ),
+                type=str,
+                default="",
+                show_default=False,
+            ).encode()
+
+            if _input:
+                chat_data[identifier] = _input
+
+        return chat_data
+
+    def menu_join_chat(self):
+        chat_data = self.get_chat_data()
+
+        purple.Server.join_chat(self.account.get_connection(), chat_data)
+
     def menu(self):
         click.echo(click.style("\nMenu", fg="green", bold=True))
 
@@ -344,6 +379,7 @@ class SimpleClient:
             ("List IMs", self.menu_list_ims),
             ("List Chats", self.menu_list_chats),
             ("Join IM", self.menu_join_im),
+            ("Join Chat", self.menu_join_chat),
             ("Send IM", self.menu_send_im),
         ]
 
@@ -367,6 +403,8 @@ class SimpleClient:
         )
 
         menu_items[selected_index][1]()
+
+        return menu_items
 
     def loop(self):
         while True:

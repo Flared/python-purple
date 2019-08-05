@@ -34,6 +34,7 @@ from .signals import Signals
 from .callbacks import Callbacks
 from .request import Request
 from .connection import Connection
+from .server import Server
 
 from .conversation import Conversation
 from .conversation import IM

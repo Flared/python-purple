@@ -103,6 +103,13 @@ cdef class Account:
         )
         return password or None
 
+    cpdef bytes get_protocol_id(self):
+        cdef char* c_protocol_id = c_libaccount.purple_account_get_protocol_id(
+            self._c_account,
+        )
+        cdef bytes protocol_id = c_protocol_id or None
+        return protocol_id
+
     def is_enabled(
         self,
         bytes ui_name = None,
