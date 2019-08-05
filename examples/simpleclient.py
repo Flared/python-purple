@@ -356,7 +356,7 @@ class SimpleClient:
                     required="required" if is_required else "not required",
                 ),
                 type=str,
-                default="",
+                default="" if is_required else None,
                 show_default=False,
             ).encode()
 
