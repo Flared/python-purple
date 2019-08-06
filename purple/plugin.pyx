@@ -82,11 +82,13 @@ cdef class Plugin:
     @staticmethod
     def get_search_paths():
         search_paths = []
-        cdef glib.GList* iter
-        iter = c_libplugin.purple_plugins_get_search_paths()
-        while iter:
-            search_paths.append(<char*> iter.data)
-            iter = iter.next
+        cdef glib.GList* c_iter
+        c_iter = c_libplugin.purple_plugins_get_search_paths()
+
+        while c_iter:
+            search_paths.append(<char*> c_iter.data)
+            c_iter = c_iter.next
+
         return search_paths
 
     @staticmethod
@@ -99,32 +101,32 @@ cdef class Plugin:
 
     @staticmethod
     def get_plugins():
-        cdef glib.GList* iter
-        cdef c_libplugin.PurplePlugin *pp
+        cdef glib.GList* c_iter
+        cdef c_libplugin.PurplePlugin* c_plugin
+
         plugins = []
-        iter = c_libplugin.purple_plugins_get_all()
-        while iter:
-            pp = <c_libplugin.PurplePlugin*> iter.data
-            if pp.info and pp.info.name:
-                p = Plugin.from_c_plugin(pp)
-                if p:
-                    plugins += [p]
-            else:
-                raise Exception("Plugin without info or name")
-            iter = iter.next
+
+        c_iter = c_libplugin.purple_plugins_get_all()
+        while c_iter:
+            c_plugin = <c_libplugin.PurplePlugin*> c_iter.data
+            plugin = Plugin.from_c_plugin(c_plugin)
+            plugins.append(plugin)
+            c_iter = c_iter.next
+
         return plugins
 
     @staticmethod
     def get_protocols():
-        cdef glib.GList *iter
-        cdef c_libplugin.PurplePlugin *pp
+        cdef glib.GList *c_iter
+        cdef c_libplugin.PurplePlugin *c_plugin
+
         protocols = []
-        iter = c_libplugin.purple_plugins_get_protocols()
-        while iter:
-            pp = <c_libplugin.PurplePlugin*> iter.data
-            if pp.info and pp.info.name:
-                p = Plugin.from_c_plugin(pp)
-                if p:
-                    protocols += [p]
-            iter = iter.next
+
+        c_iter = c_libplugin.purple_plugins_get_protocols()
+        while c_iter:
+            c_plugin = <c_libplugin.PurplePlugin*> c_iter.data
+            plugin = Plugin.from_c_plugin(c_plugin)
+            protocols.append(plugin)
+            c_iter = c_iter.next
+
         return protocols
