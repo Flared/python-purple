@@ -112,7 +112,6 @@ cdef class Plugin:
             else:
                 raise Exception("Plugin without info or name")
             iter = iter.next
-        glib.g_list_free(iter)
         return plugins
 
     @staticmethod
@@ -128,5 +127,4 @@ cdef class Plugin:
                 if p:
                     protocols += [p]
             iter = iter.next
-        glib.g_list_free(iter)
         return protocols
