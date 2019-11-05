@@ -20,11 +20,19 @@
 #!/usr/bin/env python3
 
 import os
-from setuptools import setup, find_packages
+
+from setuptools import setup
+from setuptools import find_packages
+from setuptools import dist
+
 from distutils.extension import Extension
-from Cython.Build import cythonize
 from subprocess import Popen, PIPE
 from collections import namedtuple
+
+# Require cython before importing it
+dist.Distribution().fetch_build_eggs(['cython'])
+
+from Cython.Build import cythonize
 
 cflags = (
     Popen(["pkg-config", "--cflags", "purple"], stdout=PIPE)
@@ -103,7 +111,7 @@ setup(
     long_description=long_description,
     ext_modules=cythonized_modules,
     packages=find_packages(),
-    install_requires=[
+    setup_requires=[
         "cython",
     ],
 )
