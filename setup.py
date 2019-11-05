@@ -103,4 +103,7 @@ setup(
     long_description=long_description,
     ext_modules=cythonized_modules,
     packages=find_packages(),
+    install_requires=[
+        "cython",
+    ],
 )
