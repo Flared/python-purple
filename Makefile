@@ -1,4 +1,5 @@
-venv: requirements.txt
+venv: requirements.txt \
+	  requirements.tests.txt
 	rm -rf venv
 	virtualenv -p python3 venv
 	venv/bin/pip \
