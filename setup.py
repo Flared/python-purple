@@ -112,4 +112,6 @@ setup(
     ext_modules=cythonized_modules,
     packages=find_packages(),
     setup_requires=["cython"],
+    package_data={"purple": ["py.typed"]},
+    zip_safe=False,
 )
