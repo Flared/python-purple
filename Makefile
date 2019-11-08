@@ -13,8 +13,15 @@ format: venv
 	venv/bin/black .
 
 .PHONY: lint
-lint: venv
+lint: venv mypy
 	venv/bin/black --check .
+
+.PHONY: mypy
+mypy: venv
+	venv/bin/mypy \
+	    --config-file=mypy.ini \
+	        -p purple \
+	        -p examples
 
 .PHONY: test
 test: install
@@ -35,4 +42,5 @@ clean:
 	rm -rf *.egg-info
 	rm -rf dist
 	rm -rf .pytest_cache
+	rm -rf .mypy_cache
 	find purple -type f -name "*.so" -exec rm {} \;
