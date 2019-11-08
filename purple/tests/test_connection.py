@@ -21,6 +21,7 @@ import time
 import pytest
 
 import purple
+from purple import PurpleClient
 
 from .utils import get_test_account
 from .utils import get_test_connection
@@ -32,7 +33,7 @@ def test_connection_get_prpl(core):
     assert isinstance(prpl, purple.Plugin)
 
 
-def test_signing_on_signal(core):
+def test_signing_on_signal(client: PurpleClient) -> None:
 
     called = False
     _connection = None
@@ -44,10 +45,7 @@ def test_signing_on_signal(core):
         nonlocal _connection
         _connection = connection
 
-    core.signal_connect(
-        signal_name=purple.Signals.SIGNAL_CONNECTION_SIGNING_ON,
-        callback=handler,
-    )
+    client.set_cb_signal_connection_signing_on(callback=handler)
     account = get_test_account(username=b"signing_on_user")
 
     assert not called
@@ -60,7 +58,7 @@ def test_signing_on_signal(core):
     assert _connection.get_account().get_username() == b"signing_on_user"
 
 
-def test_signed_on_signal(core):
+def test_signed_on_signal(client: PurpleClient) -> None:
 
     called = False
     _connection = None
@@ -72,9 +70,7 @@ def test_signed_on_signal(core):
         nonlocal _connection
         _connection = connection
 
-    core.signal_connect(
-        signal_name=purple.Signals.SIGNAL_CONNECTION_SIGNED_ON, callback=handler
-    )
+    client.set_cb_signal_connection_signed_on(callback=handler)
     account = get_test_account(username=b"signed_on_user")
 
     assert not called
@@ -87,7 +83,7 @@ def test_signed_on_signal(core):
     assert _connection.get_account().get_username() == b"signed_on_user"
 
 
-def test_signing_off_signal(core):
+def test_signing_off_signal(client: PurpleClient) -> None:
 
     called = False
     _connection = None
@@ -99,10 +95,7 @@ def test_signing_off_signal(core):
         nonlocal _connection
         _connection = connection
 
-    core.signal_connect(
-        signal_name=purple.Signals.SIGNAL_CONNECTION_SIGNING_OFF,
-        callback=handler,
-    )
+    client.set_cb_signal_connection_signing_off(callback=handler)
 
     account = get_test_account(username=b"signing_off_user")
     account.set_enabled(True)
@@ -117,7 +110,7 @@ def test_signing_off_signal(core):
     assert _connection.get_account().get_username() == b"signing_off_user"
 
 
-def test_signed_off_signal(core):
+def test_signed_off_signal(client: PurpleClient) -> None:
 
     called = False
     _connection = None
@@ -129,10 +122,7 @@ def test_signed_off_signal(core):
         nonlocal _connection
         _connection = connection
 
-    core.signal_connect(
-        signal_name=purple.Signals.SIGNAL_CONNECTION_SIGNED_OFF,
-        callback=handler,
-    )
+    client.set_cb_connection_signed_off(callback=handler)
 
     account = get_test_account(username=b"signed_off_user")
     account.set_enabled(True)

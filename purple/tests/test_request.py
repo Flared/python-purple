@@ -20,11 +20,12 @@ import time
 import pytest
 
 import purple
+from purple import PurpleClient
 
 from .utils import get_test_account
 
 
-def test_request_input_callback_ok(core):
+def test_request_input_callback_ok(client: PurpleClient):
 
     _requester_cancel_callback_called = False
     _requester_cancel_callback_user_data = None
@@ -83,10 +84,7 @@ def test_request_input_callback_ok(core):
 
         ok_cb(b"INPUT")
 
-    core.add_callback(
-        callback_name=purple.Callbacks.CALLBACK_REQUEST_REQUEST_INPUT,
-        callback=client_callback,
-    )
+    client.set_cb_request_request_input(callback=client_callback)
 
     assert not _client_callback_called
     assert not _requester_ok_callback_called
@@ -123,7 +121,7 @@ def test_request_input_callback_ok(core):
     assert _secondary == b"secondary"
 
 
-def test_request_input_callback_cancel(core):
+def test_request_input_callback_cancel(client: PurpleClient):
 
     _requester_cancel_callback_called = False
     _requester_cancel_callback_user_data = None
@@ -179,10 +177,7 @@ def test_request_input_callback_cancel(core):
 
         cancel_cb()
 
-    core.add_callback(
-        callback_name=purple.Callbacks.CALLBACK_REQUEST_REQUEST_INPUT,
-        callback=client_callback,
-    )
+    client.set_cb_request_request_input(callback=client_callback)
 
     assert not _client_callback_called
     assert not _requester_ok_callback_called

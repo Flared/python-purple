@@ -17,6 +17,12 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from typing import Optional
+from typing import Dict
+from typing import Any
+from typing import Callable
+from typing import Tuple
+from typing import List
 
 import click
 import tempfile
@@ -26,24 +32,43 @@ import os
 import time
 
 import purple
+from purple import PurpleClient
 
 
 class SimpleClient:
     def __init__(
-        self, *, debug, protocol_id=None, username=None, password=None
-    ):
-        self.debug = debug
+        self,
+        *,
+        debug: bool,
+        protocol_id: Optional[str] = None,
+        username: Optional[str] = None,
+        password: Optional[str] = None,
+    ) -> None:
+        self.debug: bool = debug
 
-        self.core = None
         self.account = None
+
+        self.purple_client = PurpleClient()
 
         self.protocol_id = protocol_id
         self.username = username
         self.password = password
 
+    def _get_account(self) -> purple.Account:
+        account = self.account
+        if not account:
+            raise Exception("No account!")
+        return account
+
     def cb_signal_conversation_received_im_msg(
-        self, *, account, sender, message, conversation, flags
-    ):
+        self,
+        *,
+        account: purple.Account,
+        sender: bytes,
+        message: bytes,
+        conversation: purple.Conversation,
+        flags: Any,
+    ) -> None:
         click.echo(
             "{prefix} {sender} {message}".format(
                 prefix=click.style("[RECEIVED-IM-MSG]", fg="green", bold=True),
@@ -57,8 +82,14 @@ class SimpleClient:
         )
 
     def cb_signal_conversation_received_chat_msg(
-        self, *, account, sender, message, conversation, flags
-    ):
+        self,
+        *,
+        account: purple.Account,
+        sender: bytes,
+        message: bytes,
+        conversation: purple.Conversation,
+        flags: Any,
+    ) -> None:
         click.echo(
             "{prefix} {sender} {message}".format(
                 prefix=click.style(
@@ -73,7 +104,9 @@ class SimpleClient:
             )
         )
 
-    def cb_signal_conversation_chat_joined(self, *, conversation):
+    def cb_signal_conversation_chat_joined(
+        self, *, conversation: purple.Conversation
+    ) -> None:
         click.echo(
             "{prefix} Joined chat {chat_name}".format(
                 prefix=click.style("[STATUS]", fg="blue", bold=True),
@@ -83,7 +116,9 @@ class SimpleClient:
             )
         )
 
-    def cb_signal_conversation_chat_left(self, *, conversation):
+    def cb_signal_conversation_chat_left(
+        self, *, conversation: purple.Conversation
+    ) -> None:
         click.echo(
             "{prefix} Left chat {chat_name}".format(
                 prefix=click.style("[STATUS]", fg="blue", bold=True),
@@ -93,14 +128,14 @@ class SimpleClient:
             )
         )
 
-    def cb_signal_conversation_chat_join_failed(self):
+    def cb_signal_conversation_chat_join_failed(self) -> None:
         click.echo(
             "{prefix} Failed to join chat".format(
                 prefix=click.style("[STATUS]", fg="blue", bold=True)
             )
         )
 
-    def cb_signal_connection_signing_on(self, *, connection):
+    def cb_signal_connection_signing_on(self, *, connection: purple.Connection):
         click.echo(
             "{prefix} Account {account_name} is signing on...".format(
                 prefix=click.style("[STATUS]", fg="blue", bold=True),
@@ -110,7 +145,9 @@ class SimpleClient:
             )
         )
 
-    def cb_signal_connection_signed_on(self, *, connection):
+    def cb_signal_connection_signed_on(
+        self, *, connection: purple.Connection
+    ) -> None:
         click.echo(
             "{prefix} Account {account_name} signed on.".format(
                 prefix=click.style("[STATUS]", fg="blue", bold=True),
@@ -121,37 +158,41 @@ class SimpleClient:
         )
 
     def cb_signal_connection_error(
-        self, *, connection, description, short_description
-    ):
+        self,
+        *,
+        connection: purple.Connection,
+        description: bytes,
+        short_description: bytes,
+    ) -> None:
         click.echo(
             "{prefix} Connection error for {account_name}: {short_description}: {description}".format(
                 prefix=click.style("[ERROR]", fg="red", bold=True),
                 account_name=click.style(
                     connection.get_account().get_username().decode(), bold=True
                 ),
-                short_description=short_description,
-                description=description,
+                short_description=short_description.decode(),
+                description=description.decode(),
             )
         )
 
     def cb_request_request_input(
         self,
         *,
-        title,
-        primary,
-        secondary,
-        default_value,
-        multiline,
-        masked,
-        hint,
-        ok_text,
-        ok_cb,
-        cancel_text,
-        cancel_cb,
-        account,
-        who,
-        conversation,
-    ):
+        title: bytes,
+        primary: bytes,
+        secondary: bytes,
+        default_value: bytes,
+        multiline: bool,
+        masked: bool,
+        hint: bytes,
+        ok_text: bytes,
+        ok_cb: Callable,
+        cancel_text: bytes,
+        cancel_cb: Callable,
+        account: purple.Account,
+        who: bytes,
+        conversation: purple.Conversation,
+    ) -> None:
         click.echo(
             "{title} {primary}".format(
                 title=click.style(
@@ -167,7 +208,7 @@ class SimpleClient:
         except click.Abort:
             cancel_cb()
 
-    def protocol_selection(self):
+    def protocol_selection(self) -> purple.Plugin:
         # If self.protocol_id is set, try to use it
         # before asking anything to the user.
         if self.protocol_id:
@@ -206,17 +247,9 @@ class SimpleClient:
 
         return protocol
 
-    def run(self):
+    def run(self) -> None:
         # Sets initial parameters
-        self.core = purple.Purple(
-            b"python-purple-simpleclient",
-            b"0.1",
-            b"https://github.com/flared/python-purple",
-            b"https://github.com/flared/python-purple",
-            debug_enabled=self.debug,
-            default_path=tempfile.mkdtemp().encode(),
-        )
-        self.core.purple_init()
+        self.purple_client.do_loop()
 
         # Obtain the protocol
         protocol = self.protocol_selection()
@@ -239,66 +272,58 @@ class SimpleClient:
         ).encode()
 
         # Creates new account inside libpurple
-        self.account = purple.Account.new(protocol, username)
-        self.account.set_password(password)
+        account: purple.Account = purple.Account.new(protocol, username)
+        self.account = account
+        account.set_password(password)
 
-        ######################
-        ## Register signals ##
-        ######################
+        ###############################
+        ## Register Signal Callbacks ##
+        ###############################
 
         ## Conversation
-        self.core.signal_connect(
-            signal_name=purple.Signals.SIGNAL_CONVERSATION_RECEIVED_IM_MSG,
-            callback=self.cb_signal_conversation_received_im_msg,
+        self.purple_client.set_cb_signal_conversation_received_im_msg(
+            self.cb_signal_conversation_received_im_msg
         )
-        self.core.signal_connect(
-            signal_name=purple.Signals.SIGNAL_CONVERSATION_RECEIVED_CHAT_MSG,
-            callback=self.cb_signal_conversation_received_chat_msg,
+        self.purple_client.set_cb_signal_conversation_received_chat_msg(
+            self.cb_signal_conversation_received_chat_msg
         )
-        self.core.signal_connect(
-            signal_name=purple.Signals.SIGNAL_CONVERSATION_CHAT_JOINED,
-            callback=self.cb_signal_conversation_chat_joined,
+        self.purple_client.set_cb_signal_conversation_chat_joined(
+            self.cb_signal_conversation_chat_joined
         )
-        self.core.signal_connect(
-            signal_name=purple.Signals.SIGNAL_CONVERSATION_CHAT_LEFT,
-            callback=self.cb_signal_conversation_chat_left,
+        self.purple_client.set_cb_signal_conversation_chat_left(
+            self.cb_signal_conversation_chat_left
         )
-        self.core.signal_connect(
-            signal_name=purple.Signals.SIGNAL_CONVERSATION_CHAT_JOIN_FAILED,
-            callback=self.cb_signal_conversation_chat_join_failed,
+        self.purple_client.set_cb_signal_conversation_chat_join_failed(
+            self.cb_signal_conversation_chat_join_failed
         )
 
         ## Connection
-        self.core.signal_connect(
-            signal_name=purple.Signals.SIGNAL_CONNECTION_SIGNING_ON,
-            callback=self.cb_signal_connection_signing_on,
+        self.purple_client.set_cb_signal_connection_signing_on(
+            self.cb_signal_connection_signing_on
         )
-        self.core.signal_connect(
-            signal_name=purple.Signals.SIGNAL_CONNECTION_SIGNED_ON,
-            callback=self.cb_signal_connection_signed_on,
+        self.purple_client.set_cb_signal_connection_signed_on(
+            self.cb_signal_connection_signed_on
         )
-        self.core.signal_connect(
-            signal_name=purple.Signals.SIGNAL_CONNECTION_CONNECTION_ERROR,
-            callback=self.cb_signal_connection_error,
+        self.purple_client.set_cb_signal_connection_error(
+            self.cb_signal_connection_error
         )
 
         ########################
         ## Register callbacks ##
         ########################
-        self.core.add_callback(
-            callback_name=purple.Callbacks.CALLBACK_REQUEST_REQUEST_INPUT,
-            callback=self.cb_request_request_input,
+        self.purple_client.set_cb_request_request_input(
+            self.cb_request_request_input
         )
 
         # Enable account (connects automatically)
-        self.account.set_enabled(True)
+        account.set_enabled(True)
 
         self.loop()
 
-    def menu_item_quit(self):
+    def menu_item_quit(self) -> None:
         raise KeyboardInterrupt
 
-    def menu_list_ims(self):
+    def menu_list_ims(self) -> None:
         ims = purple.Conversation.get_ims()
         if ims:
             click.echo(click.style("IMs:", bold=True))
@@ -307,7 +332,7 @@ class SimpleClient:
         else:
             click.echo(click.style("There are no IMS to show.", bold=True))
 
-    def menu_join_im(self):
+    def menu_join_im(self) -> None:
         im_name = click.prompt("Enter im name", type=str).encode()
         conversation = purple.Conversation.new(
             type=purple.ConversationType.CONVERSATION_TYPE_IM,
@@ -315,7 +340,7 @@ class SimpleClient:
             name=im_name,
         )
 
-    def menu_send_im(self):
+    def menu_send_im(self) -> None:
         im_name = click.prompt("Enter im name", type=str).encode()
         conversation = purple.Conversation.new(
             type=purple.ConversationType.CONVERSATION_TYPE_IM,
@@ -326,7 +351,7 @@ class SimpleClient:
         message = click.prompt("Message", type=str).encode()
         im.send(message)
 
-    def menu_list_chats(self):
+    def menu_list_chats(self) -> None:
         chats = purple.Conversation.get_chats()
         if chats:
             click.echo(click.style("Chats:", bold=True))
@@ -339,9 +364,11 @@ class SimpleClient:
         else:
             click.echo(click.style("There are no Chats to show.", bold=True))
 
-    def get_chat_data(self, *, prompt_required_only=False):
-        connection = self.account.get_connection()
-        plugin = purple.Plugin.find_with_id(self.account.get_protocol_id())
+    def get_chat_data(self, *, prompt_required_only=False) -> Dict:
+        connection = self._get_account().get_connection()
+        plugin = purple.Plugin.find_with_id(
+            self._get_account().get_protocol_id()
+        )
         protocol_info = plugin.get_protocol_info()
         chat_entries = protocol_info.get_chat_info(connection)
 
@@ -369,12 +396,12 @@ class SimpleClient:
 
         return chat_data
 
-    def menu_join_chat(self):
+    def menu_join_chat(self) -> None:
         chat_data = self.get_chat_data()
 
-        purple.Server.join_chat(self.account.get_connection(), chat_data)
+        purple.Server.join_chat(self._get_account().get_connection(), chat_data)
 
-    def menu_send_chat(self):
+    def menu_send_chat(self) -> None:
         chat_name = click.prompt("Enter chat name", type=str).encode()
 
         for chat_conv in purple.Conversation.get_chats():
@@ -390,7 +417,7 @@ class SimpleClient:
                 )
             )
 
-    def menu(self):
+    def menu(self) -> None:
         click.echo(click.style("\nMenu", fg="green", bold=True))
 
         menu_items = [
@@ -425,19 +452,17 @@ class SimpleClient:
 
         menu_items[selected_index][1]()
 
-        return menu_items
-
-    def loop(self):
+    def loop(self) -> None:
         while True:
             try:
-                self.core.iterate_main_loop()
+                self.purple_client.do_loop()
                 time.sleep(0.01)
             except KeyboardInterrupt:
                 try:
                     self.menu()
                 except KeyboardInterrupt:
                     click.echo("Quitting...")
-                    self.core.destroy()
+                    self.purple_client.close()
                     break
 
 
@@ -446,7 +471,9 @@ class SimpleClient:
 @click.option("--username", default=None, type=str)
 @click.option("--password", default=None, type=str)
 @click.option("--debug", default=False, is_flag=True)
-def main(*, debug, protocol_id, username, password):
+def main(
+    *, debug: bool, protocol_id: str, username: str, password: str
+) -> None:
     client = SimpleClient(
         debug=debug,
         protocol_id=protocol_id,
