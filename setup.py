@@ -30,7 +30,7 @@ from subprocess import Popen, PIPE
 from collections import namedtuple
 
 # Require cython before importing it
-dist.Distribution().fetch_build_eggs(['cython'])
+dist.Distribution().fetch_build_eggs(["cython"])
 
 from Cython.Build import cythonize
 
@@ -111,7 +111,5 @@ setup(
     long_description=long_description,
     ext_modules=cythonized_modules,
     packages=find_packages(),
-    setup_requires=[
-        "cython",
-    ],
+    setup_requires=["cython"],
 )
