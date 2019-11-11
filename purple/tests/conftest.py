@@ -23,11 +23,12 @@ import os
 import tempfile
 
 import purple
+from purple import PurpleClient
 
 
 @pytest.fixture
 def core():
-    c = purple.Purple(
+    _core = purple.Purple(
         b"name",
         b"version",
         b"website",
@@ -35,8 +36,18 @@ def core():
         debug_enabled=True,
         default_path=tempfile.mkdtemp().encode(),
     )
-    c.purple_init()
+    _core.purple_init()
 
-    yield c
+    yield _core
 
-    c.destroy()
+    _core.destroy()
+
+
+@pytest.fixture
+def client():
+    _client = PurpleClient()
+    _client.do_loop()
+
+    yield _client
+
+    _client.close()

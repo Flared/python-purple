@@ -18,6 +18,7 @@
 #
 
 import purple
+from purple import PurpleClient
 
 from . import utils
 
@@ -121,7 +122,7 @@ def test_chat_has_left(core):
     assert chat.has_left() == True
 
 
-def test_received_im_message_signal(core):
+def test_received_im_message_signal(client: PurpleClient):
 
     received_im_message_handler_called = False
     _message = None
@@ -134,9 +135,8 @@ def test_received_im_message_signal(core):
         received_im_message_handler_called = True
         _message = message
 
-    core.signal_connect(
-        signal_name=purple.Signals.SIGNAL_CONVERSATION_RECEIVED_IM_MSG,
-        callback=received_im_message_handler,
+    client.set_cb_signal_conversation_received_im_msg(
+        callback=received_im_message_handler
     )
 
     im = utils.get_test_im()
@@ -150,7 +150,7 @@ def test_received_im_message_signal(core):
     assert _message == b"Hello!"
 
 
-def test_joined_chat_signal(core):
+def test_joined_chat_signal(client: PurpleClient):
 
     # Prepare handler
     joined_chat_handler_called = False
@@ -160,10 +160,7 @@ def test_joined_chat_signal(core):
         joined_chat_handler_called = True
 
     # Connect signal
-    core.signal_connect(
-        signal_name=purple.Signals.SIGNAL_CONVERSATION_CHAT_JOINED,
-        callback=joined_chat_handler,
-    )
+    client.set_cb_signal_conversation_chat_joined(callback=joined_chat_handler)
 
     # Prepare
     account = utils.get_test_account()

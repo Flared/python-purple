@@ -21,7 +21,7 @@ mypy: venv
 	venv/bin/mypy \
 	    --config-file=mypy.ini \
 	        -p purple \
-	        -p examples
+	        -p examples.simpleclient
 
 .PHONY: test
 test: install
