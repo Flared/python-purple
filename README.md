@@ -12,7 +12,8 @@ Notable changes since then include:
 - Moving to Python 3
 - Adding tests
 - (ongoing) Refactoring the API
-- Creating a type-annotated PurpleClient for use with [mypy](https://github.com/python/mypy).
+- Type annotations for use with [mypy](https://github.com/python/mypy).
+- High-level PurpleClient for an easier-to-use API.
 
 No API stability promises are made at this time. However, whatever is tested (see [purple/tests](purple/tests)) can be considered somewhat stable.
 
