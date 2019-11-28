@@ -189,6 +189,7 @@ cdef extern from "libpurple/conversation.h":
             glib.gpointer data)
     glib.gpointer purple_conversation_get_data(PurpleConversation *conv, \
             char *key)
+    c_libaccount.PurpleAccount *purple_conversation_get_account (const PurpleConversation *conv)
     glib.GList *purple_get_conversations()
     glib.GList *purple_get_ims()
     glib.GList *purple_get_chats()

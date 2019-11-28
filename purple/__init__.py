@@ -40,4 +40,5 @@ from .conversation import Conversation
 from .conversation import IM
 from .conversation import Chat
 from .conversation import ConversationType
+from .conversation import ChatBuddy
 from .client import PurpleClient
