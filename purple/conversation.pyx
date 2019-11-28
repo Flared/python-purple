@@ -53,6 +53,11 @@ cdef class Conversation:
 
         return conversation
 
+    cpdef libaccount.Account get_account(self):
+        return libaccount.Account.from_c_account(
+            c_libconversation.purple_conversation_get_account(self._c_conversation)
+        )
+
     cpdef bytes get_name(self):
         cdef char* c_name = c_libconversation.purple_conversation_get_name(
             self._c_conversation

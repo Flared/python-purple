@@ -29,7 +29,7 @@ def test_conversation_get_all_empty():
     assert len(conversations) == 0
 
 
-def test_conversation_new_chat(core):
+def test_conversation_new_chat(core) -> None:
     account = utils.get_test_account(username=b"chatuser")
     account.set_enabled(True)
 
@@ -45,6 +45,7 @@ def test_conversation_new_chat(core):
     )
     assert conversation.get_name() == b"chatname"
     assert conversation.get_title() == b"chatname"
+    assert conversation.get_account().get_username() == b"chatuser"
     assert not conversation.get_im_data()
 
     chat = conversation.get_chat_data()

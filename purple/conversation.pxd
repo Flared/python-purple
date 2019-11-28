@@ -37,6 +37,8 @@ cdef class Conversation:
     @staticmethod
     cdef Conversation from_c_conversation(c_libconversation.PurpleConversation* c_conversation)
 
+    cpdef libaccount.Account get_account(self)
+
     cpdef bytes get_name(self)
 
     cpdef ConversationType get_type(self)
