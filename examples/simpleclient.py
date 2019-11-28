@@ -46,7 +46,7 @@ class SimpleClient:
     ) -> None:
         self.debug: bool = debug
 
-        self.account = None
+        self.account: Optional[purple.Account] = None
 
         self.purple_client = PurpleClient()
 
@@ -255,11 +255,11 @@ class SimpleClient:
         protocol = self.protocol_selection()
 
         # Get username/password from user
-        username = (
+        username: bytes = (
             self.username or click.prompt(text="Enter the username", type=str)
         ).encode()
 
-        password = (
+        password: bytes = (
             self.password
             if self.password is not None
             else click.prompt(
@@ -348,7 +348,7 @@ class SimpleClient:
             name=im_name,
         )
         im = conversation.get_im_data()
-        message = click.prompt("Message", type=str).encode()
+        message: bytes = click.prompt("Message", type=str).encode()
         im.send(message)
 
     def menu_list_chats(self) -> None:
