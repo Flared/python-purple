@@ -20,7 +20,7 @@
 import purple
 
 
-def get_test_account(*, username=b"user1"):
+def get_test_account(*, username=b"user1") -> purple.Account:
     protocol = purple.Plugin.find_with_id(b"prpl-null")
     account = purple.Account.new(protocol, username)
     return account

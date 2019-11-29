@@ -36,3 +36,4 @@ cdef class Account:
     cpdef libconnection.Connection get_connection(self)
 
     cpdef bytes get_protocol_id(self)
+    cpdef bytes get_protocol_name(self)

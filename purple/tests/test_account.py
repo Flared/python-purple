@@ -72,6 +72,11 @@ def test_account_set_password(core):
     assert account.get_password() == b"pass123"
 
 
+def test_account_get_protocol_name(core) -> None:
+    account = get_test_account()
+    assert account.get_protocol_name() == b"Null - Testing Plugin"
+
+
 def test_account_get_connection(core):
     account = get_test_account()
 
