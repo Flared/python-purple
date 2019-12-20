@@ -26,6 +26,7 @@ from libpurple cimport debug as c_libdebug
 from purple cimport signals as libsignals
 from purple cimport conversation as libconversation
 from purple cimport connection as libconnection
+from purple cimport account as libaccount
 
 cdef str SIGNAL_CONVERSATION_RECEIVING_IM_MSG = "receiving-im-msg"
 cdef glib.gboolean signal_conversation_receiving_im_msg_cb(
@@ -84,11 +85,12 @@ cdef void signal_conversation_received_im_msg_cb(
 
     cdef bytes sender = c_sender or None
     cdef bytes message = c_message or None
+    cdef libaccount.Account account = libaccount.Account.from_c_account(c_account)
     cdef libconversation.Conversation conversation = libconversation.Conversation.from_c_conversation(c_conversation)
 
     for callback in libsignals.signal_cbs.get(SIGNAL_CONVERSATION_RECEIVED_IM_MSG, tuple()):
         callback(
-            account=None,
+            account=account,
             sender=sender,
             message=message,
             conversation=conversation,
