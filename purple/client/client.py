@@ -91,13 +91,19 @@ class PurpleClient:
         flags: Any,
     ) -> None:
         if self._callbacks["SignalConversationReceivedImMsg"] is not None:
-            self._callbacks["SignalConversationReceivedImMsg"](
-                account=account,
-                sender=sender,
-                message=message,
-                conversation=conversation,
-                flags=flags,
-            )
+            try:
+                self._callbacks["SignalConversationReceivedImMsg"](
+                    account=account,
+                    sender=sender,
+                    message=message,
+                    conversation=conversation,
+                    flags=flags,
+                )
+            except Exception:
+                self.logger.exception(
+                    "Could not execute conversation_received_im_msg callback"
+                )
+                raise
 
     def set_cb_signal_conversation_received_chat_msg(
         self, callback: CallbackSignalConversationReceivedChatMsg
@@ -114,13 +120,19 @@ class PurpleClient:
         flags: Any,
     ) -> None:
         if self._callbacks["SignalConversationReceivedChatMsg"] is not None:
-            self._callbacks["SignalConversationReceivedChatMsg"](
-                account=account,
-                sender=sender,
-                message=message,
-                conversation=conversation,
-                flags=flags,
-            )
+            try:
+                self._callbacks["SignalConversationReceivedChatMsg"](
+                    account=account,
+                    sender=sender,
+                    message=message,
+                    conversation=conversation,
+                    flags=flags,
+                )
+            except Exception:
+                self.logger.exception(
+                    "Could not execute conversation_received_chat_msg callback"
+                )
+                raise
 
     def set_cb_signal_conversation_chat_joined(
         self, callback: CallbackSignalConversationChatJoined
@@ -131,9 +143,15 @@ class PurpleClient:
         self, *, conversation: purple.Conversation
     ) -> None:
         if self._callbacks["SignalConversationChatJoined"] is not None:
-            self._callbacks["SignalConversationChatJoined"](
-                conversation=conversation
-            )
+            try:
+                self._callbacks["SignalConversationChatJoined"](
+                    conversation=conversation
+                )
+            except Exception:
+                self.logger.exception(
+                    "Could not execute conversation_chat_joined callback"
+                )
+                raise
 
     def set_cb_signal_conversation_chat_left(
         self, callback: CallbackSignalConversationChatLeft
@@ -144,9 +162,15 @@ class PurpleClient:
         self, *, conversation: purple.Conversation
     ) -> None:
         if self._callbacks["SignalConversationChatLeft"] is not None:
-            self._callbacks["SignalConversationChatLeft"](
-                conversation=conversation
-            )
+            try:
+                self._callbacks["SignalConversationChatLeft"](
+                    conversation=conversation
+                )
+            except Exception:
+                self.logger.exception(
+                    "Could not execute conversation_chat_left callback"
+                )
+                raise
 
     def set_cb_signal_conversation_chat_join_failed(
         self, callback: CallbackSignalConversationChatJoinFailed
@@ -155,7 +179,13 @@ class PurpleClient:
 
     def _cb_signal_conversation_chat_join_failed(self) -> None:
         if self._callbacks["SignalConversationChatJoinFailed"] is not None:
-            self._callbacks["SignalConversationChatJoinFailed"]()
+            try:
+                self._callbacks["SignalConversationChatJoinFailed"]()
+            except Exception:
+                self.logger.exception(
+                    "Could not execute chat_join_failed callback"
+                )
+                raise
 
     def set_cb_signal_connection_signing_off(
         self, callback: CallbackSignalConnectionSigningOff
@@ -166,7 +196,15 @@ class PurpleClient:
         self, *, connection: purple.Connection
     ) -> None:
         if self._callbacks["SignalConnectionSigningOff"] is not None:
-            self._callbacks["SignalConnectionSigningOff"](connection=connection)
+            try:
+                self._callbacks["SignalConnectionSigningOff"](
+                    connection=connection
+                )
+            except Exception:
+                self.logger.exception(
+                    "Could not execute connection_signing_off callback"
+                )
+                raise
 
     def set_cb_signal_connection_signing_on(
         self, callback: CallbackSignalConnectionSigningOn
@@ -177,7 +215,15 @@ class PurpleClient:
         self, *, connection: purple.Connection
     ) -> None:
         if self._callbacks["SignalConnectionSigningOn"] is not None:
-            self._callbacks["SignalConnectionSigningOn"](connection=connection)
+            try:
+                self._callbacks["SignalConnectionSigningOn"](
+                    connection=connection
+                )
+            except Exception:
+                self.logger.exception(
+                    "Could not execute connection_signing_on callback"
+                )
+                raise
 
     def set_cb_signal_connection_signed_on(
         self, callback: CallbackSignalConnectionSignedOn
@@ -188,7 +234,15 @@ class PurpleClient:
         self, *, connection: purple.Connection
     ) -> None:
         if self._callbacks["SignalConnectionSignedOn"] is not None:
-            self._callbacks["SignalConnectionSignedOn"](connection=connection)
+            try:
+                self._callbacks["SignalConnectionSignedOn"](
+                    connection=connection
+                )
+            except Exception:
+                self.logger.exception(
+                    "Could not execute connection_signed_on callback"
+                )
+                raise
 
     def set_cb_connection_signed_off(
         self, callback: CallbackSignalConnectionSignedOff
@@ -199,7 +253,15 @@ class PurpleClient:
         self, *, connection: purple.Connection
     ) -> None:
         if self._callbacks["SignalConnectionSignedOff"] is not None:
-            self._callbacks["SignalConnectionSignedOff"](connection=connection)
+            try:
+                self._callbacks["SignalConnectionSignedOff"](
+                    connection=connection
+                )
+            except Exception:
+                self.logger.exception(
+                    "Could not execute connection_signed_off callback"
+                )
+                raise
 
     def set_cb_signal_connection_error(
         self, callback: CallbackSignalConnectionError
@@ -214,11 +276,17 @@ class PurpleClient:
         short_description: bytes,
     ) -> None:
         if self._callbacks["SignalConnectionError"] is not None:
-            self._callbacks["SignalConnectionError"](
-                connection=connection,
-                description=description,
-                short_description=short_description,
-            )
+            try:
+                self._callbacks["SignalConnectionError"](
+                    connection=connection,
+                    description=description,
+                    short_description=short_description,
+                )
+            except Exception:
+                self.logger.exception(
+                    "Could not excute connection_error callback"
+                )
+                raise
 
     def set_cb_request_request_input(
         self, callback: CallbackRequestRequestInput
