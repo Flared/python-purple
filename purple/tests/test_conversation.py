@@ -127,14 +127,17 @@ def test_received_im_message_signal(client: PurpleClient):
 
     received_im_message_handler_called = False
     _message = None
+    _account_name = None
 
     def received_im_message_handler(
         *, account, sender, message, conversation, flags
     ):
         nonlocal received_im_message_handler_called
         nonlocal _message
+        nonlocal _account_name
         received_im_message_handler_called = True
         _message = message
+        _account_name = account.get_username()
 
     client.set_cb_signal_conversation_received_im_msg(
         callback=received_im_message_handler
@@ -149,6 +152,7 @@ def test_received_im_message_signal(client: PurpleClient):
 
     assert received_im_message_handler_called
     assert _message == b"Hello!"
+    assert _account_name == b"user1"
 
 
 def test_joined_chat_signal(client: PurpleClient):
