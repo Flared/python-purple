@@ -13,6 +13,9 @@ install:
                 --prefix=/usr \
                 --disable-nm \
                 --with-dynamic-prpls=bonjour,gg,irc,jabber,novell,oscar,sametime,simple,zephyr,null \
+                --without-x --disable-gtkspell --disable-gstreamer \
+                --disable-vv --disable-meanwhile --disable-avahi \
+                --disable-dbus --disable-tcl --disable-gtkui --disable-perl \
         && make -C libpurple -j$(nproc) \
         && sudo make -C libpurple install '
   - rm -rf pidgin
