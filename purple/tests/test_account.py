@@ -85,3 +85,15 @@ def test_account_get_connection(core):
 
     connection = account.get_connection()
     assert isinstance(connection, purple.Connection)
+
+
+def test_account_set_string(core):
+    account = get_test_account()
+
+    assert account.get_string(b"test", b"default") == b"default"
+    account.set_string(b"test", b"value")
+    assert account.get_string(b"test", b"default") == b"value"
+    assert (
+        account.get_string(b"another_test", b"another_default")
+        == b"another_default"
+    )

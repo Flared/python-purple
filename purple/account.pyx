@@ -117,6 +117,23 @@ cdef class Account:
         cdef bytes protocol_name = c_protocol_name or None
         return protocol_name
 
+    def get_string(self, char* name, char* default_value):
+        """
+        Gets a protocol-specific string setting for an account.
+
+        @param name The name of the setting.
+        @param default_value The default value.
+        @return The value.
+        """
+        cdef char* c_value = c_libaccount.purple_account_get_string(
+            self._c_account,
+            name,
+            default_value,
+        )
+        cdef bytes value = c_value or None
+        return value
+
+
     def is_enabled(
         self,
         bytes ui_name = None,
@@ -141,6 +158,19 @@ cdef class Account:
         c_libaccount.purple_account_set_password(
             self._c_account,
             password
+        )
+
+    def set_string(self, char* name, char* value):
+        """
+        Sets a protocol-specific string setting for an account.
+
+        @param name The name of the setting.
+        @param value The setting's value.
+        """
+        c_libaccount.purple_account_set_string(
+            self._c_account,
+            name,
+            value
         )
 
     def set_enabled(
