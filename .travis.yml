@@ -6,7 +6,7 @@ install:
   - sudo apt-get build-dep -y pidgin
   - >
       bash -c '\
-        hg clone https://bitbucket.org/pidgin/main pidgin \
+        hg clone https://keep.imfreedom.org/pidgin/pidgin \
         && cd pidgin \
         && hg up v2.13.0 \
         && ./autogen.sh \
