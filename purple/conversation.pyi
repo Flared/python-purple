@@ -19,6 +19,7 @@
 from typing_extensions import Final
 from typing import List
 from typing import Any
+from typing import Optional
 
 import purple
 
@@ -33,8 +34,8 @@ class Conversation:
     def get_ims() -> List["Conversation"]: ...
     @staticmethod
     def get_chats() -> List["Conversation"]: ...
-    def get_chat_data(self) -> Chat: ...
-    def get_im_data(self) -> IM: ...
+    def get_chat_data(self) -> Optional[Chat]: ...
+    def get_im_data(self) -> Optional[IM]: ...
     @staticmethod
     def new(
         type: ConversationType, account: Any, name: bytes
@@ -49,10 +50,19 @@ class Chat:
     def get_nick(self) -> bytes: ...
     def get_topic(self) -> bytes: ...
     def get_users(self) -> List[ChatBuddy]: ...
+    def cb_find(self, name: bytes) -> Optional[ChatBuddy]: ...
+    def add_user(
+        self,
+        user: bytes,
+        extra_msg: bytes,
+        flags: purple.PurpleConvChatBuddyFlags,
+        new_arrival: bool,
+    ): ...
     def has_left(self) -> bool: ...
 
 class ChatBuddy:
-    pass
+    def get_name(self) -> bytes: ...
+    def get_alias(self) -> bytes: ...
 
 class ConversationType:
     CONVERSATION_TYPE_UNKNOWN: Final["ConversationType"]
@@ -60,3 +70,12 @@ class ConversationType:
     CONVERSATION_TYPE_CHAT: Final["ConversationType"]
     CONVERSATION_TYPE_MISC: Final["ConversationType"]
     CONVERSATION_TYPE_ANY: Final["ConversationType"]
+
+class PurpleConvChatBuddyFlags:
+    PURPLE_CBFLAGS_NONE = Final["PurpleConvChatBuddyFlags"]
+    PURPLE_CBFLAGS_VOICE = Final["PurpleConvChatBuddyFlags"]
+    PURPLE_CBFLAGS_HALFOP = Final["PurpleConvChatBuddyFlags"]
+    PURPLE_CBFLAGS_OP = Final["PurpleConvChatBuddyFlags"]
+    PURPLE_CBFLAGS_FOUNDER = Final["PurpleConvChatBuddyFlags"]
+    PURPLE_CBFLAGS_TYPING = Final["PurpleConvChatBuddyFlags"]
+    PURPLE_CBFLAGS_AWAY = Final["PurpleConvChatBuddyFlags"]

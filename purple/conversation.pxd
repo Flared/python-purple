@@ -17,6 +17,8 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+cimport glib
+
 from libpurple cimport conversation as c_libconversation
 
 from purple cimport account as libaccount
@@ -28,6 +30,16 @@ cpdef enum ConversationType:
     CONVERSATION_TYPE_CHAT = c_libconversation.PurpleConversationType.PURPLE_CONV_TYPE_CHAT
     CONVERSATION_TYPE_MISC = c_libconversation.PurpleConversationType.PURPLE_CONV_TYPE_MISC
     CONVERSATION_TYPE_ANY = c_libconversation.PurpleConversationType.PURPLE_CONV_TYPE_ANY
+
+cpdef enum PurpleConvChatBuddyFlags:
+    PURPLE_CBFLAGS_NONE = c_libconversation.PurpleConvChatBuddyFlags.PURPLE_CBFLAGS_NONE
+    PURPLE_CBFLAGS_VOICE = c_libconversation.PurpleConvChatBuddyFlags.PURPLE_CBFLAGS_VOICE
+    PURPLE_CBFLAGS_HALFOP = c_libconversation.PurpleConvChatBuddyFlags.PURPLE_CBFLAGS_HALFOP
+    PURPLE_CBFLAGS_OP = c_libconversation.PurpleConvChatBuddyFlags.PURPLE_CBFLAGS_OP
+    PURPLE_CBFLAGS_FOUNDER = c_libconversation.PurpleConvChatBuddyFlags.PURPLE_CBFLAGS_FOUNDER
+    PURPLE_CBFLAGS_TYPING = c_libconversation.PurpleConvChatBuddyFlags.PURPLE_CBFLAGS_TYPING
+    PURPLE_CBFLAGS_AWAY = c_libconversation.PurpleConvChatBuddyFlags.PURPLE_CBFLAGS_AWAY
+
 
 
 cdef class Conversation:
@@ -77,6 +89,10 @@ cdef class Chat:
 
     cpdef list get_users(self)
 
+    cpdef void add_user(self, bytes user, bytes extra_msg, PurpleConvChatBuddyFlags flags, glib.gboolean new_arrival)
+
+    cpdef ChatBuddy cb_find(self, bytes name)
+
     cpdef int get_id(self)
 
     cpdef bytes get_nick(self)
@@ -98,6 +114,8 @@ cdef class ChatBuddy:
     cdef ChatBuddy from_c_conv_chat_buddy(c_libconversation.PurpleConvChatBuddy* c_chat_buddy)
 
     cpdef bytes get_name(self)
+
+    cpdef bytes get_alias(self)
 
 
 cdef class ConversationMessage:

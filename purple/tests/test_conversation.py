@@ -56,8 +56,18 @@ def test_conversation_new_chat(core) -> None:
     assert chat.has_left() == False
     assert repr(chat) == "<Chat: b'chatname'>"
 
+    chat.add_user(
+        b"testuser",
+        b"extramsg",
+        purple.PurpleConvChatBuddyFlags.PURPLE_CBFLAGS_VOICE,
+        False,
+    )
     users = chat.get_users()
-    assert len(users) == 0
+    assert len(users) == 1
+    assert users[0].get_name() == b"testuser"
+    assert users[0].get_alias() == b"testuser"
+    assert chat.cb_find(b"testuser") is not None
+    assert chat.cb_find(b"invaliduser") is None
 
     conversations = purple.Conversation.get_conversations()
     assert len(conversations) == 1
