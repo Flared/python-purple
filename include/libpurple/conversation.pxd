@@ -86,6 +86,7 @@ cdef extern from "libpurple/conversation.h":
         PURPLE_CBFLAGS_OP = 0x0004
         PURPLE_CBFLAGS_FOUNDER = 0x0008
         PURPLE_CBFLAGS_TYPING = 0x0010
+        PURPLE_CBFLAGS_AWAY = 0x0020
 
     ctypedef struct PurpleConversationUiOps:
         void (*create_conversation) (PurpleConversation *conv)
@@ -251,7 +252,7 @@ cdef extern from "libpurple/conversation.h":
     PurpleConversation *purple_conv_chat_get_conversation(PurpleConvChat *chat)
     glib.GList *purple_conv_chat_get_users(PurpleConvChat *chat)
     void purple_conv_chat_ignore(PurpleConvChat *chat, char *name)
-    void purple_conv_chat_invite_user(PurpleConvChat* chat, char* user, char* message, glib.gboolean confirm) 
+    void purple_conv_chat_invite_user(PurpleConvChat* chat, char* user, char* message, glib.gboolean confirm)
     void purple_conv_chat_unignore(PurpleConvChat *chat, char *name)
     glib.GList *purple_conv_chat_set_ignored(PurpleConvChat *chat, \
             glib.GList *ignored)

@@ -253,6 +253,11 @@ cdef class Chat:
             confirm,
         )
 
+    cpdef void add_user(self, bytes user, bytes extra_msg, PurpleConvChatBuddyFlags flags, glib.gboolean new_arrival):
+        c_libconversation.purple_conv_chat_add_user(
+            self._c_conv_chat, user, extra_msg, flags, new_arrival
+        )
+
     cpdef list get_users(self):
         cdef glib.GList* c_iter = c_libconversation.purple_conv_chat_get_users(
             self._c_conv_chat,
@@ -269,6 +274,14 @@ cdef class Chat:
 
         return users
 
+    cpdef ChatBuddy cb_find(self, bytes name):
+        return ChatBuddy.from_c_conv_chat_buddy(c_libconversation.purple_conv_chat_cb_find(
+            self._c_conv_chat,
+            name,
+        ))
+
+
+
     def __repr__(self):
         return "<{class_name}: {chat_name}>".format(
             class_name=self.__class__.__name__,
@@ -280,6 +293,8 @@ cdef class ChatBuddy:
 
     @staticmethod
     cdef ChatBuddy from_c_conv_chat_buddy(c_libconversation.PurpleConvChatBuddy* c_conv_chat_buddy):
+        if c_conv_chat_buddy == NULL:
+            return None
         cdef ChatBuddy chat_buddy = ChatBuddy.__new__(ChatBuddy)
         chat_buddy._c_conv_chat_buddy = c_conv_chat_buddy
         return chat_buddy
@@ -290,6 +305,11 @@ cdef class ChatBuddy:
         )
         cdef bytes name = c_name or None
         return name
+
+    cpdef bytes get_alias(self):
+        cdef char* c_alias = self._c_conv_chat_buddy.alias
+        cdef bytes alias = c_alias or None
+        return alias
 
 
 cdef class ConversationMessage:

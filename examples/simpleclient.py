@@ -348,6 +348,7 @@ class SimpleClient:
             name=im_name,
         )
         im = conversation.get_im_data()
+        assert im is not None
         message: bytes = click.prompt("Message", type=str).encode()
         im.send(message)
 
@@ -407,6 +408,7 @@ class SimpleClient:
         for chat_conv in purple.Conversation.get_chats():
             if chat_conv.get_name() == chat_name:
                 chat = chat_conv.get_chat_data()
+                assert chat is not None
                 message = click.prompt("Message", type=str).encode()
                 chat.send(message)
                 break
