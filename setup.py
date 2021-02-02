@@ -29,9 +29,6 @@ from distutils.extension import Extension
 from subprocess import Popen, PIPE
 from collections import namedtuple
 
-# Require cython before importing it
-dist.Distribution().fetch_build_eggs(["cython"])
-
 from Cython.Build import cythonize
 
 cflags = (
