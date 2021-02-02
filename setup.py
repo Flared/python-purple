@@ -29,7 +29,7 @@ from distutils.extension import Extension
 from subprocess import Popen, PIPE
 from collections import namedtuple
 
-dist.Distribution().fetch_build_eggs(["cython>=0.29.21"])
+dist.Distribution().fetch_build_eggs(["cython>=0.29.21", "pip"])
 
 from Cython.Build import cythonize
 
