@@ -37,6 +37,14 @@ cflags = (
     .decode()
     .split()
 )
+
+# macOS fixup.
+cflags.extend(
+    p.replace("/include/libpurple", "/include")
+    for p in cflags
+    if "Cellar/pidgin/" in p and "/include/libpurple" in p
+)
+
 ldflags = (
     Popen(["pkg-config", "--libs", "purple"], stdout=PIPE)
     .communicate()[0]
