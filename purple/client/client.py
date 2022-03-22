@@ -52,13 +52,16 @@ class PurpleClient:
     type-annotated interfaces.
     """
 
-    def __init__(self, *, purple_debug: bool = False) -> None:
+    def __init__(
+        self, *, purple_debug: bool = False, user_dir: Optional[str] = None
+    ) -> None:
 
         self.logger: Final[logging.Logger] = logging.getLogger(
             __name__ + "." + self.__class__.__name__
         )
 
         self._purple_debug: Final[bool] = purple_debug
+        self._user_dir = (user_dir or tempfile.mkdtemp()).encode()
         self._purple_core: Optional[purple.Purple] = None
         self._purple_account: Optional[purple.Account] = None
 
@@ -343,7 +346,7 @@ class PurpleClient:
             b"https://github.com/flared/python-purple",
             b"https://github.com/flared/python-purple",
             debug_enabled=self._purple_debug,
-            default_path=tempfile.mkdtemp().encode(),
+            default_path=self._user_dir,
         )
         self._purple_core.purple_init()
 
