@@ -128,7 +128,9 @@ class SimpleClient:
             )
         )
 
-    def cb_signal_conversation_chat_join_failed(self) -> None:
+    def cb_signal_conversation_chat_join_failed(
+        self, *, connection: purple.Connection, components: Any
+    ) -> None:
         click.echo(
             "{prefix} Failed to join chat".format(
                 prefix=click.style("[STATUS]", fg="blue", bold=True)

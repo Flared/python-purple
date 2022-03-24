@@ -42,7 +42,9 @@ class CallbackSignalConversationChatLeft(Protocol):
 
 
 class CallbackSignalConversationChatJoinFailed(Protocol):
-    def __call__(self) -> None:
+    def __call__(
+        self, *, connection: purple.Connection, components: Any
+    ) -> None:
         ...
 
 
