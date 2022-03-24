@@ -180,10 +180,17 @@ class PurpleClient:
     ) -> None:
         self._callbacks["SignalConversationChatJoinFailed"] = callback
 
-    def _cb_signal_conversation_chat_join_failed(self) -> None:
+    def _cb_signal_conversation_chat_join_failed(
+        self,
+        connection: purple.Connection,
+        components: Any,
+    ) -> None:
         if self._callbacks["SignalConversationChatJoinFailed"] is not None:
             try:
-                self._callbacks["SignalConversationChatJoinFailed"]()
+                self._callbacks["SignalConversationChatJoinFailed"](
+                    connection=connection,
+                    components=components,
+                )
             except Exception:
                 self.logger.exception(
                     "Could not execute chat_join_failed callback"
