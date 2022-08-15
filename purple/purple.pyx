@@ -229,7 +229,6 @@ cdef class Purple:
         c_conv_ui_ops.destroy_conversation = callbacks_conversation.destroy_conversation
         c_conv_ui_ops.write_chat = callbacks_conversation.write_chat
         c_conv_ui_ops.write_im = callbacks_conversation.write_im
-        c_conv_ui_ops.write_conv = callbacks_conversation.write_conv
         c_conv_ui_ops.chat_add_users = callbacks_conversation.chat_add_users
         c_conv_ui_ops.chat_rename_user = callbacks_conversation.chat_rename_user
         c_conv_ui_ops.chat_remove_users = callbacks_conversation.chat_remove_users
@@ -308,6 +307,10 @@ cdef class Purple:
 
         if callback_name == callbacks_request.CALLBACK_REQUEST_REQUEST_INPUT:
             callbacks_request.request_cbs[callback_name] = callback
+        elif callback_name == callbacks_conversation.CALLBACK_CONVERSATION_WRITE_CHAT:
+            callbacks_conversation.conversation_cbs[callback_name] = callback
+        elif callback_name == callbacks_conversation.CALLBACK_CONVERSATION_WRITE_IM:
+            callbacks_conversation.conversation_cbs[callback_name] = callback
         else:
             raise Exception(
                 "Unknown callback '{callback_name}'".format(

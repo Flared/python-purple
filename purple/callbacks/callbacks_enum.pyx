@@ -18,8 +18,20 @@
 #
 
 from purple.callbacks cimport request as libcallbacks_request
+from purple.callbacks cimport conversation as libcallbacks_conversation
 
 cdef class _Callbacks:
+
+    ##################
+    ## Conversation ##
+    ##################
+    @property
+    def CALLBACK_CONVERSATION_WRITE_CHAT(self):
+        return libcallbacks_conversation.CALLBACK_CONVERSATION_WRITE_CHAT
+
+    @property
+    def CALLBACK_CONVERSATION_WRITE_IM(self):
+        return libcallbacks_conversation.CALLBACK_CONVERSATION_WRITE_IM
 
     #############
     ## Request ##

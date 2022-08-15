@@ -25,6 +25,8 @@ def test_callbacks_enum(core):
     callbacks = purple.Callbacks
 
     assert callbacks.CALLBACK_REQUEST_REQUEST_INPUT == "request-input"
+    assert callbacks.CALLBACK_CONVERSATION_WRITE_CHAT == "write-chat"
+    assert callbacks.CALLBACK_CONVERSATION_WRITE_IM == "write-im"
 
 
 def test_add_callback_unknown(core):

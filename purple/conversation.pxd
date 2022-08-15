@@ -31,6 +31,23 @@ cpdef enum ConversationType:
     CONVERSATION_TYPE_MISC = c_libconversation.PurpleConversationType.PURPLE_CONV_TYPE_MISC
     CONVERSATION_TYPE_ANY = c_libconversation.PurpleConversationType.PURPLE_CONV_TYPE_ANY
 
+cpdef enum PurpleMessageFlags:
+    PURPLE_MESSAGE_SEND = c_libconversation.PurpleMessageFlags.PURPLE_MESSAGE_SEND
+    PURPLE_MESSAGE_RECV = c_libconversation.PurpleMessageFlags.PURPLE_MESSAGE_RECV
+    PURPLE_MESSAGE_SYSTEM = c_libconversation.PurpleMessageFlags.PURPLE_MESSAGE_SYSTEM
+    PURPLE_MESSAGE_AUTO_RESP = c_libconversation.PurpleMessageFlags.PURPLE_MESSAGE_AUTO_RESP
+    PURPLE_MESSAGE_ACTIVE_ONLY = c_libconversation.PurpleMessageFlags.PURPLE_MESSAGE_ACTIVE_ONLY
+    PURPLE_MESSAGE_NICK = c_libconversation.PurpleMessageFlags.PURPLE_MESSAGE_NICK
+    PURPLE_MESSAGE_NO_LOG = c_libconversation.PurpleMessageFlags.PURPLE_MESSAGE_NO_LOG
+    PURPLE_MESSAGE_WHISPER = c_libconversation.PurpleMessageFlags.PURPLE_MESSAGE_WHISPER
+    PURPLE_MESSAGE_ERROR = c_libconversation.PurpleMessageFlags.PURPLE_MESSAGE_ERROR
+    PURPLE_MESSAGE_DELAYED = c_libconversation.PurpleMessageFlags.PURPLE_MESSAGE_DELAYED
+    PURPLE_MESSAGE_RAW = c_libconversation.PurpleMessageFlags.PURPLE_MESSAGE_RAW
+    PURPLE_MESSAGE_IMAGES = c_libconversation.PurpleMessageFlags.PURPLE_MESSAGE_IMAGES
+    PURPLE_MESSAGE_NOTIFY = c_libconversation.PurpleMessageFlags.PURPLE_MESSAGE_NOTIFY
+    PURPLE_MESSAGE_NO_LINKIFY = c_libconversation.PurpleMessageFlags.PURPLE_MESSAGE_NO_LINKIFY
+    PURPLE_MESSAGE_INVISIBLE = c_libconversation.PurpleMessageFlags.PURPLE_MESSAGE_INVISIBLE
+
 cpdef enum PurpleConvChatBuddyFlags:
     PURPLE_CBFLAGS_NONE = c_libconversation.PurpleConvChatBuddyFlags.PURPLE_CBFLAGS_NONE
     PURPLE_CBFLAGS_VOICE = c_libconversation.PurpleConvChatBuddyFlags.PURPLE_CBFLAGS_VOICE
@@ -39,8 +56,6 @@ cpdef enum PurpleConvChatBuddyFlags:
     PURPLE_CBFLAGS_FOUNDER = c_libconversation.PurpleConvChatBuddyFlags.PURPLE_CBFLAGS_FOUNDER
     PURPLE_CBFLAGS_TYPING = c_libconversation.PurpleConvChatBuddyFlags.PURPLE_CBFLAGS_TYPING
     PURPLE_CBFLAGS_AWAY = c_libconversation.PurpleConvChatBuddyFlags.PURPLE_CBFLAGS_AWAY
-
-
 
 cdef class Conversation:
 
