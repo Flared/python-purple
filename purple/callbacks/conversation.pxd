@@ -32,12 +32,14 @@ cdef void create_conversation(c_libconversation.PurpleConversation *conv)
 
 cdef void destroy_conversation(c_libconversation.PurpleConversation *conv)
 
+cdef str CALLBACK_CONVERSATION_WRITE_CHAT
 cdef void write_chat(c_libconversation.PurpleConversation *conv,
                      const_char *who,
                      const_char *message,
                      c_libconversation.PurpleMessageFlags flags,
                      time_t mtime)
 
+cdef str CALLBACK_CONVERSATION_WRITE_IM
 cdef void write_im(c_libconversation.PurpleConversation *conv,
                    const_char *who,
                    const_char *c_message,

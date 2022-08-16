@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from typing_extensions import Final
 from typing_extensions import Protocol
 from typing_extensions import TypedDict
@@ -23,6 +25,8 @@ from .callbacks import CallbackSignalConnectionSignedOn
 from .callbacks import CallbackSignalConnectionSignedOff
 from .callbacks import CallbackSignalConnectionError
 from .callbacks import CallbackRequestRequestInput
+from .callbacks import CallbackConversationWriteChat
+from .callbacks import CallbackConversationWriteIm
 
 
 class _Callbacks(TypedDict):
@@ -43,6 +47,8 @@ class _Callbacks(TypedDict):
     SignalConnectionSignedOff: Optional[CallbackSignalConnectionSignedOff]
     SignalConnectionError: Optional[CallbackSignalConnectionError]
     RequestRequestInput: Optional[CallbackRequestRequestInput]
+    ConversationWriteChat: Optional[CallbackConversationWriteChat]
+    ConversationWriteIm: Optional[CallbackConversationWriteIm]
 
 
 class PurpleClient:
@@ -77,6 +83,8 @@ class PurpleClient:
             "SignalConnectionSignedOff": None,
             "SignalConnectionError": None,
             "RequestRequestInput": None,
+            "ConversationWriteChat": None,
+            "ConversationWriteIm": None,
         }
 
     def set_cb_signal_conversation_received_im_msg(
@@ -339,6 +347,52 @@ class PurpleClient:
                 conversation=conversation,
             )
 
+    def set_cb_conversation_write_chat(
+        self, callback: CallbackConversationWriteChat
+    ) -> None:
+        self._callbacks["ConversationWriteChat"] = callback
+
+    def _cb_conversation_write_chat(
+        self,
+        *,
+        conversation: purple.Conversation,
+        who: bytes,
+        message: bytes,
+        time: datetime,
+        flags: int,
+    ) -> None:
+        if self._callbacks["ConversationWriteChat"] is not None:
+            self._callbacks["ConversationWriteChat"](
+                conversation=conversation,
+                who=who,
+                message=message,
+                time=time,
+                flags=flags,
+            )
+
+    def set_cb_conversation_write_im(
+        self, callback: CallbackConversationWriteChat
+    ) -> None:
+        self._callbacks["ConversationWriteIm"] = callback
+
+    def _cb_conversation_write_im(
+        self,
+        *,
+        conversation: purple.Conversation,
+        who: bytes,
+        message: bytes,
+        time: datetime,
+        flags: int,
+    ) -> None:
+        if self._callbacks["ConversationWriteIm"] is not None:
+            self._callbacks["ConversationWriteIm"](
+                conversation=conversation,
+                who=who,
+                message=message,
+                time=time,
+                flags=flags,
+            )
+
     def do_loop(self) -> None:
         if not self._purple_core:
             self._purple_core_init()
@@ -411,6 +465,15 @@ class PurpleClient:
         self._purple_core.add_callback(
             callback_name=purple.Callbacks.CALLBACK_REQUEST_REQUEST_INPUT,
             callback=self._cb_request_request_input,
+        )
+        self._purple_core.add_callback(
+            callback_name=purple.Callbacks.CALLBACK_CONVERSATION_WRITE_CHAT,
+            callback=self._cb_conversation_write_chat,
+        )
+
+        self._purple_core.add_callback(
+            callback_name=purple.Callbacks.CALLBACK_CONVERSATION_WRITE_IM,
+            callback=self._cb_conversation_write_im,
         )
 
     def close(self) -> None:

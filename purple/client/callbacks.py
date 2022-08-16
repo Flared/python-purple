@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from typing_extensions import Protocol
 from typing import Callable
 from typing import Any
@@ -97,5 +99,31 @@ class CallbackRequestRequestInput(Protocol):
         account: purple.Account,
         who: bytes,
         conversation: purple.Conversation,
+    ) -> None:
+        ...
+
+
+class CallbackConversationWriteChat(Protocol):
+    def __call__(
+        self,
+        *,
+        conversation: purple.Conversation,
+        who: bytes,
+        message: bytes,
+        time: datetime,
+        flags: int,
+    ) -> None:
+        ...
+
+
+class CallbackConversationWriteIm(Protocol):
+    def __call__(
+        self,
+        *,
+        conversation: purple.Conversation,
+        who: bytes,
+        message: bytes,
+        time: datetime,
+        flags: int,
     ) -> None:
         ...

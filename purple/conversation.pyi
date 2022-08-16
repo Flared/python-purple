@@ -71,6 +71,23 @@ class ConversationType:
     CONVERSATION_TYPE_MISC: Final["ConversationType"]
     CONVERSATION_TYPE_ANY: Final["ConversationType"]
 
+class PurpleMessageFlags:
+    PURPLE_MESSAGE_SEND: Final["PurpleMessageFlags"]
+    PURPLE_MESSAGE_RECV: Final["PurpleMessageFlags"]
+    PURPLE_MESSAGE_SYSTEM: Final["PurpleMessageFlags"]
+    PURPLE_MESSAGE_AUTO_RESP: Final["PurpleMessageFlags"]
+    PURPLE_MESSAGE_ACTIVE_ONLY: Final["PurpleMessageFlags"]
+    PURPLE_MESSAGE_NICK: Final["PurpleMessageFlags"]
+    PURPLE_MESSAGE_NO_LOG: Final["PurpleMessageFlags"]
+    PURPLE_MESSAGE_WHISPER: Final["PurpleMessageFlags"]
+    PURPLE_MESSAGE_ERROR: Final["PurpleMessageFlags"]
+    PURPLE_MESSAGE_DELAYED: Final["PurpleMessageFlags"]
+    PURPLE_MESSAGE_RAW: Final["PurpleMessageFlags"]
+    PURPLE_MESSAGE_IMAGES: Final["PurpleMessageFlags"]
+    PURPLE_MESSAGE_NOTIFY: Final["PurpleMessageFlags"]
+    PURPLE_MESSAGE_NO_LINKIFY: Final["PurpleMessageFlags"]
+    PURPLE_MESSAGE_INVISIBLE: Final["PurpleMessageFlags"]
+
 class PurpleConvChatBuddyFlags:
     PURPLE_CBFLAGS_NONE = Final["PurpleConvChatBuddyFlags"]
     PURPLE_CBFLAGS_VOICE = Final["PurpleConvChatBuddyFlags"]

@@ -165,6 +165,37 @@ def test_received_im_message_signal(client: PurpleClient):
     assert _account_name == b"user1"
 
 
+def test_write_im_callback(client: PurpleClient):
+
+    write_im_handler_called = False
+    _message = None
+    _account_name = None
+
+    def write_im_handler(*, conversation, who, message, time, flags):
+        nonlocal write_im_handler_called
+        nonlocal _message
+        nonlocal _account_name
+        if not (flags & purple.PurpleMessageFlags.PURPLE_MESSAGE_RECV):
+            return
+
+        write_im_handler_called = True
+        _message = message
+        _account_name = who
+
+    client.set_cb_conversation_write_im(callback=write_im_handler)
+
+    im = utils.get_test_im()
+
+    assert not write_im_handler_called
+    assert not _message
+
+    im.send(b"Hello!")
+
+    assert write_im_handler_called
+    assert _message == b"Hello!"
+    assert _account_name == b"user1"
+
+
 def test_joined_chat_signal(client: PurpleClient):
 
     # Prepare handler

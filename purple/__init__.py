@@ -41,5 +41,6 @@ from .conversation import IM
 from .conversation import Chat
 from .conversation import ConversationType
 from .conversation import PurpleConvChatBuddyFlags
+from .conversation import PurpleMessageFlags
 from .conversation import ChatBuddy
 from .client import PurpleClient

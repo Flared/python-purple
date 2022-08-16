@@ -16,11 +16,11 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from datetime import datetime
 
 from libpurple cimport conversation as c_libconversation
 from libpurple cimport debug as c_libdebug
-from libpurple cimport account as c_libaccount
-from libpurple cimport blist as c_libblist
+from purple cimport conversation as libconversation
 
 cdef extern from *:
     ctypedef char const_char "const char"
@@ -54,68 +54,54 @@ cdef void destroy_conversation(c_libconversation.PurpleConversation *conv):
         (<object> conversation_cbs["destroy-conversation"]) \
             ("destroy-conversation: TODO")
 
-cdef void write_chat(c_libconversation.PurpleConversation *conv,
-                     const_char *who,
-                     const_char *message,
+cdef str CALLBACK_CONVERSATION_WRITE_CHAT = "write-chat"
+cdef void write_chat(c_libconversation.PurpleConversation* c_conversation,
+                     const_char* c_who,
+                     const_char* c_message,
                      c_libconversation.PurpleMessageFlags flags,
-                     time_t mtime):
+                     time_t c_mtime):
     """
     Write a message to a chat. If this field is NULL, libpurple will fall
     back to using write_conv.
     @see purple_conv_chat_write()
     """
     c_libdebug.purple_debug_info("conversation", "%s", "write-chat\n")
-    if "write-chat" in conversation_cbs:
-        (<object> conversation_cbs["write-chat"])("write-chat: TODO")
+    cdef libconversation.Conversation conversation = libconversation.Conversation.from_c_conversation(c_conversation)
+    cdef bytes who = c_who or None
+    cdef bytes message = c_message or None
 
-cdef void write_im(c_libconversation.PurpleConversation *conv,
-                   const_char *who,
+    if CALLBACK_CONVERSATION_WRITE_CHAT in conversation_cbs:
+        conversation_cbs[CALLBACK_CONVERSATION_WRITE_CHAT](
+            conversation=conversation,
+            who=who,
+            message=message,
+            time=datetime.utcfromtimestamp(c_mtime),
+            flags=flags,
+        )
+
+cdef str CALLBACK_CONVERSATION_WRITE_IM = "write-im"
+cdef void write_im(c_libconversation.PurpleConversation *c_conversation,
+                   const_char *c_who,
                    const_char *c_message,
                    c_libconversation.PurpleMessageFlags flags,
-                   time_t mtime):
+                   time_t c_mtime):
     """
     Write a message to an IM conversation. If this field is NULL, libpurple
     will fall back to using write_conv.
     @see purple_conv_im_write()
     """
     c_libdebug.purple_debug_info("conversation", "%s", "write-im\n")
-    cdef c_libaccount.PurpleAccount *acc = \
-        c_libconversation.purple_conversation_get_account(conv)
-    cdef c_libblist.PurpleBuddy *buddy = NULL
-    cdef char *c_username = NULL
-    cdef char *c_sender_alias = NULL
+    cdef libconversation.Conversation conversation = libconversation.Conversation.from_c_conversation(c_conversation)
+    cdef bytes who = c_who or None
+    cdef bytes message = c_message or None
 
-    c_username = <char *> c_libaccount.purple_account_get_username(acc)
-    cdef username = c_username or None
-
-    if who == NULL:
-        who = c_libconversation.purple_conversation_get_name(conv)
-
-    sender = <char *> who
-    buddy = c_libblist.purple_find_buddy(acc, <char *> who)
-    if buddy:
-        c_sender_alias = <char *> c_libblist.purple_buddy_get_alias_only(buddy)
-
-    if c_sender_alias:
-        sender_alias = unicode(c_sender_alias, 'utf-8')
-    else:
-        sender_alias = None
-
-    cdef message = c_message or None
-
-    # FIXME: Maybe we need add more purple flags in the future
-    if (<int>flags & c_libconversation.PURPLE_MESSAGE_SEND):
-        flag = "SEND"
-    else:
-        flag = "RECV"
-
-    if "write-im" in conversation_cbs:
-        (<object> conversation_cbs["write-im"])(
-            username,
-            sender,
-            sender_alias,
-            message,
-            flag
+    if CALLBACK_CONVERSATION_WRITE_IM in conversation_cbs:
+        conversation_cbs[CALLBACK_CONVERSATION_WRITE_IM](
+            conversation=conversation,
+            who=who,
+            message=message,
+            time=datetime.utcfromtimestamp(c_mtime),
+            flags=flags,
         )
 
 cdef void write_conv(c_libconversation.PurpleConversation *conv,
