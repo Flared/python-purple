@@ -17,6 +17,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from datetime import datetime
 from typing import Optional
 from typing import Dict
 from typing import Any
@@ -60,49 +61,53 @@ class SimpleClient:
             raise Exception("No account!")
         return account
 
-    def cb_signal_conversation_received_im_msg(
+    def cb_conversation_write_im(
         self,
         *,
-        account: purple.Account,
-        sender: bytes,
-        message: bytes,
         conversation: purple.Conversation,
-        flags: Any,
+        who: bytes,
+        message: bytes,
+        time: datetime,
+        flags: int,
     ) -> None:
-        click.echo(
-            "{prefix} {sender} {message}".format(
-                prefix=click.style("[RECEIVED-IM-MSG]", fg="green", bold=True),
-                sender=click.style(
-                    "[{sender}]".format(sender=sender.decode()),
-                    fg="yellow",
-                    bold=True,
-                ),
-                message=message.decode(),
+        if flags & purple.PurpleMessageFlags.PURPLE_MESSAGE_RECV:
+            click.echo(
+                "{prefix} {time} {sender} {message}".format(
+                    prefix=click.style("[RECEIVED-IM-MSG]", fg="green", bold=True),
+                    time=time.isoformat(),
+                    sender=click.style(
+                        "[{sender}]".format(sender=who.decode()),
+                        fg="yellow",
+                        bold=True,
+                    ),
+                    message=message.decode(),
+                )
             )
-        )
 
-    def cb_signal_conversation_received_chat_msg(
+    def cb_conversation_write_chat(
         self,
         *,
-        account: purple.Account,
-        sender: bytes,
-        message: bytes,
         conversation: purple.Conversation,
-        flags: Any,
+        who: bytes,
+        message: bytes,
+        time: datetime,
+        flags: int,
     ) -> None:
-        click.echo(
-            "{prefix} {sender} {message}".format(
-                prefix=click.style(
-                    "[RECEIVED-CHAT-MSG]", fg="green", bold=True
-                ),
-                sender=click.style(
-                    "[{sender}]".format(sender=sender.decode()),
-                    fg="yellow",
-                    bold=True,
-                ),
-                message=message.decode(),
+        if flags & purple.PurpleMessageFlags.PURPLE_MESSAGE_RECV:
+            click.echo(
+                "{prefix} {time} {sender} {message}".format(
+                    prefix=click.style(
+                        "[RECEIVED-CHAT-MSG]", fg="green", bold=True
+                    ),
+                    time=time.isoformat(),
+                    sender=click.style(
+                        "[{sender}]".format(sender=who.decode()),
+                        fg="yellow",
+                        bold=True,
+                    ),
+                    message=message.decode(),
+                )
             )
-        )
 
     def cb_signal_conversation_chat_joined(
         self, *, conversation: purple.Conversation
@@ -283,11 +288,11 @@ class SimpleClient:
         ###############################
 
         ## Conversation
-        self.purple_client.set_cb_signal_conversation_received_im_msg(
-            self.cb_signal_conversation_received_im_msg
+        self.purple_client.set_cb_conversation_write_im(
+            self.cb_conversation_write_im
         )
-        self.purple_client.set_cb_signal_conversation_received_chat_msg(
-            self.cb_signal_conversation_received_chat_msg
+        self.purple_client.set_cb_conversation_write_chat(
+            self.cb_conversation_write_chat
         )
         self.purple_client.set_cb_signal_conversation_chat_joined(
             self.cb_signal_conversation_chat_joined

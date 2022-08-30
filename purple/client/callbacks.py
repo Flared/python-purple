@@ -127,3 +127,12 @@ class CallbackConversationWriteIm(Protocol):
         flags: int,
     ) -> None:
         ...
+
+
+class CallbackConversationHasFocus(Protocol):
+    def __call__(
+        self,
+        *,
+        conversation: purple.Conversation,
+    ) -> bool:
+        ...

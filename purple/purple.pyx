@@ -311,6 +311,8 @@ cdef class Purple:
             callbacks_conversation.conversation_cbs[callback_name] = callback
         elif callback_name == callbacks_conversation.CALLBACK_CONVERSATION_WRITE_IM:
             callbacks_conversation.conversation_cbs[callback_name] = callback
+        elif callback_name == callbacks_conversation.CALLBACK_CONVERSATION_HAS_FOCUS:
+            callbacks_conversation.conversation_cbs[callback_name] = callback
         else:
             raise Exception(
                 "Unknown callback '{callback_name}'".format(

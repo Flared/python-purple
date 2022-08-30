@@ -33,6 +33,10 @@ cdef class _Callbacks:
     def CALLBACK_CONVERSATION_WRITE_IM(self):
         return libcallbacks_conversation.CALLBACK_CONVERSATION_WRITE_IM
 
+    @property
+    def CALLBACK_CONVERSATION_HAS_FOCUS(self):
+        return libcallbacks_conversation.CALLBACK_CONVERSATION_HAS_FOCUS
+
     #############
     ## Request ##
     #############
