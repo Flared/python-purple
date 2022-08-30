@@ -70,6 +70,7 @@ cdef void chat_update_user(c_libconversation.PurpleConversation *conv,
 
 cdef void present(c_libconversation.PurpleConversation *conv)
 
+cdef str CALLBACK_CONVERSATION_HAS_FOCUS
 cdef glib.gboolean has_focus(c_libconversation.PurpleConversation *conv)
 
 cdef glib.gboolean custom_smiley_add(c_libconversation.PurpleConversation *conv,
