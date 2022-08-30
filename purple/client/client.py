@@ -27,6 +27,7 @@ from .callbacks import CallbackSignalConnectionError
 from .callbacks import CallbackRequestRequestInput
 from .callbacks import CallbackConversationWriteChat
 from .callbacks import CallbackConversationWriteIm
+from .callbacks import CallbackConversationHasFocus
 
 
 class _Callbacks(TypedDict):
@@ -49,6 +50,7 @@ class _Callbacks(TypedDict):
     RequestRequestInput: Optional[CallbackRequestRequestInput]
     ConversationWriteChat: Optional[CallbackConversationWriteChat]
     ConversationWriteIm: Optional[CallbackConversationWriteIm]
+    ConversationHasFocus: Optional[CallbackConversationHasFocus]
 
 
 class PurpleClient:
@@ -85,6 +87,7 @@ class PurpleClient:
             "RequestRequestInput": None,
             "ConversationWriteChat": None,
             "ConversationWriteIm": None,
+            "ConversationHasFocus": None,
         }
 
     def set_cb_signal_conversation_received_im_msg(
@@ -393,6 +396,22 @@ class PurpleClient:
                 flags=flags,
             )
 
+    def set_cb_conversation_has_focus(
+        self, callback: CallbackConversationHasFocus
+    ) -> None:
+        self._callbacks["ConversationHasFocus"] = callback
+
+    def _cb_conversation_has_focus(
+        self,
+        *,
+        conversation: purple.Conversation,
+    ) -> bool:
+        if self._callbacks["ConversationHasFocus"] is not None:
+            return self._callbacks["ConversationHasFocus"](
+                conversation=conversation,
+            )
+        return False
+
     def do_loop(self) -> None:
         if not self._purple_core:
             self._purple_core_init()
@@ -474,6 +493,11 @@ class PurpleClient:
         self._purple_core.add_callback(
             callback_name=purple.Callbacks.CALLBACK_CONVERSATION_WRITE_IM,
             callback=self._cb_conversation_write_im,
+        )
+
+        self._purple_core.add_callback(
+            callback_name=purple.Callbacks.CALLBACK_CONVERSATION_HAS_FOCUS,
+            callback=self._cb_conversation_has_focus,
         )
 
     def close(self) -> None:

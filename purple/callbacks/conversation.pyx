@@ -183,14 +183,17 @@ cdef void present(c_libconversation.PurpleConversation *conv):
     if "present" in conversation_cbs:
         (<object> conversation_cbs["present"])("present: TODO")
 
+cdef str CALLBACK_CONVERSATION_HAS_FOCUS = "has-focus"
 cdef glib.gboolean has_focus(c_libconversation.PurpleConversation *conv):
     """
     If this UI has a concept of focus (as in a windowing system) and this
     conversation has the focus, return TRUE; otherwise, return FALSE.
     """
     c_libdebug.purple_debug_info("conversation", "%s", "has-focus\n")
-    if "has-focus" in conversation_cbs:
-        (<object> conversation_cbs["has-focus"])("has-focus: TODO")
+    cdef libconversation.Conversation conversation = libconversation.Conversation.from_c_conversation(conv)
+
+    if CALLBACK_CONVERSATION_HAS_FOCUS in conversation_cbs:
+        return conversation_cbs[CALLBACK_CONVERSATION_HAS_FOCUS](conversation=conversation)
     return False
 
 cdef glib.gboolean custom_smiley_add(c_libconversation.PurpleConversation *conv,
