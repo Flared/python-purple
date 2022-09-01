@@ -44,6 +44,10 @@ cdef class _Callbacks:
     def CALLBACK_REQUEST_REQUEST_INPUT(self):
         return libcallbacks_request.CALLBACK_REQUEST_REQUEST_INPUT
 
+    @property
+    def CALLBACK_REQUEST_REQUEST_ACTION(self):
+        return libcallbacks_request.CALLBACK_REQUEST_REQUEST_ACTION
+
 
 cdef _Callbacks get_callbacks_enum():
     return _Callbacks()

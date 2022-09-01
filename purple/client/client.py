@@ -6,6 +6,7 @@ from typing_extensions import TypedDict
 from typing import Optional
 from typing import Any
 from typing import Callable
+from typing import List
 
 import logging
 import click
@@ -25,6 +26,7 @@ from .callbacks import CallbackSignalConnectionSignedOn
 from .callbacks import CallbackSignalConnectionSignedOff
 from .callbacks import CallbackSignalConnectionError
 from .callbacks import CallbackRequestRequestInput
+from .callbacks import CallbackRequestRequestAction
 from .callbacks import CallbackConversationWriteChat
 from .callbacks import CallbackConversationWriteIm
 from .callbacks import CallbackConversationHasFocus
@@ -48,6 +50,7 @@ class _Callbacks(TypedDict):
     SignalConnectionSignedOff: Optional[CallbackSignalConnectionSignedOff]
     SignalConnectionError: Optional[CallbackSignalConnectionError]
     RequestRequestInput: Optional[CallbackRequestRequestInput]
+    RequestRequestAction: Optional[CallbackRequestRequestAction]
     ConversationWriteChat: Optional[CallbackConversationWriteChat]
     ConversationWriteIm: Optional[CallbackConversationWriteIm]
     ConversationHasFocus: Optional[CallbackConversationHasFocus]
@@ -85,6 +88,7 @@ class PurpleClient:
             "SignalConnectionSignedOff": None,
             "SignalConnectionError": None,
             "RequestRequestInput": None,
+            "RequestRequestAction": None,
             "ConversationWriteChat": None,
             "ConversationWriteIm": None,
             "ConversationHasFocus": None,
@@ -350,6 +354,36 @@ class PurpleClient:
                 conversation=conversation,
             )
 
+    def set_cb_request_request_action(
+        self, callback: CallbackRequestRequestAction
+    ) -> None:
+        self._callbacks["RequestRequestAction"] = callback
+
+    def _cb_request_request_action(
+        self,
+        *,
+        title: bytes,
+        primary: bytes,
+        secondary: bytes,
+        default_action: int,
+        account: purple.Account,
+        who: bytes,
+        conversation: Optional[purple.Conversation],
+        actions: List[bytes],
+    ) -> int:
+        if self._callbacks["RequestRequestAction"] is not None:
+            return self._callbacks["RequestRequestAction"](
+                title=title,
+                primary=primary,
+                secondary=secondary,
+                default_action=default_action,
+                account=account,
+                who=who,
+                conversation=conversation,
+                actions=actions,
+            )
+        return default_action
+
     def set_cb_conversation_write_chat(
         self, callback: CallbackConversationWriteChat
     ) -> None:
@@ -484,6 +518,10 @@ class PurpleClient:
         self._purple_core.add_callback(
             callback_name=purple.Callbacks.CALLBACK_REQUEST_REQUEST_INPUT,
             callback=self._cb_request_request_input,
+        )
+        self._purple_core.add_callback(
+            callback_name=purple.Callbacks.CALLBACK_REQUEST_REQUEST_ACTION,
+            callback=self._cb_request_request_action,
         )
         self._purple_core.add_callback(
             callback_name=purple.Callbacks.CALLBACK_CONVERSATION_WRITE_CHAT,

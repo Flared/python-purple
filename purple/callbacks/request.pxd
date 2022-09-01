@@ -68,6 +68,7 @@ cdef void *request_choice(
     va_list choices
 )
 
+cdef str CALLBACK_REQUEST_REQUEST_ACTION
 cdef void *request_action(
     const_char *title,
     const_char *primary,

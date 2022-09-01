@@ -23,6 +23,8 @@ from libpurple cimport conversation as c_libconversation
 from libpurple cimport request as c_librequest
 from libpurple cimport debug as c_libdebug
 from libpurple cimport account as c_libaccount
+from purple cimport account as libaccount
+from purple cimport conversation as libconversation
 
 cdef extern from *:
     ctypedef char const_char "const char"
@@ -131,14 +133,15 @@ cdef void __call_action(int i):
         cb = req_actions_cb[i]
         cb(req_action_user_data, i)
 
+cdef str CALLBACK_REQUEST_REQUEST_ACTION = "request-action"
 cdef void *request_action(
-    const_char *title,
-    const_char *primary,
-    const_char *secondary,
+    const_char *c_title,
+    const_char *c_primary,
+    const_char *c_secondary,
     int default_action,
-    c_libaccount.PurpleAccount *account,
-    const_char *who,
-    c_libconversation.PurpleConversation *conv,
+    c_libaccount.PurpleAccount *c_account,
+    const_char *c_who,
+    c_libconversation.PurpleConversation *c_conversation,
     void *user_data,
     size_t action_count, va_list actions
 ):
@@ -148,11 +151,17 @@ cdef void *request_action(
     global req_actions_cb
     global req_actions_list
     global req_action_user_data
-    cdef int i
+    cdef int i = 0
+    cdef int action_id = default_action
     cdef char *btn_txt
     cdef void *cb
 
-    i = 0
+    cdef bytes title = c_title or None
+    cdef bytes primary = c_primary or None
+    cdef bytes secondary = c_secondary or None
+    cdef libaccount.Account account = libaccount.Account.from_c_account(c_account)
+    cdef bytes who = c_who or None
+    cdef libconversation.Conversation conversation = libconversation.Conversation.from_c_conversation(c_conversation)
 
     req_action_user_data = user_data
     req_actions_list = []
@@ -165,10 +174,22 @@ cdef void *request_action(
         i = i + 1
 
     c_libdebug.purple_debug_info("request", "%s", "request-action\n")
-    if "request-action" in request_cbs:
-        (<object> request_cbs["request-action"]) \
-            (<char *> title, <char *> primary, <char *> secondary, \
-            default_action, req_actions_list)
+    if CALLBACK_REQUEST_REQUEST_ACTION in request_cbs:
+        action_id = request_cbs[CALLBACK_REQUEST_REQUEST_ACTION](
+            title=title,
+            primary=primary,
+            secondary=secondary,
+            default_action=default_action,
+            account=account,
+            who=who,
+            conversation=conversation,
+            actions=req_actions_list)
+
+    if action_id < 0 or action_id >= action_count or action_id >= 10:
+        action_id = default_action
+
+    if action_id > -1:
+        req_actions_cb[action_id](user_data, action_id)
 
 cdef void *request_fields(
     const_char *title,
