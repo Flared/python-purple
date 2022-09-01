@@ -1,4 +1,5 @@
 #
+#  Copyright (c) 2022 Flare Systems Inc.
 #  Copyright (c) 2008 INdT - Instituto Nokia de Tecnologia
 #
 #  This file is part of python-purple.
@@ -133,6 +134,20 @@ cdef class Account:
         cdef bytes value = c_value or None
         return value
 
+    def get_bool(self, char* name, bint default_value):
+        """
+        Gets a protocol-specific bool setting for an account.
+
+        @param name The name of the setting.
+        @param default_value The default value.
+        @return The value.
+        """
+        cdef bint c_value = c_libaccount.purple_account_get_bool(
+            self._c_account,
+            name,
+            default_value,
+        )
+        return c_value
 
     def is_enabled(
         self,
@@ -168,6 +183,19 @@ cdef class Account:
         @param value The setting's value.
         """
         c_libaccount.purple_account_set_string(
+            self._c_account,
+            name,
+            value
+        )
+
+    def set_bool(self, char* name, bint value):
+        """
+        Sets a protocol-specific bool setting for an account.
+
+        @param name The name of the setting.
+        @param value The setting's value.
+        """
+        c_libaccount.purple_account_set_bool(
             self._c_account,
             name,
             value
