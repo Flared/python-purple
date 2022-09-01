@@ -2,7 +2,9 @@ from datetime import datetime
 
 from typing_extensions import Protocol
 from typing import Callable
+from typing import Optional
 from typing import Any
+from typing import List
 
 import purple
 
@@ -100,6 +102,22 @@ class CallbackRequestRequestInput(Protocol):
         who: bytes,
         conversation: purple.Conversation,
     ) -> None:
+        ...
+
+
+class CallbackRequestRequestAction(Protocol):
+    def __call__(
+        self,
+        *,
+        title: bytes,
+        primary: bytes,
+        secondary: bytes,
+        default_action: int,
+        account: purple.Account,
+        who: bytes,
+        conversation: Optional[purple.Conversation],
+        actions: List[bytes],
+    ) -> int:
         ...
 
 
