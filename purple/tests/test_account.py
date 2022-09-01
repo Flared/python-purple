@@ -97,3 +97,11 @@ def test_account_set_string(core):
         account.get_string(b"another_test", b"another_default")
         == b"another_default"
     )
+
+
+def test_account_set_bool(core):
+    account = get_test_account()
+
+    assert account.get_bool(b"test", False) == False
+    account.set_bool(b"test", True)
+    assert account.get_bool(b"test", False) == True
