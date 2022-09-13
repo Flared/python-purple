@@ -109,7 +109,7 @@ Python bindings for libpurple, a multi-protocol instant messaging library."
 
 setup(
     name="python-purple",
-    version="0.1.4",
+    version="0.1.5",
     author="Alexandre Viau",
     author_email="alexandre.viau@flare.systems",
     description="Python bindings for libpurple",
