@@ -124,5 +124,3 @@ cdef void *request_folder(
     c_libconversation.PurpleConversation *conv,
     void *user_data
 )
-
-cdef void __call_action(int i)

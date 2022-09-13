@@ -483,7 +483,3 @@ cdef class Purple:
     def iterate_main_loop(self):
         glib.g_main_context_iteration(NULL, False)
         return True
-
-
-    def call_action(self, i):
-        callbacks_request.__call_action(i)

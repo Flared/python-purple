@@ -36,10 +36,6 @@ cdef extern from *:
 
 request_cbs = {}
 
-cdef c_librequest.PurpleRequestActionCb req_actions_cb[10]
-cdef object req_actions_list = []
-cdef void *req_action_user_data = NULL
-
 cdef str CALLBACK_REQUEST_REQUEST_INPUT = "request-input"
 cdef void* request_input(
     const_char* c_title,
@@ -122,17 +118,6 @@ cdef void *request_choice(
     if "request-choice" in request_cbs:
         (<object> request_cbs["request-choice"])("request-choice: TODO")
 
-cdef void __call_action(int i):
-    global req_actions_cb
-    global req_actions_list
-    global req_action_user_data
-
-    cdef c_librequest.PurpleRequestActionCb cb 
-
-    if req_actions_list and len(req_actions_list) > i:
-        cb = req_actions_cb[i]
-        cb(req_action_user_data, i)
-
 cdef str CALLBACK_REQUEST_REQUEST_ACTION = "request-action"
 cdef void *request_action(
     const_char *c_title,
@@ -148,9 +133,8 @@ cdef void *request_action(
     """
     @see purple_request_action_varg().
     """
-    global req_actions_cb
-    global req_actions_list
-    global req_action_user_data
+    cdef c_librequest.PurpleRequestActionCb req_actions_cb[10]
+    cdef object req_actions_list = []
     cdef int i = 0
     cdef int action_id = default_action
     cdef char *btn_txt
@@ -162,9 +146,6 @@ cdef void *request_action(
     cdef libaccount.Account account = libaccount.Account.from_c_account(c_account)
     cdef bytes who = c_who or None
     cdef libconversation.Conversation conversation = libconversation.Conversation.from_c_conversation(c_conversation)
-
-    req_action_user_data = user_data
-    req_actions_list = []
 
     #FIXME: i < 10 max size to req_actions_cb
     while i < action_count and i < 10:
