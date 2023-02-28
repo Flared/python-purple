@@ -13,7 +13,7 @@ jobs:
         architecture: x64
     - run: pip install pip==22.1.2 wheel==0.37.1 build==0.8.0
     - run: python -m build --sdist
-    - uses: Flared/python-publish-action@v0.2.1
+    - uses: Flared/python-publish-action@v0.3.2
       with:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
