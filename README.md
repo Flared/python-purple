@@ -6,7 +6,7 @@ Python bindings to [libpurple](https://developer.pidgin.im/wiki/WhatIsLibpurple)
 
 # Note
 
-This is [Flare System](https://flare.systems)'s attempt at reviving python-purple. The library was forked from [fahhem/python-purple](https://github.com/fahhem/python-purple), which was a short-lived fork of Anderson Briglia's original work.
+This is [Flare](https://flare.io)'s attempt at reviving python-purple. The library was forked from [fahhem/python-purple](https://github.com/fahhem/python-purple), which was a short-lived fork of Anderson Briglia's original work.
 
 Notable changes since then include:
 - Moving to Python 3
