@@ -116,7 +116,7 @@ setup(
     long_description=long_description,
     ext_modules=cythonized_modules,
     packages=find_packages(),
-    setup_requires=["cython"],
+    setup_requires=["Cython<3.0"],
     package_data={"purple": ["py.typed"]},
     zip_safe=False,
 )
