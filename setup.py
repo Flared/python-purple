@@ -101,7 +101,10 @@ cythonized_modules = cythonize(
     ext_modules,
     include_path=["include"],
     build_dir="build",
-    compiler_directives={"language_level": "3"},
+    compiler_directives={
+        "language_level": "3",
+        "legacy_implicit_noexcept": True,
+    },
 )
 
 long_description = "\
@@ -116,7 +119,7 @@ setup(
     long_description=long_description,
     ext_modules=cythonized_modules,
     packages=find_packages(),
-    setup_requires=["Cython<3.0"],
+    setup_requires=["Cython>=3"],
     package_data={"purple": ["py.typed"]},
     zip_safe=False,
 )
